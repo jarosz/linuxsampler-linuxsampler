@@ -1,6 +1,6 @@
 /***************************************************************************
  *                                                                         *
- *   Copyright (C) 2005, 2008 Christian Schoenebeck                        *
+ *   Copyright (C) 2005 - 2017 Christian Schoenebeck                       *
  *                                                                         *
  *   This library is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -67,8 +67,10 @@ namespace LinuxSampler {
              *
              * @param ExtControlValue - new external controller value
              */
-            inline void update(const uint16_t& ExtControlValue) {
-                const float max = this->InternalDepth + ExtControlValue * this->ExtControlDepthCoeff;
+            inline void updateByMIDICtrlValue(const uint16_t& ExtControlValue) {
+                this->ExtControlValue = ExtControlValue;
+
+                const float max = (this->InternalDepth + ExtControlValue * this->ExtControlDepthCoeff) * this->ScriptDepthFactor;
                 if (RANGE == range_unsigned) {
                     const float harmonicCompensation = 1.0f + fabsf(AMP2); // to compensate the compensation ;) (see trigger())
                     normalizer = max * 0.5f;
@@ -93,12 +95,15 @@ namespace LinuxSampler {
              *                          audio output signal
              */
             void trigger(float Frequency, start_level_t StartLevel, uint16_t InternalDepth, uint16_t ExtControlDepth, bool FlipPhase, unsigned int SampleRate) {
+                this->Frequency = Frequency;
+                this->ScriptFrequencyFactor = this->ScriptDepthFactor = 1.f; // reset for new voice
                 const float harmonicCompensation = 1.0f + fabsf(AMP2); // to compensate the 2nd harmonic's amplitude overhead
                 this->InternalDepth        = (InternalDepth / 1200.0f) * this->Max / harmonicCompensation;
                 this->ExtControlDepthCoeff = (((float) ExtControlDepth / 1200.0f) / 127.0f) * this->Max / harmonicCompensation;
 
-                c1 = 2.0f * M_PI * Frequency / (float) SampleRate;
-                c2 = 2.0f * M_PI * Frequency / (float) SampleRate * 3.0f;
+                const float freq = Frequency * this->ScriptFrequencyFactor;
+                c1 = 2.0f * M_PI * freq / (float) SampleRate;
+                c2 = 2.0f * M_PI * freq / (float) SampleRate * 3.0f;
 
                 double phi; // phase displacement
                 switch (StartLevel) {
@@ -134,8 +139,20 @@ namespace LinuxSampler {
             }
             
             void setFrequency(float Frequency, unsigned int SampleRate) {
-                c1 = 2.0f * M_PI * Frequency / (float) SampleRate;
-                c2 = 2.0f * M_PI * Frequency / (float) SampleRate * 3.0f;
+                this->Frequency = Frequency;
+                const float freq = Frequency * this->ScriptFrequencyFactor;
+                c1 = 2.0f * M_PI * freq / (float) SampleRate;
+                c2 = 2.0f * M_PI * freq / (float) SampleRate * 3.0f;
+            }
+
+            void setScriptDepthFactor(float factor) {
+                this->ScriptDepthFactor = factor;
+                updateByMIDICtrlValue(this->ExtControlValue);
+            }
+
+            void setScriptFrequencyFactor(float factor, unsigned int SampleRate) {
+                this->ScriptFrequencyFactor = factor;
+                setFrequency(this->Frequency, SampleRate);
             }
 
         private:

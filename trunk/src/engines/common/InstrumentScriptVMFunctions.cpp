@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 Christian Schoenebeck
+ * Copyright (c) 2014-2017 Christian Schoenebeck
  *
  * http://www.linuxsampler.org
  *
@@ -1057,6 +1057,115 @@ namespace LinuxSampler {
         }
 
         return successResult();
+    }
+
+    #define VM_GENERAL_CHANGE_SYNTH_PAR_MAX_VALUE 1000000
+
+    bool VMChangeSynthParamFunction::acceptsArgType(int iArg, ExprType_t type) const {
+        if (iArg == 0)
+            return type == INT_EXPR || type == INT_ARR_EXPR;
+        else
+            return INT_EXPR;
+    }
+
+    template<float NoteBase::_Override::*T_noteParam, int T_synthParam>
+    VMFnResult* VMChangeSynthParamFunction::execTemplate(VMFnArgs* args, const char* functionName) {
+        int value = args->arg(1)->asInt()->evalInt();
+        if (value > VM_GENERAL_CHANGE_SYNTH_PAR_MAX_VALUE) {
+            wrnMsg(String(functionName) + "(): argument 2 may not be larger than 1000000");
+            value = VM_GENERAL_CHANGE_SYNTH_PAR_MAX_VALUE;
+        } else if (value < 0) {
+            wrnMsg(String(functionName) + "(): argument 2 may not be negative");
+            value = 0;
+        }
+        const float fValue = float(value) / float(VM_GENERAL_CHANGE_SYNTH_PAR_MAX_VALUE);
+
+        AbstractEngineChannel* pEngineChannel =
+            static_cast<AbstractEngineChannel*>(m_vm->m_event->cause.pEngineChannel);
+
+        if (args->arg(0)->exprType() == INT_EXPR) {
+            const ScriptID id = args->arg(0)->asInt()->evalInt();
+            if (!id) {
+                wrnMsg(String(functionName) + "(): note ID for argument 1 may not be zero");
+                return successResult();
+            }
+            if (!id.isNoteID()) {
+                wrnMsg(String(functionName) + "(): argument 1 is not a note ID");
+                return successResult();
+            }
+
+            NoteBase* pNote = pEngineChannel->pEngine->NoteByID( id.noteID() );
+            if (!pNote) return successResult();
+
+            // if this change_*() script function was called immediately after
+            // note was triggered then immediately apply the synth parameter
+            // change to Note object
+            if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+                pNote->Override.*T_noteParam = fValue;
+            } else { // otherwise schedule this synth parameter change ...
+                Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
+                e.Init(); // clear IDs
+                e.Type = Event::type_note_synth_param;
+                e.Param.NoteSynthParam.NoteID   = id.noteID();
+                e.Param.NoteSynthParam.Type     = (Event::synth_param_t) T_synthParam;
+                e.Param.NoteSynthParam.Delta    = fValue;
+                e.Param.NoteSynthParam.Relative = false;
+
+                pEngineChannel->ScheduleEventMicroSec(&e, 0);
+            }
+        } else if (args->arg(0)->exprType() == INT_ARR_EXPR) {
+            VMIntArrayExpr* ids = args->arg(0)->asIntArray();
+            for (int i = 0; i < ids->arraySize(); ++i) {
+                const ScriptID id = ids->evalIntElement(i);
+                if (!id || !id.isNoteID()) continue;
+
+                NoteBase* pNote = pEngineChannel->pEngine->NoteByID( id.noteID() );
+                if (!pNote) continue;
+
+                // if this change_*() script function was called immediately after
+                // note was triggered then immediately apply the synth parameter
+                // change to Note object
+                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+                    pNote->Override.*T_noteParam = fValue;
+                } else { // otherwise schedule this synth parameter change ...
+                    Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
+                    e.Init(); // clear IDs
+                    e.Type = Event::type_note_synth_param;
+                    e.Param.NoteSynthParam.NoteID   = id.noteID();
+                    e.Param.NoteSynthParam.Type     = (Event::synth_param_t) T_synthParam;
+                    e.Param.NoteSynthParam.Delta    = fValue;
+                    e.Param.NoteSynthParam.Relative = false;
+
+                    pEngineChannel->ScheduleEventMicroSec(&e, 0);
+                }
+            }
+        }
+
+        return successResult();
+    }
+
+    // change_amp_lfo_depth() function
+
+    VMFnResult* InstrumentScriptVMFunction_change_amp_lfo_depth::exec(VMFnArgs* args) {
+        return VMChangeSynthParamFunction::execTemplate< &NoteBase::_Override::AmpLFODepth, Event::synth_param_amp_lfo_depth >(args, "change_amp_lfo_depth");
+    }
+
+    // change_amp_lfo_freq() function
+
+    VMFnResult* InstrumentScriptVMFunction_change_amp_lfo_freq::exec(VMFnArgs* args) {
+        return VMChangeSynthParamFunction::execTemplate< &NoteBase::_Override::AmpLFOFreq, Event::synth_param_amp_lfo_freq >(args, "change_amp_lfo_freq");
+    }
+
+    // change_pitch_lfo_depth() function
+
+    VMFnResult* InstrumentScriptVMFunction_change_pitch_lfo_depth::exec(VMFnArgs* args) {
+        return VMChangeSynthParamFunction::execTemplate< &NoteBase::_Override::PitchLFODepth, Event::synth_param_pitch_lfo_depth >(args, "change_pitch_lfo_depth");
+    }
+
+    // change_pitch_lfo_freq() function
+
+    VMFnResult* InstrumentScriptVMFunction_change_pitch_lfo_freq::exec(VMFnArgs* args) {
+        return VMChangeSynthParamFunction::execTemplate< &NoteBase::_Override::PitchLFOFreq, Event::synth_param_pitch_lfo_freq >(args, "change_pitch_lfo_freq");
     }
 
     // event_status() function

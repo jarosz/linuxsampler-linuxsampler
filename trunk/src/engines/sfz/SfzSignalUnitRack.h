@@ -249,7 +249,7 @@ namespace LinuxSampler { namespace sfz {
             LfoBase(float Max): T(Max) { }
             virtual float Render() { return T::render(); }
             
-            virtual void Update(const uint16_t& ExtControlValue) { T::update(ExtControlValue); }
+            virtual void Update(const uint16_t& ExtControlValue) { T::updateByMIDICtrlValue(ExtControlValue); }
             
             virtual void Trigger (
                 float Frequency, start_level_t StartLevel, uint16_t InternalDepth,

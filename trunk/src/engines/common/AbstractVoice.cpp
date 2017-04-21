@@ -660,13 +660,13 @@ namespace LinuxSampler {
                 }
                 if (pSignalUnitRack == NULL) {
                     if (itEvent->Param.CC.Controller == pLFO1->ExtController) {
-                        pLFO1->update(itEvent->Param.CC.Value);
+                        pLFO1->updateByMIDICtrlValue(itEvent->Param.CC.Value);
                     }
                     if (itEvent->Param.CC.Controller == pLFO2->ExtController) {
-                        pLFO2->update(itEvent->Param.CC.Value);
+                        pLFO2->updateByMIDICtrlValue(itEvent->Param.CC.Value);
                     }
                     if (itEvent->Param.CC.Controller == pLFO3->ExtController) {
-                        pLFO3->update(itEvent->Param.CC.Value);
+                        pLFO3->updateByMIDICtrlValue(itEvent->Param.CC.Value);
                     }
                 }
                 if (itEvent->Param.CC.Controller == 7) { // volume
@@ -749,6 +749,18 @@ namespace LinuxSampler {
                         break;
                     case Event::synth_param_resonance:
                         NoteResonance = itEvent->Param.NoteSynthParam.AbsValue;
+                        break;
+                    case Event::synth_param_amp_lfo_depth:
+                        pLFO1->setScriptDepthFactor(itEvent->Param.NoteSynthParam.AbsValue);
+                        break;
+                    case Event::synth_param_amp_lfo_freq:
+                        pLFO1->setScriptFrequencyFactor(itEvent->Param.NoteSynthParam.AbsValue, GetEngine()->SampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE);
+                        break;
+                    case Event::synth_param_pitch_lfo_depth:
+                        pLFO3->setScriptDepthFactor(itEvent->Param.NoteSynthParam.AbsValue);
+                        break;
+                    case Event::synth_param_pitch_lfo_freq:
+                        pLFO3->setScriptFrequencyFactor(itEvent->Param.NoteSynthParam.AbsValue, GetEngine()->SampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE);
                         break;
 
                     case Event::synth_param_attack:

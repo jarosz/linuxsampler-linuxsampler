@@ -63,9 +63,11 @@ namespace LinuxSampler {
              *
              * @param ExtControlValue - new external controller value
              */
-            inline void update(const uint16_t& ExtControlValue) {
+            inline void updateByMIDICtrlValue(const uint16_t& ExtControlValue) {
+                this->ExtControlValue = ExtControlValue;
+
                 const unsigned int intLimit = (unsigned int) -1; // all 0xFFFF...
-                const float max = this->InternalDepth + ExtControlValue * this->ExtControlDepthCoeff;
+                const float max = (this->InternalDepth + ExtControlValue * this->ExtControlDepthCoeff) * this->ScriptDepthFactor;
                 if (RANGE == range_unsigned) {
                     normalizer = max / (float) intLimit;
                 } else { // signed range
@@ -88,11 +90,14 @@ namespace LinuxSampler {
              *                          audio output signal
              */
             virtual void trigger(float Frequency, start_level_t StartLevel, uint16_t InternalDepth, uint16_t ExtControlDepth, bool FlipPhase, unsigned int SampleRate) {
+                this->Frequency            = Frequency;
                 this->InternalDepth        = (InternalDepth / 1200.0f) * this->Max;
                 this->ExtControlDepthCoeff = (((float) ExtControlDepth / 1200.0f) / 127.0f) * this->Max;
+                this->ScriptFrequencyFactor = this->ScriptDepthFactor = 1.f; // reset for new voice
 
                 const unsigned int intLimit = (unsigned int) -1; // all 0xFFFF...
-                const float r = Frequency / (float) SampleRate; // frequency alteration quotient
+                const float freq = Frequency * this->ScriptFrequencyFactor;
+                const float r = freq / (float) SampleRate; // frequency alteration quotient
                 c = (int) (intLimit * r);
 
                 uiLevel = 0;
@@ -111,9 +116,21 @@ namespace LinuxSampler {
             }
             
             void setFrequency(float Frequency, unsigned int SampleRate) {
+                this->Frequency = Frequency;
+                const float freq = Frequency * this->ScriptFrequencyFactor;
                 const unsigned int intLimit = (unsigned int) -1; // all 0xFFFF...
-                float r = Frequency / (float) SampleRate; // frequency alteration quotient
+                float r = freq / (float) SampleRate; // frequency alteration quotient
                 c = (int) (intLimit * r);
+            }
+
+            void setScriptDepthFactor(float factor) {
+                this->ScriptDepthFactor = factor;
+                updateByMIDICtrlValue(this->ExtControlValue);
+            }
+
+            void setScriptFrequencyFactor(float factor, unsigned int SampleRate) {
+                this->ScriptFrequencyFactor = factor;
+                setFrequency(this->Frequency, SampleRate);
             }
 
         protected:

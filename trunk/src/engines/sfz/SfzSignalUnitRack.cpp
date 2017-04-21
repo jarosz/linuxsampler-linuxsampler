@@ -306,7 +306,7 @@ namespace LinuxSampler { namespace sfz {
             start_level_mid,
             1, 0, false, GetSampleRate()
         );
-        lfo.update(0);
+        lfo.updateByMIDICtrlValue(0);
     }
     
     

@@ -143,6 +143,10 @@ Version SVN trunk (?)
       initializer list to an array variable.
     - Implemented built-in script array variable "%ALL_EVENTS".
     - Implemented built-in script function "in_range()".
+    - Implemented built-in script function "change_amp_lfo_depth()".
+    - Implemented built-in script function "change_amp_lfo_freq()".
+    - Implemented built-in script function "change_pitch_lfo_depth()".
+    - Implemented built-in script function "change_pitch_lfo_freq()".
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

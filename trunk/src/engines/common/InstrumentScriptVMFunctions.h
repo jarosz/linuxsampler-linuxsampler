@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 - 2016 Christian Schoenebeck
+ * Copyright (c) 2014 - 2017 Christian Schoenebeck
  *
  * http://www.linuxsampler.org
  *
@@ -12,6 +12,7 @@
 
 #include "../../common/global.h"
 #include "../../scriptvm/CoreVMFunctions.h"
+#include "Note.h"
 
 namespace LinuxSampler {
 
@@ -225,6 +226,44 @@ namespace LinuxSampler {
         VMFnResult* exec(VMFnArgs* args);
     protected:
         InstrumentScriptVM* m_vm;
+    };
+
+    class VMChangeSynthParamFunction : public VMEmptyResultFunction {
+    public:
+        VMChangeSynthParamFunction(InstrumentScriptVM* parent) : m_vm(parent) {}
+        int minRequiredArgs() const { return 2; }
+        int maxAllowedArgs() const { return 2; }
+        bool acceptsArgType(int iArg, ExprType_t type) const;
+        ExprType_t argType(int iArg) const { return INT_EXPR; }
+
+        template<float NoteBase::_Override::*T_noteParam, int T_synthParam>
+        VMFnResult* execTemplate(VMFnArgs* args, const char* functionName);
+    protected:
+        InstrumentScriptVM* m_vm;
+    };
+
+    class InstrumentScriptVMFunction_change_amp_lfo_depth : public VMChangeSynthParamFunction {
+    public:
+        InstrumentScriptVMFunction_change_amp_lfo_depth(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}
+        VMFnResult* exec(VMFnArgs* args);
+    };
+
+    class InstrumentScriptVMFunction_change_amp_lfo_freq : public VMChangeSynthParamFunction {
+    public:
+        InstrumentScriptVMFunction_change_amp_lfo_freq(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}
+        VMFnResult* exec(VMFnArgs* args);
+    };
+
+    class InstrumentScriptVMFunction_change_pitch_lfo_depth : public VMChangeSynthParamFunction {
+    public:
+        InstrumentScriptVMFunction_change_pitch_lfo_depth(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}
+        VMFnResult* exec(VMFnArgs* args);
+    };
+
+    class InstrumentScriptVMFunction_change_pitch_lfo_freq : public VMChangeSynthParamFunction {
+    public:
+        InstrumentScriptVMFunction_change_pitch_lfo_freq(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}
+        VMFnResult* exec(VMFnArgs* args);
     };
 
     class InstrumentScriptVMFunction_event_status : public VMIntResultFunction {

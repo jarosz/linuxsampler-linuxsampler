@@ -279,7 +279,9 @@ namespace LinuxSampler { namespace gig {
                            pRegion->LFO1ControlDepth,
                            pRegion->LFO1FlipPhase,
                            pEngine->SampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE);
-            pLFO1->update(pLFO1->ExtController ? GetGigEngineChannel()->ControllerTable[pLFO1->ExtController] : 0);
+            pLFO1->updateByMIDICtrlValue(pLFO1->ExtController ? GetGigEngineChannel()->ControllerTable[pLFO1->ExtController] : 0);
+            pLFO1->setScriptDepthFactor(pNote->Override.AmpLFODepth);
+            pLFO1->setScriptFrequencyFactor(pNote->Override.AmpLFOFreq, pEngine->SampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE);
         }
     }
 
@@ -323,7 +325,7 @@ namespace LinuxSampler { namespace gig {
                            pRegion->LFO2ControlDepth,
                            pRegion->LFO2FlipPhase,
                            pEngine->SampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE);
-            pLFO2->update(pLFO2->ExtController ? GetGigEngineChannel()->ControllerTable[pLFO2->ExtController] : 0);
+            pLFO2->updateByMIDICtrlValue(pLFO2->ExtController ? GetGigEngineChannel()->ControllerTable[pLFO2->ExtController] : 0);
         }
     }
 
@@ -367,7 +369,9 @@ namespace LinuxSampler { namespace gig {
                            pRegion->LFO3ControlDepth,
                            false,
                            pEngine->SampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE);
-            pLFO3->update(pLFO3->ExtController ? GetGigEngineChannel()->ControllerTable[pLFO3->ExtController] : 0);
+            pLFO3->updateByMIDICtrlValue(pLFO3->ExtController ? GetGigEngineChannel()->ControllerTable[pLFO3->ExtController] : 0);
+            pLFO3->setScriptDepthFactor(pNote->Override.PitchLFODepth);
+            pLFO3->setScriptFrequencyFactor(pNote->Override.PitchLFOFreq, pEngine->SampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE);
         }
     }
 

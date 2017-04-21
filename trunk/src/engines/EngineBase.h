@@ -1991,6 +1991,18 @@ namespace LinuxSampler {
                     case Event::synth_param_release:
                         pNote->Override.Release = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
                         break;
+                    case Event::synth_param_amp_lfo_depth:
+                        pNote->Override.AmpLFODepth = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
+                        break;
+                    case Event::synth_param_amp_lfo_freq:
+                        pNote->Override.AmpLFOFreq = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
+                        break;
+                    case Event::synth_param_pitch_lfo_depth:
+                        pNote->Override.PitchLFODepth = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
+                        break;
+                    case Event::synth_param_pitch_lfo_freq:
+                        pNote->Override.PitchLFOFreq = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
+                        break;
                 }
 
                 // move note parameter event to its MIDI key

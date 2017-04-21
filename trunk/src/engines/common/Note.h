@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Christian Schoenebeck
+ * Copyright (c) 2016 - 2017 Christian Schoenebeck
  *
  * http://www.linuxsampler.org
  *
@@ -40,6 +40,10 @@ namespace LinuxSampler {
             float Attack;       ///< between 0.0 and 1.0
             float Decay;        ///< between 0.0 and 1.0
             float Release;      ///< between 0.0 and 1.0
+            float AmpLFODepth;  ///< between 0.0 and 1.0
+            float AmpLFOFreq;   ///< between 0.0 and 1.0
+            float PitchLFODepth; ///< between 0.0 and 1.0
+            float PitchLFOFreq; ///< between 0.0 and 1.0
         } Override;
         /// Sampler format specific informations and variables.
         union _Format {
@@ -60,6 +64,11 @@ namespace LinuxSampler {
             Override.Attack     = 1.f;
             Override.Decay      = 1.f;
             Override.Release    = 1.f;
+            Override.AmpLFODepth   = 1.f;
+            Override.AmpLFOFreq    = 1.f;
+            Override.PitchLFODepth = 1.f;
+            Override.PitchLFOFreq  = 1.f;
+
             Format = _Format();
         }
     };
@@ -119,6 +128,10 @@ namespace LinuxSampler {
             Override.Attack     = 1.f;
             Override.Decay      = 1.f;
             Override.Release    = 1.f;
+            Override.AmpLFODepth   = 1.f;
+            Override.AmpLFOFreq    = 1.f;
+            Override.PitchLFODepth = 1.f;
+            Override.PitchLFOFreq  = 1.f;
             Format = _Format();
             if (pActiveVoices) {
                 typename RTList<V>::Iterator itVoice = pActiveVoices->first();

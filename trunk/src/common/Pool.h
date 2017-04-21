@@ -38,9 +38,10 @@
 # include <string>
 #endif // CONFIG_RT_EXCEPTIONS
 
+#include <iostream>
+
 #if CONFIG_DEVMODE
 # include <string>
-# include <iostream>
 const std::string __err_msg_iterator_invalidated = "Pool/RTList iterator invalidated";
 #endif // CONFIG_DEVMODE
 

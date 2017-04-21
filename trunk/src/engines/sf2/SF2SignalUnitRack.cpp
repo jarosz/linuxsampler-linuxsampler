@@ -151,7 +151,7 @@ namespace LinuxSampler { namespace sf2 {
             start_level_min,
             1, 0, false, samplerate
         );
-        update(0);
+        updateByMIDICtrlValue(0);
     }
 
     void ModLfoUnit::Increment() {
@@ -178,7 +178,7 @@ namespace LinuxSampler { namespace sf2 {
             pVoice->pRegion->GetVibLfoToPitch(pVoice->pPresetRegion),
             0, false, samplerate
         );
-        update(0);
+        updateByMIDICtrlValue(0);
     }
 
     void VibLfoUnit::Increment() {

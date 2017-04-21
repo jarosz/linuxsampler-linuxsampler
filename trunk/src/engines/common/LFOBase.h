@@ -1,6 +1,6 @@
 /***************************************************************************
  *                                                                         *
- *   Copyright (C) 2005 Christian Schoenebeck                              *
+ *   Copyright (C) 2005 - 2017 Christian Schoenebeck                       *
  *                                                                         *
  *   This library is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -82,6 +82,12 @@ namespace LinuxSampler {
             LFOBase(float Max) {
                 this->ExtController = 0;
                 this->Max           = Max;
+                this->InternalDepth = 0;
+                this->Frequency = 20.f;
+                this->ExtControlValue = 0;
+                this->ExtControlDepthCoeff = 0;
+                this->ScriptDepthFactor = 1.f;
+                this->ScriptFrequencyFactor = 1.f;
             }
 
             virtual ~LFOBase() {
@@ -101,7 +107,7 @@ namespace LinuxSampler {
              *
              * @param ExtControlValue - new external controller value
              */
-            //abstract inline void update(const uint16_t& ExtControlValue); //< what a pity that abstract inliners are not supported by C++98 (probably by upcoming C++0x?)
+            //abstract inline void updateByMIDICtrlValue(const uint16_t& ExtControlValue); //< what a pity that abstract inliners are not supported by C++98 (probably by upcoming C++0x?)
 
             /**
              * Will be called by the voice when the key / voice was triggered.
@@ -122,7 +128,11 @@ namespace LinuxSampler {
         protected:
             float Max;
             float InternalDepth;
-            float ExtControlDepthCoeff;
+            float Frequency; ///< Internal base frequency for this LFO.
+            float ExtControlValue; ///< The current external MIDI controller value (0-127).
+            float ExtControlDepthCoeff; ///< A usually constant factor used to convert a new MIDI controller value from range 0-127 to the required internal implementation dependent value range.
+            float ScriptDepthFactor; ///< Usually neutral (1.0), only altered by external RT instrument script functions.
+            float ScriptFrequencyFactor; ///< Usually neutral (1.0), only altered by external RT instrument script functions.
     };
 
 } // namespace LinuxSampler

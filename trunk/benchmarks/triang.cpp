@@ -4,7 +4,7 @@
     This is a benchmark for comparison between a integer math, table lookup
     and numeric sine wave harmonics solution.
 
-    Copyright (C) 2005 - 2016 Christian Schoenebeck <cuse@users.sf.net>
+    Copyright (C) 2005 - 2017 Christian Schoenebeck <cuse@users.sf.net>
 */
 
 #include <math.h>
@@ -84,7 +84,7 @@ float int_math(smpl_t* pDestinationBuffer, float* pAmp, const int steps, const f
     clock_t start_time = clock();
 
     for (int run = 0; run < RUNS; run++) {
-        pIntLFO->update(127); // pro forma
+        pIntLFO->updateByMIDICtrlValue(127); // pro forma
         for (int i = 0; i < steps; ++i) {
             pDestinationBuffer[i] = pIntLFO->render() * pAmp[i]; // * pAmp[i] just to simulate some memory load
         }
@@ -108,7 +108,7 @@ float int_math_abs(smpl_t* pDestinationBuffer, float* pAmp, const int steps, con
     clock_t start_time = clock();
 
     for (int run = 0; run < RUNS; run++) {
-        pIntAbsLFO->update(0); // pro forma
+        pIntAbsLFO->updateByMIDICtrlValue(0); // pro forma
         for (int i = 0; i < steps; ++i) {
             pDestinationBuffer[i] = pIntAbsLFO->render() * pAmp[i]; // * pAmp[i] just to simulate some memory load
         }
@@ -202,7 +202,7 @@ float numeric_di_harmonic_solution(smpl_t* pDestinationBuffer, float* pAmp, cons
     clock_t start_time = clock();
 
     for (int run = 0; run < RUNS; run++) {
-        pDiHarmonicLFO->update(127); // pro forma
+        pDiHarmonicLFO->updateByMIDICtrlValue(127); // pro forma
         for (int i = 0; i < steps; ++i) {
             pDestinationBuffer[i] = pDiHarmonicLFO->render() * pAmp[i]; // * pAmp[i] just to simulate some memory load
         }

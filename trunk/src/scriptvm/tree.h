@@ -1,6 +1,6 @@
 /*                                                              -*- c++ -*-
  *
- * Copyright (c) 2014 - 2016 Christian Schoenebeck and Andreas Persson
+ * Copyright (c) 2014 - 2017 Christian Schoenebeck and Andreas Persson
  *
  * http://www.linuxsampler.org
  *
@@ -340,6 +340,7 @@ public:
     bool isAssignable() const OVERRIDE { return dynVar->isAssignable(); }
     bool isPolyphonic() const OVERRIDE { return false; }
     void assign(Expression* expr) OVERRIDE { dynVar->assignExpr(expr); }
+    VMIntArrayExpr* asIntArray() const OVERRIDE { return dynVar->asIntArray(); }
     int evalInt() OVERRIDE;
     String evalStr() OVERRIDE;
     String evalCastToStr() OVERRIDE;
