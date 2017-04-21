@@ -3,7 +3,7 @@
  *   LinuxSampler - modular, streaming capable sampler                     *
  *                                                                         *
  *   Copyright (C) 2003, 2004 by Benno Senoner and Christian Schoenebeck   *
- *   Copyright (C) 2005 - 2016 Christian Schoenebeck                       *
+ *   Copyright (C) 2005 - 2017 Christian Schoenebeck                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -108,9 +108,9 @@ namespace LinuxSampler { namespace gig {
             class GigResourceManager : public ResourceManager<String, ::gig::File> {
                 protected:
                     // implementation of derived abstract methods from 'ResourceManager'
-                    virtual ::gig::File* Create(String Key, GigConsumer* pConsumer, void*& pArg);
-                    virtual void         Destroy(::gig::File* pResource, void* pArg);
-                    virtual void         OnBorrow(::gig::File* pResource, GigConsumer* pConsumer, void*& pArg) {} // ignore
+                    virtual ::gig::File* Create(String Key, GigConsumer* pConsumer, void*& pArg) OVERRIDE;
+                    virtual void         Destroy(::gig::File* pResource, void* pArg) OVERRIDE;
+                    virtual void         OnBorrow(::gig::File* pResource, GigConsumer* pConsumer, void*& pArg) OVERRIDE {} // ignore
                 public:
                     GigResourceManager(InstrumentResourceManager* parent) : parent(parent) {}
                     virtual ~GigResourceManager() {}
