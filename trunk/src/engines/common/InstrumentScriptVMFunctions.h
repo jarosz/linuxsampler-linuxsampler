@@ -236,7 +236,9 @@ namespace LinuxSampler {
         bool acceptsArgType(int iArg, ExprType_t type) const;
         ExprType_t argType(int iArg) const { return INT_EXPR; }
 
-        template<float NoteBase::_Override::*T_noteParam, int T_synthParam>
+        template<float NoteBase::_Override::*T_noteParam, int T_synthParam,
+                 bool T_isNormalizedParam, int T_maxValue = 1000000,
+                 int T_minValue = 0>
         VMFnResult* execTemplate(VMFnArgs* args, const char* functionName);
     protected:
         InstrumentScriptVM* m_vm;
@@ -264,6 +266,42 @@ namespace LinuxSampler {
     public:
         InstrumentScriptVMFunction_change_pitch_lfo_freq(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}
         VMFnResult* exec(VMFnArgs* args);
+    };
+
+    class InstrumentScriptVMFunction_change_vol_time : public VMChangeSynthParamFunction {
+    public:
+        InstrumentScriptVMFunction_change_vol_time(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}
+        VMFnResult* exec(VMFnArgs* args);
+    };
+
+    class InstrumentScriptVMFunction_change_tune_time : public VMChangeSynthParamFunction {
+    public:
+        InstrumentScriptVMFunction_change_tune_time(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}
+        VMFnResult* exec(VMFnArgs* args);
+    };
+
+    class InstrumentScriptVMFunction_fade_in : public VMEmptyResultFunction {
+    public:
+        InstrumentScriptVMFunction_fade_in(InstrumentScriptVM* parent);
+        int minRequiredArgs() const { return 2; }
+        int maxAllowedArgs() const { return 2; }
+        bool acceptsArgType(int iArg, ExprType_t type) const;
+        ExprType_t argType(int iArg) const { return INT_EXPR; }
+        VMFnResult* exec(VMFnArgs* args);
+    protected:
+        InstrumentScriptVM* m_vm;
+    };
+
+    class InstrumentScriptVMFunction_fade_out : public VMEmptyResultFunction {
+    public:
+        InstrumentScriptVMFunction_fade_out(InstrumentScriptVM* parent);
+        int minRequiredArgs() const { return 2; }
+        int maxAllowedArgs() const { return 3; }
+        bool acceptsArgType(int iArg, ExprType_t type) const;
+        ExprType_t argType(int iArg) const { return INT_EXPR; }
+        VMFnResult* exec(VMFnArgs* args);
+    protected:
+        InstrumentScriptVM* m_vm;
     };
 
     class InstrumentScriptVMFunction_event_status : public VMIntResultFunction {

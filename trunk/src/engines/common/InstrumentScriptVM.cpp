@@ -230,12 +230,14 @@ namespace LinuxSampler {
         m_event(NULL), m_fnPlayNote(this), m_fnSetController(this),
         m_fnIgnoreEvent(this), m_fnIgnoreController(this), m_fnNoteOff(this),
         m_fnSetEventMark(this), m_fnDeleteEventMark(this), m_fnByMarks(this),
-        m_fnChangeVol(this), m_fnChangeTune(this), m_fnChangePan(this),
+        m_fnChangeVol(this), m_fnChangeVolTime(this),
+        m_fnChangeTune(this), m_fnChangeTuneTime(this), m_fnChangePan(this),
         m_fnChangeCutoff(this), m_fnChangeReso(this),  m_fnChangeAttack(this),
         m_fnChangeDecay(this), m_fnChangeRelease(this),
         m_fnChangeAmpLFODepth(this), m_fnChangeAmpLFOFreq(this),
         m_fnChangePitchLFODepth(this), m_fnChangePitchLFOFreq(this),
         m_fnEventStatus(this), m_fnWait2(this), m_fnStopWait(this),
+        m_fnFadeIn(this), m_fnFadeOut(this),
         m_varEngineUptime(this), m_varCallbackID(this), m_varAllEvents(this)
     {
         m_CC.size = _MEMBER_SIZEOF(AbstractEngineChannel, ControllerTable);
@@ -358,7 +360,9 @@ namespace LinuxSampler {
         else if (name == "delete_event_mark") return &m_fnDeleteEventMark;
         else if (name == "by_marks") return &m_fnByMarks;
         else if (name == "change_vol") return &m_fnChangeVol;
+        else if (name == "change_vol_time") return &m_fnChangeVolTime;
         else if (name == "change_tune") return &m_fnChangeTune;
+        else if (name == "change_tune_time") return &m_fnChangeTuneTime;
         else if (name == "change_pan") return &m_fnChangePan;
         else if (name == "change_cutoff") return &m_fnChangeCutoff;
         else if (name == "change_reso") return &m_fnChangeReso;
@@ -369,6 +373,8 @@ namespace LinuxSampler {
         else if (name == "change_amp_lfo_freq") return &m_fnChangeAmpLFOFreq;
         else if (name == "change_pitch_lfo_depth") return &m_fnChangePitchLFODepth;
         else if (name == "change_pitch_lfo_freq") return &m_fnChangePitchLFOFreq;
+        else if (name == "fade_in") return &m_fnFadeIn;
+        else if (name == "fade_out") return &m_fnFadeOut;
         else if (name == "event_status") return &m_fnEventStatus;
         else if (name == "wait") return &m_fnWait2; // override wait() core implementation
         else if (name == "stop_wait") return &m_fnStopWait;

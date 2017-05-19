@@ -166,11 +166,14 @@ namespace LinuxSampler {
                 type_note_pressure, ///< polyphonic key pressure (aftertouch)
                 type_play_note, ///< caused by a call to built-in instrument script function play_note()
                 type_stop_note, ///< caused by a call to built-in instrument script function note_off()
+                type_kill_note, ///< caused by a call to built-in instrument script function fade_out()
                 type_note_synth_param, ///< change a note's synthesis parameters (upon real-time instrument script function calls, i.e. change_vol(), change_tune(), change_pan(), etc.)
             } Type;
             enum synth_param_t {
                 synth_param_volume,
+                synth_param_volume_time,
                 synth_param_pitch,
+                synth_param_pitch_time,
                 synth_param_pan,
                 synth_param_cutoff,
                 synth_param_resonance,

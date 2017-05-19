@@ -359,7 +359,7 @@ namespace LinuxSampler {
         if (iArg == 0)
             return type == INT_EXPR || type == INT_ARR_EXPR;
         else
-            return INT_EXPR;
+            return type == INT_EXPR;
     }
 
     VMFnResult* InstrumentScriptVMFunction_change_vol::exec(VMFnArgs* args) {
@@ -446,7 +446,7 @@ namespace LinuxSampler {
         if (iArg == 0)
             return type == INT_EXPR || type == INT_ARR_EXPR;
         else
-            return INT_EXPR;
+            return type == INT_EXPR;
     }
 
     VMFnResult* InstrumentScriptVMFunction_change_tune::exec(VMFnArgs* args) {
@@ -533,7 +533,7 @@ namespace LinuxSampler {
         if (iArg == 0)
             return type == INT_EXPR || type == INT_ARR_EXPR;
         else
-            return INT_EXPR;
+            return type == INT_EXPR;
     }
 
     VMFnResult* InstrumentScriptVMFunction_change_pan::exec(VMFnArgs* args) {
@@ -635,7 +635,7 @@ namespace LinuxSampler {
         if (iArg == 0)
             return type == INT_EXPR || type == INT_ARR_EXPR;
         else
-            return INT_EXPR;
+            return type == INT_EXPR;
     }
 
     VMFnResult* InstrumentScriptVMFunction_change_cutoff::exec(VMFnArgs* args) {
@@ -722,7 +722,7 @@ namespace LinuxSampler {
         if (iArg == 0)
             return type == INT_EXPR || type == INT_ARR_EXPR;
         else
-            return INT_EXPR;
+            return type == INT_EXPR;
     }
 
     VMFnResult* InstrumentScriptVMFunction_change_reso::exec(VMFnArgs* args) {
@@ -809,7 +809,7 @@ namespace LinuxSampler {
         if (iArg == 0)
             return type == INT_EXPR || type == INT_ARR_EXPR;
         else
-            return INT_EXPR;
+            return type == INT_EXPR;
     }
 
     VMFnResult* InstrumentScriptVMFunction_change_attack::exec(VMFnArgs* args) {
@@ -896,7 +896,7 @@ namespace LinuxSampler {
         if (iArg == 0)
             return type == INT_EXPR || type == INT_ARR_EXPR;
         else
-            return INT_EXPR;
+            return type == INT_EXPR;
     }
 
     VMFnResult* InstrumentScriptVMFunction_change_decay::exec(VMFnArgs* args) {
@@ -983,7 +983,7 @@ namespace LinuxSampler {
         if (iArg == 0)
             return type == INT_EXPR || type == INT_ARR_EXPR;
         else
-            return INT_EXPR;
+            return type == INT_EXPR;
     }
 
     VMFnResult* InstrumentScriptVMFunction_change_release::exec(VMFnArgs* args) {
@@ -1059,26 +1059,30 @@ namespace LinuxSampler {
         return successResult();
     }
 
-    #define VM_GENERAL_CHANGE_SYNTH_PAR_MAX_VALUE 1000000
-
     bool VMChangeSynthParamFunction::acceptsArgType(int iArg, ExprType_t type) const {
         if (iArg == 0)
             return type == INT_EXPR || type == INT_ARR_EXPR;
         else
-            return INT_EXPR;
+            return type == INT_EXPR;
     }
 
-    template<float NoteBase::_Override::*T_noteParam, int T_synthParam>
+    template<float NoteBase::_Override::*T_noteParam, int T_synthParam,
+             bool T_isNormalizedParam, int T_maxValue, int T_minValue>
     VMFnResult* VMChangeSynthParamFunction::execTemplate(VMFnArgs* args, const char* functionName) {
         int value = args->arg(1)->asInt()->evalInt();
-        if (value > VM_GENERAL_CHANGE_SYNTH_PAR_MAX_VALUE) {
-            wrnMsg(String(functionName) + "(): argument 2 may not be larger than 1000000");
-            value = VM_GENERAL_CHANGE_SYNTH_PAR_MAX_VALUE;
-        } else if (value < 0) {
-            wrnMsg(String(functionName) + "(): argument 2 may not be negative");
-            value = 0;
+        if (value > T_maxValue) {
+            wrnMsg(String(functionName) + "(): argument 2 may not be larger than " + ToString(T_maxValue));
+            value = T_maxValue;
+        } else if (value < T_minValue) {
+            if (T_minValue == 0)
+                wrnMsg(String(functionName) + "(): argument 2 may not be negative");
+            else
+                wrnMsg(String(functionName) + "(): argument 2 may not be smaller than " + ToString(T_minValue));
+            value = T_minValue;
         }
-        const float fValue = float(value) / float(VM_GENERAL_CHANGE_SYNTH_PAR_MAX_VALUE);
+        const float fValue = (T_isNormalizedParam) ?
+            float(value) / float(T_maxValue) : // convert to 0.0 .. 1.0 value range
+            float(value) / 1000000.f; // assuming microseconds here, convert to seconds
 
         AbstractEngineChannel* pEngineChannel =
             static_cast<AbstractEngineChannel*>(m_vm->m_event->cause.pEngineChannel);
@@ -1147,25 +1151,311 @@ namespace LinuxSampler {
     // change_amp_lfo_depth() function
 
     VMFnResult* InstrumentScriptVMFunction_change_amp_lfo_depth::exec(VMFnArgs* args) {
-        return VMChangeSynthParamFunction::execTemplate< &NoteBase::_Override::AmpLFODepth, Event::synth_param_amp_lfo_depth >(args, "change_amp_lfo_depth");
+        return VMChangeSynthParamFunction::execTemplate<
+                    &NoteBase::_Override::AmpLFODepth,
+                    Event::synth_param_amp_lfo_depth, true>( args, "change_amp_lfo_depth" );
     }
 
     // change_amp_lfo_freq() function
 
     VMFnResult* InstrumentScriptVMFunction_change_amp_lfo_freq::exec(VMFnArgs* args) {
-        return VMChangeSynthParamFunction::execTemplate< &NoteBase::_Override::AmpLFOFreq, Event::synth_param_amp_lfo_freq >(args, "change_amp_lfo_freq");
+        return VMChangeSynthParamFunction::execTemplate<
+                    &NoteBase::_Override::AmpLFOFreq,
+                    Event::synth_param_amp_lfo_freq, true>( args, "change_amp_lfo_freq" );
     }
 
     // change_pitch_lfo_depth() function
 
     VMFnResult* InstrumentScriptVMFunction_change_pitch_lfo_depth::exec(VMFnArgs* args) {
-        return VMChangeSynthParamFunction::execTemplate< &NoteBase::_Override::PitchLFODepth, Event::synth_param_pitch_lfo_depth >(args, "change_pitch_lfo_depth");
+        return VMChangeSynthParamFunction::execTemplate<
+                    &NoteBase::_Override::PitchLFODepth,
+                    Event::synth_param_pitch_lfo_depth, true>( args, "change_pitch_lfo_depth" );
     }
 
     // change_pitch_lfo_freq() function
 
     VMFnResult* InstrumentScriptVMFunction_change_pitch_lfo_freq::exec(VMFnArgs* args) {
-        return VMChangeSynthParamFunction::execTemplate< &NoteBase::_Override::PitchLFOFreq, Event::synth_param_pitch_lfo_freq >(args, "change_pitch_lfo_freq");
+        return VMChangeSynthParamFunction::execTemplate<
+                    &NoteBase::_Override::PitchLFOFreq,
+                    Event::synth_param_pitch_lfo_freq, true>( args, "change_pitch_lfo_freq" );
+    }
+
+    // change_vol_time() function
+
+    VMFnResult* InstrumentScriptVMFunction_change_vol_time::exec(VMFnArgs* args) {
+        return VMChangeSynthParamFunction::execTemplate<
+                    &NoteBase::_Override::VolumeTime,
+                    Event::synth_param_volume_time, false>( args, "change_vol_time" );
+    }
+
+    // change_tune_time() function
+
+    VMFnResult* InstrumentScriptVMFunction_change_tune_time::exec(VMFnArgs* args) {
+        return VMChangeSynthParamFunction::execTemplate<
+                    &NoteBase::_Override::PitchTime,
+                    Event::synth_param_pitch_time, false>( args, "change_tune_time" );
+    }
+
+    // fade_in() function
+
+    InstrumentScriptVMFunction_fade_in::InstrumentScriptVMFunction_fade_in(InstrumentScriptVM* parent)
+        : m_vm(parent)
+    {
+    }
+
+    bool InstrumentScriptVMFunction_fade_in::acceptsArgType(int iArg, ExprType_t type) const {
+        if (iArg == 0)
+            return type == INT_EXPR || type == INT_ARR_EXPR;
+        else
+            return type == INT_EXPR;
+    }
+
+    VMFnResult* InstrumentScriptVMFunction_fade_in::exec(VMFnArgs* args) {
+        int duration = args->arg(1)->asInt()->evalInt();
+        if (duration < 0) {
+            wrnMsg("fade_in(): argument 2 may not be negative");
+            duration = 0;
+        }
+        const float fDuration = float(duration) / 1000000.f; // convert microseconds to seconds
+
+        AbstractEngineChannel* pEngineChannel =
+            static_cast<AbstractEngineChannel*>(m_vm->m_event->cause.pEngineChannel);
+
+        if (args->arg(0)->exprType() == INT_EXPR) {
+            const ScriptID id = args->arg(0)->asInt()->evalInt();
+            if (!id) {
+                wrnMsg("fade_in(): note ID for argument 1 may not be zero");
+                return successResult();
+            }
+            if (!id.isNoteID()) {
+                wrnMsg("fade_in(): argument 1 is not a note ID");
+                return successResult();
+            }
+
+            NoteBase* pNote = pEngineChannel->pEngine->NoteByID( id.noteID() );
+            if (!pNote) return successResult();
+
+            // if fade_in() was called immediately after note was triggered
+            // then immediately apply a start volume of zero to Note object,
+            // as well as the fade in duration
+            if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+                pNote->Override.Volume = 0.f;
+                pNote->Override.VolumeTime = fDuration;
+            } else { // otherwise schedule a "volume time" change with the requested fade in duration ...
+                Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
+                e.Init(); // clear IDs
+                e.Type = Event::type_note_synth_param;
+                e.Param.NoteSynthParam.NoteID   = id.noteID();
+                e.Param.NoteSynthParam.Type     = Event::synth_param_volume_time;
+                e.Param.NoteSynthParam.Delta    = fDuration;
+                e.Param.NoteSynthParam.Relative = false;
+
+                pEngineChannel->ScheduleEventMicroSec(&e, 0);
+            }
+            // and finally schedule a "volume" change, simply one time slice
+            // ahead, with the final fade in volume (1.0)
+            {
+                Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
+                e.Init(); // clear IDs
+                e.Type = Event::type_note_synth_param;
+                e.Param.NoteSynthParam.NoteID   = id.noteID();
+                e.Param.NoteSynthParam.Type     = Event::synth_param_volume;
+                e.Param.NoteSynthParam.Delta    = 1.f;
+                e.Param.NoteSynthParam.Relative = false;
+
+                // scheduling with 0 delay would also work here, but +1 is more
+                // safe regarding potential future implementation changes of the
+                // scheduler (see API comments of RTAVLTree::insert())
+                pEngineChannel->ScheduleEventMicroSec(&e, 1);
+            }
+        } else if (args->arg(0)->exprType() == INT_ARR_EXPR) {
+            VMIntArrayExpr* ids = args->arg(0)->asIntArray();
+            for (int i = 0; i < ids->arraySize(); ++i) {
+                const ScriptID id = ids->evalIntElement(i);
+                if (!id || !id.isNoteID()) continue;
+
+                NoteBase* pNote = pEngineChannel->pEngine->NoteByID( id.noteID() );
+                if (!pNote) continue;
+
+                // if fade_in() was called immediately after note was triggered
+                // then immediately apply a start volume of zero to Note object,
+                // as well as the fade in duration
+                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+                    pNote->Override.Volume = 0.f;
+                    pNote->Override.VolumeTime = fDuration;
+                } else { // otherwise schedule a "volume time" change with the requested fade in duration ...
+                    Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
+                    e.Init(); // clear IDs
+                    e.Type = Event::type_note_synth_param;
+                    e.Param.NoteSynthParam.NoteID   = id.noteID();
+                    e.Param.NoteSynthParam.Type     = Event::synth_param_volume_time;
+                    e.Param.NoteSynthParam.Delta    = fDuration;
+                    e.Param.NoteSynthParam.Relative = false;
+
+                    pEngineChannel->ScheduleEventMicroSec(&e, 0);
+                }
+                // and finally schedule a "volume" change, simply one time slice
+                // ahead, with the final fade in volume (1.0)
+                {
+                    Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
+                    e.Init(); // clear IDs
+                    e.Type = Event::type_note_synth_param;
+                    e.Param.NoteSynthParam.NoteID   = id.noteID();
+                    e.Param.NoteSynthParam.Type     = Event::synth_param_volume;
+                    e.Param.NoteSynthParam.Delta    = 1.f;
+                    e.Param.NoteSynthParam.Relative = false;
+
+                    // scheduling with 0 delay would also work here, but +1 is more
+                    // safe regarding potential future implementation changes of the
+                    // scheduler (see API comments of RTAVLTree::insert())
+                    pEngineChannel->ScheduleEventMicroSec(&e, 1);
+                }
+            }
+        }
+
+        return successResult();
+    }
+
+    // fade_out() function
+
+    InstrumentScriptVMFunction_fade_out::InstrumentScriptVMFunction_fade_out(InstrumentScriptVM* parent)
+        : m_vm(parent)
+    {
+    }
+
+    bool InstrumentScriptVMFunction_fade_out::acceptsArgType(int iArg, ExprType_t type) const {
+        if (iArg == 0)
+            return type == INT_EXPR || type == INT_ARR_EXPR;
+        else
+            return type == INT_EXPR;
+    }
+
+    VMFnResult* InstrumentScriptVMFunction_fade_out::exec(VMFnArgs* args) {
+        int duration = args->arg(1)->asInt()->evalInt();
+        if (duration < 0) {
+            wrnMsg("fade_out(): argument 2 may not be negative");
+            duration = 0;
+        }
+        const float fDuration = float(duration) / 1000000.f; // convert microseconds to seconds
+
+        bool stop = (args->argsCount() >= 3) ? (args->arg(2)->asInt()->evalInt() & 1) : true;
+
+        AbstractEngineChannel* pEngineChannel =
+            static_cast<AbstractEngineChannel*>(m_vm->m_event->cause.pEngineChannel);
+
+        if (args->arg(0)->exprType() == INT_EXPR) {
+            const ScriptID id = args->arg(0)->asInt()->evalInt();
+            if (!id) {
+                wrnMsg("fade_out(): note ID for argument 1 may not be zero");
+                return successResult();
+            }
+            if (!id.isNoteID()) {
+                wrnMsg("fade_out(): argument 1 is not a note ID");
+                return successResult();
+            }
+
+            NoteBase* pNote = pEngineChannel->pEngine->NoteByID( id.noteID() );
+            if (!pNote) return successResult();
+
+            // if fade_out() was called immediately after note was triggered
+            // then immediately apply fade out duration to Note object
+            if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+                pNote->Override.VolumeTime = fDuration;
+            } else { // otherwise schedule a "volume time" change with the requested fade out duration ...
+                Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
+                e.Init(); // clear IDs
+                e.Type = Event::type_note_synth_param;
+                e.Param.NoteSynthParam.NoteID   = id.noteID();
+                e.Param.NoteSynthParam.Type     = Event::synth_param_volume_time;
+                e.Param.NoteSynthParam.Delta    = fDuration;
+                e.Param.NoteSynthParam.Relative = false;
+
+                pEngineChannel->ScheduleEventMicroSec(&e, 0);
+            }
+            // now schedule a "volume" change, simply one time slice ahead, with
+            // the final fade out volume (0.0)
+            {
+                Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
+                e.Init(); // clear IDs
+                e.Type = Event::type_note_synth_param;
+                e.Param.NoteSynthParam.NoteID   = id.noteID();
+                e.Param.NoteSynthParam.Type     = Event::synth_param_volume;
+                e.Param.NoteSynthParam.Delta    = 0.f;
+                e.Param.NoteSynthParam.Relative = false;
+
+                // scheduling with 0 delay would also work here, but +1 is more
+                // safe regarding potential future implementation changes of the
+                // scheduler (see API comments of RTAVLTree::insert())
+                pEngineChannel->ScheduleEventMicroSec(&e, 1);
+            }
+            // and finally if stopping the note was requested after the fade out
+            // completed, then schedule to kill the voice after the requested
+            // duration
+            if (stop) {
+                Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
+                e.Init(); // clear IDs
+                e.Type = Event::type_kill_note;
+                e.Param.Note.ID = id.noteID();
+                e.Param.Note.Key = pNote->hostKey;
+
+                pEngineChannel->ScheduleEventMicroSec(&e, duration + 1);
+            }
+        } else if (args->arg(0)->exprType() == INT_ARR_EXPR) {
+            VMIntArrayExpr* ids = args->arg(0)->asIntArray();
+            for (int i = 0; i < ids->arraySize(); ++i) {
+                const ScriptID id = ids->evalIntElement(i);
+                if (!id || !id.isNoteID()) continue;
+
+                NoteBase* pNote = pEngineChannel->pEngine->NoteByID( id.noteID() );
+                if (!pNote) continue;
+
+                // if fade_out() was called immediately after note was triggered
+                // then immediately apply fade out duration to Note object
+                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+                    pNote->Override.VolumeTime = fDuration;
+                } else { // otherwise schedule a "volume time" change with the requested fade out duration ...
+                    Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
+                    e.Init(); // clear IDs
+                    e.Type = Event::type_note_synth_param;
+                    e.Param.NoteSynthParam.NoteID   = id.noteID();
+                    e.Param.NoteSynthParam.Type     = Event::synth_param_volume_time;
+                    e.Param.NoteSynthParam.Delta    = fDuration;
+                    e.Param.NoteSynthParam.Relative = false;
+
+                    pEngineChannel->ScheduleEventMicroSec(&e, 0);
+                }
+                // now schedule a "volume" change, simply one time slice ahead, with
+                // the final fade out volume (0.0)
+                {
+                    Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
+                    e.Init(); // clear IDs
+                    e.Type = Event::type_note_synth_param;
+                    e.Param.NoteSynthParam.NoteID   = id.noteID();
+                    e.Param.NoteSynthParam.Type     = Event::synth_param_volume;
+                    e.Param.NoteSynthParam.Delta    = 0.f;
+                    e.Param.NoteSynthParam.Relative = false;
+
+                    // scheduling with 0 delay would also work here, but +1 is more
+                    // safe regarding potential future implementation changes of the
+                    // scheduler (see API comments of RTAVLTree::insert())
+                    pEngineChannel->ScheduleEventMicroSec(&e, 1);
+                }
+                // and finally if stopping the note was requested after the fade out
+                // completed, then schedule to kill the voice after the requested
+                // duration
+                if (stop) {
+                    Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
+                    e.Init(); // clear IDs
+                    e.Type = Event::type_kill_note;
+                    e.Param.Note.ID = id.noteID();
+                    e.Param.Note.Key = pNote->hostKey;
+                    
+                    pEngineChannel->ScheduleEventMicroSec(&e, duration + 1);
+                }
+            }
+        }
+
+        return successResult();
     }
 
     // event_status() function

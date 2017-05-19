@@ -809,6 +809,7 @@ namespace LinuxSampler {
                             case Event::type_release_note:
                             case Event::type_play_note:
                             case Event::type_stop_note:
+                            case Event::type_kill_note:
                             case Event::type_note_synth_param:
                                 break; // noop
                         }
@@ -880,6 +881,10 @@ namespace LinuxSampler {
                             case Event::type_stop_note:
                                 dmsg(5,("Engine: Stop Note received\n"));
                                 ProcessNoteOff((EngineChannel*)itEvent->pEngineChannel, itEvent);
+                                break;
+                            case Event::type_kill_note:
+                                dmsg(5,("Engine: Kill Note received\n"));
+                                ProcessKillNote((EngineChannel*)itEvent->pEngineChannel, itEvent);
                                 break;
                             case Event::type_control_change:
                                 dmsg(5,("Engine: MIDI CC received\n"));
@@ -1927,9 +1932,27 @@ namespace LinuxSampler {
             }
 
             /**
+             * Called on "kill note" events, which currently only happens on
+             * built-in real-time instrument script function fade_out(). This
+             * method only fulfills one task: moving the even to the Note's own
+             * event list so that its voices can process the kill event sample
+             * accurately.
+             */
+            void ProcessKillNote(EngineChannel* pEngineChannel, RTList<Event>::Iterator& itEvent) {
+                EngineChannelBase<V, R, I>* pChannel = static_cast<EngineChannelBase<V, R, I>*>(pEngineChannel);
+
+                NoteBase* pNote = pChannel->pEngine->NoteByID( itEvent->Param.Note.ID );
+                if (!pNote || pNote->hostKey < 0 || pNote->hostKey >= 128) return;
+
+                // move note kill event to its MIDI key
+                MidiKey* pKey = &pChannel->pMIDIKeyInfo[pNote->hostKey];
+                itEvent.moveToEndOf(pKey->pEvents);
+            }
+
+            /**
              * Called on note synthesis parameter change events. These are
              * internal events caused by calling built-in real-time instrument
-             * script functions like change_vol(), change_pitch(), etc.
+             * script functions like change_vol(), change_tune(), etc.
              *
              * This method performs two tasks:
              *
@@ -1960,12 +1983,18 @@ namespace LinuxSampler {
                             pNote->Override.Volume = itEvent->Param.NoteSynthParam.Delta;
                         itEvent->Param.NoteSynthParam.AbsValue = pNote->Override.Volume;
                         break;
+                    case Event::synth_param_volume_time:
+                        pNote->Override.VolumeTime = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
+                        break;
                     case Event::synth_param_pitch:
                         if (relative)
                             pNote->Override.Pitch *= itEvent->Param.NoteSynthParam.Delta;
                         else
                             pNote->Override.Pitch = itEvent->Param.NoteSynthParam.Delta;
                         itEvent->Param.NoteSynthParam.AbsValue = pNote->Override.Pitch;
+                        break;
+                    case Event::synth_param_pitch_time:
+                        pNote->Override.PitchTime = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
                         break;
                     case Event::synth_param_pan:
                         if (relative) {

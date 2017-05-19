@@ -147,11 +147,12 @@ namespace LinuxSampler {
         // this rate is used for rather mellow volume fades
         const float subfragmentRate = GetEngine()->SampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE;
         // this rate is used for very fast volume fades
-        const float quickRampRate = RTMath::Min(subfragmentRate, GetEngine()->SampleRate * 0.001f /* 1ms */);
+        const float quickRampRate = RTMath::Min(subfragmentRate, GetEngine()->SampleRate * 0.001f /* approx. 13ms */);
         CrossfadeSmoother.trigger(crossfadeVolume, subfragmentRate);
 
         VolumeSmoother.trigger(pEngineChannel->MidiVolume, subfragmentRate);
-        NoteVolumeSmoother.trigger(pNote ? pNote->Override.Volume : 1.f, quickRampRate);
+        NoteVolume.setCurrentValue(pNote ? pNote->Override.Volume : 1.f);
+        NoteVolume.setDefaultDuration(pNote ? pNote->Override.VolumeTime : DEFAULT_NOTE_VOLUME_TIME_S);
 
         // Check if the sample needs disk streaming or is too short for that
         long cachedsamples = GetSampleCacheSize() / SmplInfo.FrameSize;
@@ -191,7 +192,8 @@ namespace LinuxSampler {
         }
 
         Pitch = CalculatePitchInfo(PitchBend);
-        NotePitch = (pNote) ? pNote->Override.Pitch : 1.0f;
+        NotePitch.setCurrentValue(pNote ? pNote->Override.Pitch : 1.0f);
+        NotePitch.setDefaultDuration(pNote ? pNote->Override.PitchTime : DEFAULT_NOTE_PITCH_TIME_S);
         NoteCutoff = (pNote) ? pNote->Override.Cutoff : 1.0f;
         NoteResonance = (pNote) ? pNote->Override.Resonance : 1.0f;
 
@@ -456,9 +458,9 @@ namespace LinuxSampler {
             PanLeftSmoother.update(AbstractEngine::PanCurve[128 - pan] * NotePanLeft);
             PanRightSmoother.update(AbstractEngine::PanCurve[pan]      * NotePanRight);
 
-            finalSynthesisParameters.fFinalPitch = Pitch.PitchBase * Pitch.PitchBend * NotePitch;
+            finalSynthesisParameters.fFinalPitch = Pitch.PitchBase * Pitch.PitchBend * NotePitch.render();
 
-            float fFinalVolume = VolumeSmoother.render() * CrossfadeSmoother.render() * NoteVolumeSmoother.render();
+            float fFinalVolume = VolumeSmoother.render() * CrossfadeSmoother.render() * NoteVolume.render();
 #ifdef CONFIG_PROCESS_MUTED_CHANNELS
             if (pChannel->GetMute()) fFinalVolume = 0;
 #endif
@@ -729,16 +731,28 @@ namespace LinuxSampler {
             {
                 EnterReleaseStage();
             }
+            // process kill-note events (caused by built-in instrument script function fade_out())
+            if (itEvent->Type == Event::type_kill_note && pNote &&
+                pEngineChannel->pEngine->NoteByID( itEvent->Param.Note.ID ) == pNote)
+            {
+                Kill(itEvent);
+            }
             // process synthesis parameter events (caused by built-in realt-time instrument script functions)
             if (itEvent->Type == Event::type_note_synth_param && pNote &&
                 pEngineChannel->pEngine->NoteByID( itEvent->Param.NoteSynthParam.NoteID ) == pNote)
             {
                 switch (itEvent->Param.NoteSynthParam.Type) {
                     case Event::synth_param_volume:
-                        NoteVolumeSmoother.update(itEvent->Param.NoteSynthParam.AbsValue);
+                        NoteVolume.fadeTo(itEvent->Param.NoteSynthParam.AbsValue, GetEngine()->SampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE);
+                        break;
+                    case Event::synth_param_volume_time:
+                        NoteVolume.setDefaultDuration(itEvent->Param.NoteSynthParam.AbsValue);
                         break;
                     case Event::synth_param_pitch:
-                        NotePitch = itEvent->Param.NoteSynthParam.AbsValue;
+                        NotePitch.fadeTo(itEvent->Param.NoteSynthParam.AbsValue, GetEngine()->SampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE);
+                        break;
+                    case Event::synth_param_pitch_time:
+                        NotePitch.setDefaultDuration(itEvent->Param.NoteSynthParam.AbsValue);
                         break;
                     case Event::synth_param_pan:
                         NotePanLeft  = AbstractEngine::PanCurveValueNorm(itEvent->Param.NoteSynthParam.AbsValue, 0 /*left*/);

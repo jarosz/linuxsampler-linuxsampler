@@ -8,7 +8,7 @@ Version SVN trunk (?)
     - Implemented opcode set_ccN (initial patch by Giovanni Senatore).
     - Fixed unintended volume fade-in of voices under certain conditions.
 
-  * Gigasampler format engine:
+  * Gigasampler/GigaStudio format engine:
     - Fixed clicks and pumping noise with Lowpass Turbo filter on very low
       cutoff settings.
 
@@ -147,6 +147,15 @@ Version SVN trunk (?)
     - Implemented built-in script function "change_amp_lfo_freq()".
     - Implemented built-in script function "change_pitch_lfo_depth()".
     - Implemented built-in script function "change_pitch_lfo_freq()".
+    - Implemented built-in script function "change_vol_time()".
+    - Implemented built-in script function "change_tune_time()".
+    - Implemented built-in script function "fade_in()".
+    - Implemented built-in script function "fade_out()".
+    - Fixed acceptance of wrong data type of parameters passed to built-in
+      script functions "change_vol()", "change_tune()", "change_pan()",
+      "change_cutoff()", "change_reso()", "change_attack()", "change_decay()",
+      "change_release()", "change_amp_lfo_depth()", "change_amp_lfo_freq()",
+      "change_pitch_lfo_depth()" and "change_pitch_lfo_freq()".
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to
