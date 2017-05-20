@@ -238,6 +238,7 @@ namespace LinuxSampler {
         m_fnChangePitchLFODepth(this), m_fnChangePitchLFOFreq(this),
         m_fnEventStatus(this), m_fnWait2(this), m_fnStopWait(this),
         m_fnFadeIn(this), m_fnFadeOut(this),
+        m_fnGetEventPar(this), m_fnSetEventPar(this),
         m_varEngineUptime(this), m_varCallbackID(this), m_varAllEvents(this)
     {
         m_CC.size = _MEMBER_SIZEOF(AbstractEngineChannel, ControllerTable);
@@ -334,6 +335,14 @@ namespace LinuxSampler {
         for (int i = 0; i < INSTR_SCRIPT_EVENT_GROUPS; ++i) {
             m["$MARK_" + ToString(i+1)] = i;
         }
+        m["$EVENT_PAR_NOTE"] = EVENT_PAR_NOTE;
+        m["$EVENT_PAR_VELOCITY"] = EVENT_PAR_VELOCITY;
+        m["$EVENT_PAR_VOLUME"] = EVENT_PAR_VOLUME;
+        m["$EVENT_PAR_TUNE"] = EVENT_PAR_TUNE;
+        m["$EVENT_PAR_0"] = EVENT_PAR_0;
+        m["$EVENT_PAR_1"] = EVENT_PAR_1;
+        m["$EVENT_PAR_2"] = EVENT_PAR_2;
+        m["$EVENT_PAR_3"] = EVENT_PAR_3;
 
         return m;
     }
@@ -375,6 +384,8 @@ namespace LinuxSampler {
         else if (name == "change_pitch_lfo_freq") return &m_fnChangePitchLFOFreq;
         else if (name == "fade_in") return &m_fnFadeIn;
         else if (name == "fade_out") return &m_fnFadeOut;
+        else if (name == "get_event_par") return &m_fnGetEventPar;
+        else if (name == "set_event_par") return &m_fnSetEventPar;
         else if (name == "event_status") return &m_fnEventStatus;
         else if (name == "wait") return &m_fnWait2; // override wait() core implementation
         else if (name == "stop_wait") return &m_fnStopWait;

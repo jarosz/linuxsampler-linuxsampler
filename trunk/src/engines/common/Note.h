@@ -58,6 +58,7 @@ namespace LinuxSampler {
                 uint8_t DimBits; ///< Used only in conjunction with DimMask: Dimension bits that shall be selected.
             } Gig;
         } Format;
+        int userPar[4]; ///< Used only for real-time instrument script functions set_event_par() and get_event_par() to store script author's user specific data ($EVENT_PAR_0 to $EVENT_PAR_3).
     protected:
         NoteBase() : hostKey(0), parentNoteID(0), pChildNotes(NULL) {
             Override.Volume     = 1.f;
@@ -77,6 +78,11 @@ namespace LinuxSampler {
             Override.PitchLFOFreq  = 1.f;
 
             Format = _Format();
+
+            userPar[0] = 0;
+            userPar[1] = 0;
+            userPar[2] = 0;
+            userPar[3] = 0;
         }
     };
 
@@ -146,6 +152,10 @@ namespace LinuxSampler {
             Override.PitchLFODepth = 1.f;
             Override.PitchLFOFreq  = 1.f;
             Format = _Format();
+            userPar[0] = 0;
+            userPar[1] = 0;
+            userPar[2] = 0;
+            userPar[3] = 0;
             if (pActiveVoices) {
                 typename RTList<V>::Iterator itVoice = pActiveVoices->first();
                 typename RTList<V>::Iterator itVoicesEnd = pActiveVoices->end();

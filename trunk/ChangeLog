@@ -156,6 +156,10 @@ Version SVN trunk (?)
       "change_cutoff()", "change_reso()", "change_attack()", "change_decay()",
       "change_release()", "change_amp_lfo_depth()", "change_amp_lfo_freq()",
       "change_pitch_lfo_depth()" and "change_pitch_lfo_freq()".
+    - Added built-in script function "get_event_par()" and implemented some
+      of its possible parameter selections.
+    - Added built-in script function "set_event_par()" and implemented some
+      of its possible parameter selections.
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

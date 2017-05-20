@@ -64,6 +64,17 @@ enum InstrScriptIDType_T {
 #define EVENT_STATUS_INACTIVE 0
 #define EVENT_STATUS_NOTE_QUEUE 1
 
+enum {
+    EVENT_PAR_NOTE = 1,
+    EVENT_PAR_VELOCITY,
+    EVENT_PAR_VOLUME,
+    EVENT_PAR_TUNE,
+    EVENT_PAR_0 = 1024,
+    EVENT_PAR_1,
+    EVENT_PAR_2,
+    EVENT_PAR_3,
+};
+
 namespace LinuxSampler {
 
     class AbstractEngineChannel;
@@ -287,6 +298,8 @@ namespace LinuxSampler {
         InstrumentScriptVMFunction_stop_wait m_fnStopWait;
         InstrumentScriptVMFunction_fade_in m_fnFadeIn;
         InstrumentScriptVMFunction_fade_out m_fnFadeOut;
+        InstrumentScriptVMFunction_get_event_par m_fnGetEventPar;
+        InstrumentScriptVMFunction_set_event_par m_fnSetEventPar;
         InstrumentScriptVMDynVar_ENGINE_UPTIME m_varEngineUptime;
         InstrumentScriptVMDynVar_NI_CALLBACK_ID m_varCallbackID;
         InstrumentScriptVMDynVar_ALL_EVENTS m_varAllEvents;
@@ -316,6 +329,8 @@ namespace LinuxSampler {
         friend class InstrumentScriptVMFunction_change_pitch_lfo_freq;
         friend class InstrumentScriptVMFunction_fade_in;
         friend class InstrumentScriptVMFunction_fade_out;
+        friend class InstrumentScriptVMFunction_get_event_par;
+        friend class InstrumentScriptVMFunction_set_event_par;
         friend class InstrumentScriptVMFunction_event_status;
         friend class InstrumentScriptVMFunction_wait;
         friend class InstrumentScriptVMFunction_stop_wait;

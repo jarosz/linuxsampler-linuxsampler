@@ -1066,14 +1066,17 @@ namespace LinuxSampler {
             return type == INT_EXPR;
     }
 
+    // Arbitrarily chosen constant value symbolizing "no limit".
+    #define NO_LIMIT 1315916909
+
     template<float NoteBase::_Override::*T_noteParam, int T_synthParam,
              bool T_isNormalizedParam, int T_maxValue, int T_minValue>
     VMFnResult* VMChangeSynthParamFunction::execTemplate(VMFnArgs* args, const char* functionName) {
         int value = args->arg(1)->asInt()->evalInt();
-        if (value > T_maxValue) {
+        if (T_maxValue != NO_LIMIT && value > T_maxValue) {
             wrnMsg(String(functionName) + "(): argument 2 may not be larger than " + ToString(T_maxValue));
             value = T_maxValue;
-        } else if (value < T_minValue) {
+        } else if (T_minValue != NO_LIMIT && value < T_minValue) {
             if (T_minValue == 0)
                 wrnMsg(String(functionName) + "(): argument 2 may not be negative");
             else
@@ -1153,7 +1156,8 @@ namespace LinuxSampler {
     VMFnResult* InstrumentScriptVMFunction_change_amp_lfo_depth::exec(VMFnArgs* args) {
         return VMChangeSynthParamFunction::execTemplate<
                     &NoteBase::_Override::AmpLFODepth,
-                    Event::synth_param_amp_lfo_depth, true>( args, "change_amp_lfo_depth" );
+                    Event::synth_param_amp_lfo_depth,
+                    true, 1000000, 0>( args, "change_amp_lfo_depth" );
     }
 
     // change_amp_lfo_freq() function
@@ -1161,7 +1165,8 @@ namespace LinuxSampler {
     VMFnResult* InstrumentScriptVMFunction_change_amp_lfo_freq::exec(VMFnArgs* args) {
         return VMChangeSynthParamFunction::execTemplate<
                     &NoteBase::_Override::AmpLFOFreq,
-                    Event::synth_param_amp_lfo_freq, true>( args, "change_amp_lfo_freq" );
+                    Event::synth_param_amp_lfo_freq,
+                    true, 1000000, 0>( args, "change_amp_lfo_freq" );
     }
 
     // change_pitch_lfo_depth() function
@@ -1169,7 +1174,8 @@ namespace LinuxSampler {
     VMFnResult* InstrumentScriptVMFunction_change_pitch_lfo_depth::exec(VMFnArgs* args) {
         return VMChangeSynthParamFunction::execTemplate<
                     &NoteBase::_Override::PitchLFODepth,
-                    Event::synth_param_pitch_lfo_depth, true>( args, "change_pitch_lfo_depth" );
+                    Event::synth_param_pitch_lfo_depth,
+                    true, 1000000, 0>( args, "change_pitch_lfo_depth" );
     }
 
     // change_pitch_lfo_freq() function
@@ -1177,7 +1183,8 @@ namespace LinuxSampler {
     VMFnResult* InstrumentScriptVMFunction_change_pitch_lfo_freq::exec(VMFnArgs* args) {
         return VMChangeSynthParamFunction::execTemplate<
                     &NoteBase::_Override::PitchLFOFreq,
-                    Event::synth_param_pitch_lfo_freq, true>( args, "change_pitch_lfo_freq" );
+                    Event::synth_param_pitch_lfo_freq,
+                    true, 1000000, 0>( args, "change_pitch_lfo_freq" );
     }
 
     // change_vol_time() function
@@ -1185,7 +1192,8 @@ namespace LinuxSampler {
     VMFnResult* InstrumentScriptVMFunction_change_vol_time::exec(VMFnArgs* args) {
         return VMChangeSynthParamFunction::execTemplate<
                     &NoteBase::_Override::VolumeTime,
-                    Event::synth_param_volume_time, false>( args, "change_vol_time" );
+                    Event::synth_param_volume_time,
+                    false, NO_LIMIT, 0>( args, "change_vol_time" );
     }
 
     // change_tune_time() function
@@ -1193,7 +1201,8 @@ namespace LinuxSampler {
     VMFnResult* InstrumentScriptVMFunction_change_tune_time::exec(VMFnArgs* args) {
         return VMChangeSynthParamFunction::execTemplate<
                     &NoteBase::_Override::PitchTime,
-                    Event::synth_param_pitch_time, false>( args, "change_tune_time" );
+                    Event::synth_param_pitch_time,
+                    false, NO_LIMIT, 0>( args, "change_tune_time" );
     }
 
     // fade_in() function
@@ -1455,6 +1464,133 @@ namespace LinuxSampler {
             }
         }
 
+        return successResult();
+    }
+
+    // get_event_par() function
+
+    InstrumentScriptVMFunction_get_event_par::InstrumentScriptVMFunction_get_event_par(InstrumentScriptVM* parent)
+        : m_vm(parent)
+    {
+    }
+
+    VMFnResult* InstrumentScriptVMFunction_get_event_par::exec(VMFnArgs* args) {
+        AbstractEngineChannel* pEngineChannel =
+            static_cast<AbstractEngineChannel*>(m_vm->m_event->cause.pEngineChannel);
+
+        const ScriptID id = args->arg(0)->asInt()->evalInt();
+        if (!id) {
+            wrnMsg("get_event_par(): note ID for argument 1 may not be zero");
+            return successResult(0);
+        }
+        if (!id.isNoteID()) {
+            wrnMsg("get_event_par(): argument 1 is not a note ID");
+            return successResult(0);
+        }
+
+        NoteBase* pNote = pEngineChannel->pEngine->NoteByID( id.noteID() );
+        if (!pNote) {
+            wrnMsg("get_event_par(): no note alive with that note ID of argument 1");
+            return successResult(0);
+        }
+
+        const int parameter = args->arg(1)->asInt()->evalInt();
+        switch (parameter) {
+            case EVENT_PAR_NOTE:
+                return successResult(pNote->cause.Param.Note.Key);
+            case EVENT_PAR_VELOCITY:
+                return successResult(pNote->cause.Param.Note.Velocity);
+            case EVENT_PAR_VOLUME:
+                return successResult(
+                    RTMath::LinRatioToDecibel(pNote->Override.Volume) * 1000.f
+                );
+            case EVENT_PAR_TUNE:
+                return successResult(
+                     RTMath::FreqRatioToCents(pNote->Override.Pitch) * 1000.f
+                );
+            case EVENT_PAR_0:
+                return successResult(pNote->userPar[0]);
+            case EVENT_PAR_1:
+                return successResult(pNote->userPar[1]);
+            case EVENT_PAR_2:
+                return successResult(pNote->userPar[2]);
+            case EVENT_PAR_3:
+                return successResult(pNote->userPar[3]);
+        }
+
+        wrnMsg("get_event_par(): argument 2 is an invalid event parameter");
+        return successResult(0);
+    }
+
+    // set_event_par() function
+
+    InstrumentScriptVMFunction_set_event_par::InstrumentScriptVMFunction_set_event_par(InstrumentScriptVM* parent)
+        : m_vm(parent)
+    {
+    }
+
+    VMFnResult* InstrumentScriptVMFunction_set_event_par::exec(VMFnArgs* args) {
+        AbstractEngineChannel* pEngineChannel =
+            static_cast<AbstractEngineChannel*>(m_vm->m_event->cause.pEngineChannel);
+
+        const ScriptID id = args->arg(0)->asInt()->evalInt();
+        if (!id) {
+            wrnMsg("set_event_par(): note ID for argument 1 may not be zero");
+            return successResult();
+        }
+        if (!id.isNoteID()) {
+            wrnMsg("set_event_par(): argument 1 is not a note ID");
+            return successResult();
+        }
+
+        NoteBase* pNote = pEngineChannel->pEngine->NoteByID( id.noteID() );
+        if (!pNote) return successResult();
+
+        const int parameter = args->arg(1)->asInt()->evalInt();
+        const int value     = args->arg(2)->asInt()->evalInt();
+
+        switch (parameter) {
+            case EVENT_PAR_NOTE:
+                if (value < 0 || value > 127) {
+                    wrnMsg("set_event_par(): note number of argument 3 is out of range");
+                    return successResult();
+                }
+                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime)
+                    pNote->cause.Param.Note.Key = value;
+                else
+                    wrnMsg("set_event_par(): note number can only be changed when note is new");
+                return successResult();
+            case EVENT_PAR_VELOCITY:
+                if (value < 0 || value > 127) {
+                    wrnMsg("set_event_par(): velocity of argument 3 is out of range");
+                    return successResult();
+                }
+                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime)
+                    pNote->cause.Param.Note.Velocity = value;
+                else
+                    wrnMsg("set_event_par(): velocity can only be changed when note is new");
+                return successResult();
+            case EVENT_PAR_VOLUME:
+                wrnMsg("set_event_par(): changing volume by this function is currently not supported, use change_vol() instead");
+                return successResult();
+            case EVENT_PAR_TUNE:
+                wrnMsg("set_event_par(): changing tune by this function is currently not supported, use change_tune() instead");
+                return successResult();
+            case EVENT_PAR_0:
+                pNote->userPar[0] = value;
+                return successResult();
+            case EVENT_PAR_1:
+                pNote->userPar[1] = value;
+                return successResult();
+            case EVENT_PAR_2:
+                pNote->userPar[2] = value;
+                return successResult();
+            case EVENT_PAR_3:
+                pNote->userPar[3] = value;
+                return successResult();
+        }
+
+        wrnMsg("set_event_par(): argument 2 is an invalid event parameter");
         return successResult();
     }
 

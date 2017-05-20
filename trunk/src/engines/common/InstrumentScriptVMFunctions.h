@@ -237,8 +237,7 @@ namespace LinuxSampler {
         ExprType_t argType(int iArg) const { return INT_EXPR; }
 
         template<float NoteBase::_Override::*T_noteParam, int T_synthParam,
-                 bool T_isNormalizedParam, int T_maxValue = 1000000,
-                 int T_minValue = 0>
+                 bool T_isNormalizedParam, int T_maxValue, int T_minValue>
         VMFnResult* execTemplate(VMFnArgs* args, const char* functionName);
     protected:
         InstrumentScriptVM* m_vm;
@@ -298,6 +297,30 @@ namespace LinuxSampler {
         int minRequiredArgs() const { return 2; }
         int maxAllowedArgs() const { return 3; }
         bool acceptsArgType(int iArg, ExprType_t type) const;
+        ExprType_t argType(int iArg) const { return INT_EXPR; }
+        VMFnResult* exec(VMFnArgs* args);
+    protected:
+        InstrumentScriptVM* m_vm;
+    };
+
+    class InstrumentScriptVMFunction_get_event_par : public VMIntResultFunction {
+    public:
+        InstrumentScriptVMFunction_get_event_par(InstrumentScriptVM* parent);
+        int minRequiredArgs() const { return 2; }
+        int maxAllowedArgs() const { return 2; }
+        bool acceptsArgType(int iArg, ExprType_t type) const { return type == INT_EXPR;}
+        ExprType_t argType(int iArg) const { return INT_EXPR; }
+        VMFnResult* exec(VMFnArgs* args);
+    protected:
+        InstrumentScriptVM* m_vm;
+    };
+
+    class InstrumentScriptVMFunction_set_event_par : public VMEmptyResultFunction {
+    public:
+        InstrumentScriptVMFunction_set_event_par(InstrumentScriptVM* parent);
+        int minRequiredArgs() const { return 3; }
+        int maxAllowedArgs() const { return 3; }
+        bool acceptsArgType(int iArg, ExprType_t type) const { return type == INT_EXPR;}
         ExprType_t argType(int iArg) const { return INT_EXPR; }
         VMFnResult* exec(VMFnArgs* args);
     protected:

@@ -3,7 +3,7 @@
  *   LinuxSampler - modular, streaming capable sampler                     *
  *                                                                         *
  *   Copyright (C) 2003, 2004 by Benno Senoner and Christian Schoenebeck   *
- *   Copyright (C) 2005 - 2016 Christian Schoenebeck                       *
+ *   Copyright (C) 2005 - 2017 Christian Schoenebeck                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -100,7 +100,7 @@ class RTMathBase {
         }
 
         /**
-         * Calculates the line ratio value representation (linear scale)
+         * Calculates the linear ratio value representation (linear scale)
          * of the @a decibel value provided (exponential scale).
          *
          * The context of audio acoustic sound pressure levels is assumed, and
@@ -110,9 +110,27 @@ class RTMathBase {
          *
          * @param decibel - sound pressure level in dB
          * @returns linear ratio of the supplied dB value
+         * @see LinRatioToDecibel() as inverse function
          */
         static float DecibelToLinRatio(float decibel) {
             return powf(10.f, decibel / 20.f);
+        }
+
+        /**
+         * Calculates the decibel value (exponential scale) of the @a linear
+         * ratio value representation (linear scale) provided.
+         *
+         * The context of audio acoustic sound pressure levels is assumed, and
+         * hence the field version of the dB unit is used here (which uses a
+         * linear factor of 20). This function is a bit slow, so it should
+         * not be called too frequently.
+         *
+         * @param linear - sound pressure level as linear ratio value (linear scale)
+         * @returns dB value representation
+         * @see DecibelToLinRatio() as inverse function
+         */
+        static float LinRatioToDecibel(float linear) {
+            return 20.f * log10f(linear);
         }
 
         /**
