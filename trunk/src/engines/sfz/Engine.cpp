@@ -122,7 +122,7 @@ namespace LinuxSampler { namespace sfz {
                     itControlChangeEvent->Param.Note.Velocity = 127;
                     itControlChangeEvent->Param.Note.pRegion = region;
                     if (!itNewNote) {
-                        const note_id_t noteID = LaunchNewNote(pEngineChannel, &*itControlChangeEvent);
+                        const note_id_t noteID = LaunchNewNote(pEngineChannel, itControlChangeEvent);
                         itNewNote = GetNotePool()->fromID(noteID);
                         if (!itNewNote) {
                             dmsg(1,("sfz::Engine: Note pool empty!\n"));

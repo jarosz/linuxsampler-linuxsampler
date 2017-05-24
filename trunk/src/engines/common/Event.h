@@ -350,7 +350,13 @@ namespace LinuxSampler {
      */
     template<typename T>
     void EventGenerator::scheduleAheadMicroSec(RTAVLTree<T>& queue, T& node, int32_t fragmentPosBase, uint64_t microseconds) {
-        node.scheduleTime = uiTotalSamplesProcessed + fragmentPosBase + float(uiSampleRate) * (float(microseconds) / 1000000.f);
+        // round up (+1) if microseconds is not zero (i.e. because 44.1 kHz and
+        // 1 us would yield in < 1 and thus would be offset == 0)
+        const sched_time_t offset =
+            (microseconds != 0LL) ?
+                1.f + (float(uiSampleRate) * (float(microseconds) / 1000000.f))
+                : 0.f;
+        node.scheduleTime = uiTotalSamplesProcessed + fragmentPosBase + offset;
         queue.insert(node);
     }
 

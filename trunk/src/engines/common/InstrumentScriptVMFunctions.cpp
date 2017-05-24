@@ -386,7 +386,7 @@ namespace LinuxSampler {
 
             // if change_vol() was called immediately after note was triggered
             // then immediately apply the volume to note object
-            if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+            if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                 if (relative)
                     pNote->Override.Volume *= fVolumeLin;
                 else
@@ -413,7 +413,7 @@ namespace LinuxSampler {
 
                 // if change_vol() was called immediately after note was triggered
                 // then immediately apply the volume to Note object
-                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                     if (relative)
                         pNote->Override.Volume *= fVolumeLin;
                     else
@@ -473,7 +473,7 @@ namespace LinuxSampler {
 
             // if change_tune() was called immediately after note was triggered
             // then immediately apply the tuning to Note object
-            if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+            if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                 if (relative) 
                     pNote->Override.Pitch *= fFreqRatio;
                 else
@@ -500,7 +500,7 @@ namespace LinuxSampler {
 
                 // if change_tune() was called immediately after note was triggered
                 // then immediately apply the tuning to Note object
-                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                     if (relative) 
                         pNote->Override.Pitch *= fFreqRatio;
                     else
@@ -568,7 +568,7 @@ namespace LinuxSampler {
 
             // if change_pan() was called immediately after note was triggered
             // then immediately apply the panning to Note object
-            if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+            if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                 if (relative) {
                     pNote->Override.Pan = RTMath::RelativeSummedAvg(pNote->Override.Pan, fPan, ++pNote->Override.PanSources);
                 } else {
@@ -597,7 +597,7 @@ namespace LinuxSampler {
 
                 // if change_pan() was called immediately after note was triggered
                 // then immediately apply the panning to Note object
-                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                     if (relative) {
                         pNote->Override.Pan = RTMath::RelativeSummedAvg(pNote->Override.Pan, fPan, ++pNote->Override.PanSources);
                     } else {
@@ -668,7 +668,7 @@ namespace LinuxSampler {
 
             // if change_cutoff() was called immediately after note was triggered
             // then immediately apply cutoff to Note object
-            if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+            if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                 pNote->Override.Cutoff = fCutoff;
             } else { // otherwise schedule cutoff change ...
                 Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
@@ -692,7 +692,7 @@ namespace LinuxSampler {
 
                 // if change_cutoff() was called immediately after note was triggered
                 // then immediately apply cutoff to Note object
-                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                     pNote->Override.Cutoff = fCutoff;
                 } else { // otherwise schedule cutoff change ...
                     Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
@@ -755,7 +755,7 @@ namespace LinuxSampler {
 
             // if change_reso() was called immediately after note was triggered
             // then immediately apply resonance to Note object
-            if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+            if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                 pNote->Override.Resonance = fResonance;
             } else { // otherwise schedule resonance change ...
                 Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
@@ -779,7 +779,7 @@ namespace LinuxSampler {
 
                 // if change_reso() was called immediately after note was triggered
                 // then immediately apply resonance to Note object
-                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                     pNote->Override.Resonance = fResonance;
                 } else { // otherwise schedule resonance change ...
                     Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
@@ -842,7 +842,7 @@ namespace LinuxSampler {
 
             // if change_attack() was called immediately after note was triggered
             // then immediately apply attack to Note object
-            if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+            if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                 pNote->Override.Attack = fAttack;
             } else { // otherwise schedule attack change ...
                 Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
@@ -866,7 +866,7 @@ namespace LinuxSampler {
 
                 // if change_attack() was called immediately after note was triggered
                 // then immediately apply attack to Note object
-                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                     pNote->Override.Attack = fAttack;
                 } else { // otherwise schedule attack change ...
                     Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
@@ -929,7 +929,7 @@ namespace LinuxSampler {
 
             // if change_decay() was called immediately after note was triggered
             // then immediately apply decay to Note object
-            if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+            if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                 pNote->Override.Decay = fDecay;
             } else { // otherwise schedule decay change ...
                 Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
@@ -953,7 +953,7 @@ namespace LinuxSampler {
 
                 // if change_decay() was called immediately after note was triggered
                 // then immediately apply decay to Note object
-                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                     pNote->Override.Decay = fDecay;
                 } else { // otherwise schedule decay change ...
                     Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
@@ -1016,7 +1016,7 @@ namespace LinuxSampler {
 
             // if change_release() was called immediately after note was triggered
             // then immediately apply relase to Note object
-            if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+            if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                 pNote->Override.Release = fRelease;
             } else { // otherwise schedule release change ...
                 Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
@@ -1040,7 +1040,7 @@ namespace LinuxSampler {
 
                 // if change_release() was called immediately after note was triggered
                 // then immediately apply relase to Note object
-                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                     pNote->Override.Release = fRelease;
                 } else { // otherwise schedule release change ...
                     Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
@@ -1107,7 +1107,7 @@ namespace LinuxSampler {
             // if this change_*() script function was called immediately after
             // note was triggered then immediately apply the synth parameter
             // change to Note object
-            if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+            if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                 pNote->Override.*T_noteParam = fValue;
             } else { // otherwise schedule this synth parameter change ...
                 Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
@@ -1132,7 +1132,7 @@ namespace LinuxSampler {
                 // if this change_*() script function was called immediately after
                 // note was triggered then immediately apply the synth parameter
                 // change to Note object
-                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                     pNote->Override.*T_noteParam = fValue;
                 } else { // otherwise schedule this synth parameter change ...
                     Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
@@ -1247,7 +1247,7 @@ namespace LinuxSampler {
             // if fade_in() was called immediately after note was triggered
             // then immediately apply a start volume of zero to Note object,
             // as well as the fade in duration
-            if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+            if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                 pNote->Override.Volume = 0.f;
                 pNote->Override.VolumeTime = fDuration;
             } else { // otherwise schedule a "volume time" change with the requested fade in duration ...
@@ -1289,7 +1289,7 @@ namespace LinuxSampler {
                 // if fade_in() was called immediately after note was triggered
                 // then immediately apply a start volume of zero to Note object,
                 // as well as the fade in duration
-                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                     pNote->Override.Volume = 0.f;
                     pNote->Override.VolumeTime = fDuration;
                 } else { // otherwise schedule a "volume time" change with the requested fade in duration ...
@@ -1368,7 +1368,7 @@ namespace LinuxSampler {
 
             // if fade_out() was called immediately after note was triggered
             // then immediately apply fade out duration to Note object
-            if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+            if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                 pNote->Override.VolumeTime = fDuration;
             } else { // otherwise schedule a "volume time" change with the requested fade out duration ...
                 Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
@@ -1420,7 +1420,7 @@ namespace LinuxSampler {
 
                 // if fade_out() was called immediately after note was triggered
                 // then immediately apply fade out duration to Note object
-                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime) {
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                     pNote->Override.VolumeTime = fDuration;
                 } else { // otherwise schedule a "volume time" change with the requested fade out duration ...
                     Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
@@ -1555,7 +1555,7 @@ namespace LinuxSampler {
                     wrnMsg("set_event_par(): note number of argument 3 is out of range");
                     return successResult();
                 }
-                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime)
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime)
                     pNote->cause.Param.Note.Key = value;
                 else
                     wrnMsg("set_event_par(): note number can only be changed when note is new");
@@ -1565,7 +1565,7 @@ namespace LinuxSampler {
                     wrnMsg("set_event_par(): velocity of argument 3 is out of range");
                     return successResult();
                 }
-                if (m_vm->m_event->cause.SchedTime() == pNote->triggerSchedTime)
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime)
                     pNote->cause.Param.Note.Velocity = value;
                 else
                     wrnMsg("set_event_par(): velocity can only be changed when note is new");
@@ -1659,7 +1659,7 @@ namespace LinuxSampler {
             (args->argsCount() >= 2) ? (args->arg(1)->asInt()->evalInt() == 1) : false;
 
         pEngineChannel->ScheduleResumeOfScriptCallback(
-            itCallback, m_vm->m_event->cause.SchedTime(), disableWaitForever
+            itCallback, m_vm->m_event->scheduleTime, disableWaitForever
         );
 
         return successResult();

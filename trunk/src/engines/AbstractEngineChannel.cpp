@@ -728,7 +728,7 @@ namespace LinuxSampler {
         {
             const uint8_t channel = MidiChannel() == midi_chan_all ? 0 : MidiChannel();
             const int FragmentPos = 0; // randomly chosen, we don't care about jitter for virtual MIDI devices
-            Event event = pEngine->pEventGenerator->CreateEvent(FragmentPos);
+            const Event event = pEngine->pEventGenerator->CreateEvent(FragmentPos);
             VirtualMidiDevice::event_t devEvent; // the event format we get from the virtual MIDI device
             // as we're going to (carefully) write some status to the
             // synchronized struct, we cast away the const
@@ -739,68 +739,91 @@ namespace LinuxSampler {
                 VirtualMidiDevice* pDev = devices[i];
                 // I think we can simply flush the whole FIFO(s), the user shouldn't be so fast ;-)
                 while (pDev->GetMidiEventFromDevice(devEvent)) {
+                    if (pEvents->poolIsEmpty()) {
+                        dmsg(1,("Event pool emtpy!\n"));
+                        goto exitVirtualDevicesLoop;
+                    }
+
+                    // copy event to internal event list (this is already
+                    // required here, because the LaunchNewNote() call below
+                    // requires the event to be from the internal event pool for
+                    // being able to generate a valid event ID)
+                    RTList<Event>::Iterator itEvent = pEvents->allocAppend();
+                    *itEvent = event;
+
+                    itEvent->pEngineChannel = this;
+
                     switch (devEvent.Type) {
                         case VirtualMidiDevice::EVENT_TYPE_NOTEON:
-                            event.Type = Event::type_note_on;
-                            event.Param.Note.Key      = devEvent.Arg1;
-                            event.Param.Note.Velocity = devEvent.Arg2;
-                            event.Param.Note.Channel  = channel;
+                            itEvent->Type = Event::type_note_on;
+                            itEvent->Param.Note.Key      = devEvent.Arg1;
+                            itEvent->Param.Note.Velocity = devEvent.Arg2;
+                            itEvent->Param.Note.Channel  = channel;
                             // apply transpose setting to (note on/off) event
-                            if (!applyTranspose(&event))
-                                continue; // note value is out of range, so drop this event
+                            if (!applyTranspose(&*itEvent)) {
+                                // note value is out of range, so drop this event
+                                pEvents->free(itEvent);
+                                continue;
+                            }
                             // assign a new note to this note-on event
-                            if (!pEngine->LaunchNewNote(this, &event))
-                                continue; // failed launching new note, so drop this event
+                            if (!pEngine->LaunchNewNote(this, itEvent)) {
+                                // failed launching new note, so drop this event
+                                pEvents->free(itEvent);
+                                continue;
+                            }
                             break;
                         case VirtualMidiDevice::EVENT_TYPE_NOTEOFF:
-                            event.Type = Event::type_note_off;
-                            event.Param.Note.Key      = devEvent.Arg1;
-                            event.Param.Note.Velocity = devEvent.Arg2;
-                            event.Param.Note.Channel  = channel;
-                            if (!applyTranspose(&event))
-                                continue; // note value is out of range, so drop this event
+                            itEvent->Type = Event::type_note_off;
+                            itEvent->Param.Note.Key      = devEvent.Arg1;
+                            itEvent->Param.Note.Velocity = devEvent.Arg2;
+                            itEvent->Param.Note.Channel  = channel;
+                            if (!applyTranspose(&*itEvent)) {
+                                // note value is out of range, so drop this event
+                                pEvents->free(itEvent);
+                                continue;
+                            }
                             break;
                         case VirtualMidiDevice::EVENT_TYPE_CC:
                             switch (devEvent.Arg1) {
                                 case 0: // bank select MSB ...
                                     SetMidiBankMsb(devEvent.Arg2);
-                                    continue; // don't push this event into FIFO
+                                    // don't push this event into FIFO
+                                    pEvents->free(itEvent);
+                                    continue;
                                 case 32: // bank select LSB ...
                                     SetMidiBankLsb(devEvent.Arg2);
-                                    continue; // don't push this event into FIFO
+                                    // don't push this event into FIFO
+                                    pEvents->free(itEvent);
+                                    continue;
                                 default: // regular MIDI CC ...
-                                    event.Type = Event::type_control_change;
-                                    event.Param.CC.Controller = devEvent.Arg1;
-                                    event.Param.CC.Value      = devEvent.Arg2;
-                                    event.Param.CC.Channel    = channel;
+                                    itEvent->Type = Event::type_control_change;
+                                    itEvent->Param.CC.Controller = devEvent.Arg1;
+                                    itEvent->Param.CC.Value      = devEvent.Arg2;
+                                    itEvent->Param.CC.Channel    = channel;
                             }
                             break;
                         case VirtualMidiDevice::EVENT_TYPE_PITCHBEND:
-                            event.Type = Event::type_pitchbend;
-                            event.Param.Pitch.Pitch = int(devEvent.Arg2 << 7 | devEvent.Arg1) - 8192;
-                            event.Param.Pitch.Channel = channel;
+                            itEvent->Type = Event::type_pitchbend;
+                            itEvent->Param.Pitch.Pitch = int(devEvent.Arg2 << 7 | devEvent.Arg1) - 8192;
+                            itEvent->Param.Pitch.Channel = channel;
                             break;
                         case VirtualMidiDevice::EVENT_TYPE_PROGRAM:
                             SendProgramChange(devEvent.Arg1);
-                            continue; // don't push this event into FIFO
+                            // don't push this event into FIFO
+                            pEvents->free(itEvent);
+                            continue;
                         case VirtualMidiDevice::EVENT_TYPE_CHPRESSURE:
-                            event.Type = Event::type_channel_pressure;
-                            event.Param.ChannelPressure.Controller = CTRL_TABLE_IDX_AFTERTOUCH;
-                            event.Param.ChannelPressure.Value   = devEvent.Arg2;
-                            event.Param.ChannelPressure.Channel = channel;
+                            itEvent->Type = Event::type_channel_pressure;
+                            itEvent->Param.ChannelPressure.Controller = CTRL_TABLE_IDX_AFTERTOUCH;
+                            itEvent->Param.ChannelPressure.Value   = devEvent.Arg2;
+                            itEvent->Param.ChannelPressure.Channel = channel;
                             break;
                         default:
                             std::cerr << "AbstractEngineChannel::ImportEvents() ERROR: unknown event type ("
                                       << devEvent.Type << "). This is a bug!";
+                            pEvents->free(itEvent); // drop event
                             continue;
                     }
-                    event.pEngineChannel = this;
-                    // copy event to internal event list
-                    if (pEvents->poolIsEmpty()) {
-                        dmsg(1,("Event pool emtpy!\n"));
-                        goto exitVirtualDevicesLoop;
-                    }
-                    *pEvents->allocAppend() = event;
                 }
             }
         }
@@ -824,15 +847,28 @@ namespace LinuxSampler {
                 dmsg(1,("Event pool emtpy!\n"));
                 break;
             }
-            // apply transpose setting to (note on/off) event
-            if (!applyTranspose(pEvent))
-                continue; // it's a note event which has a note value out of range, so drop this event
-            // assign a new note to this event (if its a note-on event)
-            if (pEvent->Type == Event::type_note_on)
-                if (!pEngine->LaunchNewNote(this, pEvent))
-                    continue; // failed launching new note, so drop this event
+
             // copy event to internal event list
-            *pEvents->allocAppend() = *pEvent;
+            // (required already because LaunchNewNote() relies on it, see
+            // comment about it above)
+            RTList<Event>::Iterator itEvent = pEvents->allocAppend();
+            *itEvent = *pEvent;
+
+            // apply transpose setting to (note on/off) event
+            if (!applyTranspose(&*itEvent)) {
+                // it's a note event which has a note value out of range, so drop this event
+                pEvents->free(itEvent);
+                continue;
+            }
+            // assign a new note to this event (if its a note-on event)
+            if (itEvent->Type == Event::type_note_on) {
+                if (!pEngine->LaunchNewNote(this, itEvent)) {
+                    // failed launching new note, so drop this event
+                    pEvents->free(itEvent);
+                    continue;
+                }
+            }
+
         }
         eventQueueReader.free(); // free all copied events from input queue
     }

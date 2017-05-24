@@ -357,7 +357,7 @@ namespace LinuxSampler {
                 // get access to (copied) event on the scheduler queue
                 RTList<Event>::Iterator itEvent = pEvents->fromID(noteOnEventID);
                 // stick a new note to the (copied) event on the queue
-                const note_id_t noteID = pEngine->LaunchNewNote(this, &*itEvent);
+                const note_id_t noteID = pEngine->LaunchNewNote(this, itEvent);
                 return noteID;
             }
 

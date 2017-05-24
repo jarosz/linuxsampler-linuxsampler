@@ -676,7 +676,7 @@ namespace LinuxSampler {
              * @param pNoteOnEvent - event which caused this
              * @returns new note's unique ID (or zero on error)
              */
-            note_id_t LaunchNewNote(LinuxSampler::EngineChannel* pEngineChannel, Event* pNoteOnEvent) OVERRIDE {
+            note_id_t LaunchNewNote(LinuxSampler::EngineChannel* pEngineChannel, Pool<Event>::Iterator& itNoteOnEvent) OVERRIDE {
                 EngineChannelBase<V, R, I>* pChannel = static_cast<EngineChannelBase<V, R, I>*>(pEngineChannel);
                 Pool< Note<V> >* pNotePool = GetNotePool();
 
@@ -691,7 +691,7 @@ namespace LinuxSampler {
                 const note_id_t newNoteID = pNotePool->getID(itNewNote);
 
                 // remember the engine's time when this note was triggered exactly
-                itNewNote->triggerSchedTime = pNoteOnEvent->SchedTime();
+                itNewNote->triggerSchedTime = itNoteOnEvent->SchedTime();
 
                 // usually the new note (and its subsequent voices) will be
                 // allocated on the key provided by the event's note number,
@@ -699,11 +699,11 @@ namespace LinuxSampler {
                 // note, but rather a child note, then this new note will be
                 // allocated on the parent note's key instead in order to
                 // release the child note simultaniously with its parent note
-                itNewNote->hostKey = pNoteOnEvent->Param.Note.Key;
+                itNewNote->hostKey = itNoteOnEvent->Param.Note.Key;
 
                 // in case this new note was requested to be a child note,
                 // then retrieve its parent note and link them with each other
-                const note_id_t parentNoteID = pNoteOnEvent->Param.Note.ParentNoteID;
+                const note_id_t parentNoteID = itNoteOnEvent->Param.Note.ParentNoteID;
                 if (parentNoteID) {
                     NoteIterator itParentNote = pNotePool->fromID(parentNoteID);                        
                     if (itParentNote) {
@@ -731,15 +731,18 @@ namespace LinuxSampler {
                 dmsg(2,("Launched new note on host key %d\n", itNewNote->hostKey));
 
                 // copy event which caused this note
-                itNewNote->cause = *pNoteOnEvent;
-                itNewNote->eventID = pEventPool->getID(pNoteOnEvent);
+                itNewNote->cause = *itNoteOnEvent;
+                itNewNote->eventID = pEventPool->getID(itNoteOnEvent);
+                if (!itNewNote->eventID) {
+                    dmsg(0,("Engine: No valid event ID resolved for note. This is a bug!!!\n"));
+                }
 
                 // move new note to its host key
                 MidiKey* pKey = &pChannel->pMIDIKeyInfo[itNewNote->hostKey];
                 itNewNote.moveToEndOf(pKey->pActiveNotes);
 
                 // assign unique note ID of this new note to the original note on event
-                pNoteOnEvent->Param.Note.ID = newNoteID;
+                itNoteOnEvent->Param.Note.ID = newNoteID;
 
                 return newNoteID; // success
             }
@@ -1013,6 +1016,7 @@ namespace LinuxSampler {
 
                 // initialize/reset other members
                 itScriptEvent->cause = *itEvent;
+                itScriptEvent->scheduleTime = itEvent->SchedTime();
                 itScriptEvent->currentHandler = 0;
                 itScriptEvent->executionSlices = 0;
                 itScriptEvent->ignoreAllWaitCalls = false;
@@ -1359,7 +1363,7 @@ namespace LinuxSampler {
                         // usually there should already be a new Note object
                         NoteIterator itNote = GetNotePool()->fromID(itVoiceStealEvent->Param.Note.ID);
                         if (!itNote) { // should not happen, but just to be sure ...
-                            const note_id_t noteID = LaunchNewNote(pEngineChannel, &*itVoiceStealEvent);
+                            const note_id_t noteID = LaunchNewNote(pEngineChannel, itVoiceStealEvent);
                             if (!noteID) {
                                 dmsg(1,("Engine: Voice stealing failed; No Note object and Note pool empty!\n"));
                                 continue;
@@ -1836,7 +1840,7 @@ namespace LinuxSampler {
                                         itPseudoNoteOnEvent->Param.Note.Key      = i;
                                         itPseudoNoteOnEvent->Param.Note.Velocity = pOtherKey->Velocity;
                                         // assign a new note to this note-on event
-                                        if (LaunchNewNote(pChannel, &*itPseudoNoteOnEvent)) {
+                                        if (LaunchNewNote(pChannel, itPseudoNoteOnEvent)) {
                                             // allocate and trigger new voice(s) for the other key
                                             TriggerNewVoices(pChannel, itPseudoNoteOnEvent, false);
                                         }
@@ -1923,7 +1927,7 @@ namespace LinuxSampler {
                 // spawn release triggered voice(s) if needed
                 if (pKey->ReleaseTrigger && pChannel->pInstrument) {
                     // assign a new note to this release event
-                    if (LaunchNewNote(pChannel, &*itEvent)) {
+                    if (LaunchNewNote(pChannel, itEvent)) {
                         // allocate and trigger new release voice(s)
                         TriggerReleaseVoices(pChannel, itEvent);
                     }
