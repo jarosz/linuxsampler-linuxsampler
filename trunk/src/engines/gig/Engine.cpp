@@ -140,20 +140,23 @@ namespace LinuxSampler { namespace gig {
         RTList<Event>::Iterator&     itNoteOnEvent,
         bool                         HandleKeyGroupConflicts
     ) {
-        EngineChannel* pChannel = static_cast<EngineChannel*>(pEngineChannel);
-        // first, get total amount of required voices (dependant on amount of layers)
-        ::gig::Region* pRegion = pChannel->pInstrument->GetRegion(itNoteOnEvent->Param.Note.Key);
-        if (!pRegion || RegionSuspended(pRegion))
-            return;
-        const int voicesRequired = pRegion->Layers;
-        if (voicesRequired <= 0)
-            return;
-
         NoteIterator itNote = GetNotePool()->fromID(itNoteOnEvent->Param.Note.ID);
         if (!itNote) {
             dmsg(1,("gig::Engine: No Note object for triggering new voices!\n"));
             return;
         }
+
+        EngineChannel* pChannel = static_cast<EngineChannel*>(pEngineChannel);
+
+        // first, get total amount of required voices (dependant on amount of layers)
+        // (using the note's MIDI note number instead of the MIDI event's one,
+        //  because an instrument script might have modified the note number)
+        ::gig::Region* pRegion = pChannel->pInstrument->GetRegion(itNote->cause.Param.Note.Key);
+        if (!pRegion || RegionSuspended(pRegion))
+            return;
+        const int voicesRequired = pRegion->Layers;
+        if (voicesRequired <= 0)
+            return;
 
         // now launch the required amount of voices
         for (int i = 0; i < voicesRequired; i++) {
@@ -168,21 +171,23 @@ namespace LinuxSampler { namespace gig {
         LinuxSampler::EngineChannel*  pEngineChannel,
         RTList<Event>::Iterator&      itNoteOffEvent
     ) {
-        EngineChannel* pChannel = static_cast<EngineChannel*>(pEngineChannel);
-        MidiKey* pKey = &pChannel->pMIDIKeyInfo[itNoteOffEvent->Param.Note.Key];
-        // first, get total amount of required voices (dependant on amount of layers)
-        ::gig::Region* pRegion = pChannel->pInstrument->GetRegion(itNoteOffEvent->Param.Note.Key);
-        if (!pRegion)
-            return;
-        const int voicesRequired = pRegion->Layers;
-        if (voicesRequired <= 0)
-            return;
-
         NoteIterator itNote = GetNotePool()->fromID(itNoteOffEvent->Param.Note.ID);
         if (!itNote) {
             dmsg(1,("gig::Engine: No Note object for triggering new release voices!\n"));
             return;
         }
+
+        EngineChannel* pChannel = static_cast<EngineChannel*>(pEngineChannel);
+        MidiKey* pKey = &pChannel->pMIDIKeyInfo[itNoteOffEvent->Param.Note.Key];
+        // first, get total amount of required voices (dependant on amount of layers)
+        // (using the note's MIDI note number instead of the MIDI event's one,
+        //  because an instrument script might have modified the note number)
+        ::gig::Region* pRegion = pChannel->pInstrument->GetRegion(itNote->cause.Param.Note.Key);
+        if (!pRegion)
+            return;
+        const int voicesRequired = pRegion->Layers;
+        if (voicesRequired <= 0)
+            return;
 
         // MIDI note-on velocity is used instead of note-off velocity
         itNoteOffEvent->Param.Note.Velocity = pKey->Velocity;
@@ -204,10 +209,19 @@ namespace LinuxSampler { namespace gig {
         bool                          VoiceStealing,
         bool                          HandleKeyGroupConflicts
     ) {
+        NoteIterator itNote = GetNotePool()->fromID(itNoteOnEvent->Param.Note.ID);
+        if (!itNote) {
+            dmsg(1,("gig::Engine: No Note object for launching voices!\n"));
+            return Pool<Voice>::Iterator();
+        }
+
         EngineChannel* pChannel = static_cast<EngineChannel*>(pEngineChannel);
+        // the note's MIDI note number might differ from the event's note number
+        // because a script might have modified the note's note number
         int MIDIKey = itNoteOnEvent->Param.Note.Key;
+        int NoteKey = itNote->cause.Param.Note.Key;
         //EngineChannel::MidiKey* pKey  = &pChannel->pMIDIKeyInfo[MIDIKey];
-        ::gig::Region* pRegion = pChannel->pInstrument->GetRegion(MIDIKey);
+        ::gig::Region* pRegion = pChannel->pInstrument->GetRegion(NoteKey);
 
         // if nothing defined for this key
         if (!pRegion) return Pool<Voice>::Iterator(); // nothing to do
@@ -232,7 +246,7 @@ namespace LinuxSampler { namespace gig {
                     DimValues[i] = iLayer;
                     break;
                 case ::gig::dimension_velocity:
-                    DimValues[i] = itNoteOnEvent->Param.Note.Velocity;
+                    DimValues[i] = itNote->cause.Param.Note.Velocity;
                     break;
                 case ::gig::dimension_channelaftertouch:
                     DimValues[i] = pChannel->ControllerTable[128];
@@ -337,8 +351,6 @@ namespace LinuxSampler { namespace gig {
         // releasetrigger dimension (could happen if an instrument
         // change has occured between note on and off)
         if (ReleaseTriggerVoice && !(VoiceType & Voice::type_release_trigger)) return Pool<Voice>::Iterator();
-
-        NoteIterator itNote = GetNotePool()->fromID(itNoteOnEvent->Param.Note.ID);
 
         ::gig::DimensionRegion* pDimRgn;
         if (!itNote->Format.Gig.DimMask) { // normal case ...

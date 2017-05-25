@@ -163,12 +163,17 @@ namespace LinuxSampler { namespace sfz {
         RTList<Event>::Iterator&     itNoteOnEvent,
         bool                         HandleKeyGroupConflicts
     ) {
+        NoteIterator itNote = GetNotePool()->fromID(itNoteOnEvent->Param.Note.ID);
+        if (!itNote) {
+            dmsg(1,("sfz::Engine: No Note object for triggering new voices!\n"));
+            return;
+        }
         EngineChannel* pChannel = static_cast<EngineChannel*>(pEngineChannel);
         //MidiKey* pKey = &pChannel->pMIDIKeyInfo[itNoteOnEvent->Param.Note.Key];
         ::sfz::Query q;
         q.chan        = itNoteOnEvent->Param.Note.Channel + 1;
-        q.key         = itNoteOnEvent->Param.Note.Key;
-        q.vel         = itNoteOnEvent->Param.Note.Velocity;
+        q.key         = itNote->cause.Param.Note.Key; //itNoteOnEvent->Param.Note.Key; <- using note object instead, since note nr might been modified by script
+        q.vel         = itNote->cause.Param.Note.Velocity; //itNoteOnEvent->Param.Note.Velocity; <- using note object instead, since velocity might been modified by script
         q.bend        = pChannel->Pitch;
         q.bpm         = 0;
         q.chanaft     = pChannel->ControllerTable[128];
@@ -188,12 +193,6 @@ namespace LinuxSampler { namespace sfz {
 
         q.search(pChannel->pInstrument);
 
-        NoteIterator itNote = GetNotePool()->fromID(itNoteOnEvent->Param.Note.ID);
-        if (!itNote) {
-            dmsg(1,("sfz::Engine: No Note object for triggering new voices!\n"));
-            return;
-        }
-
         int i = 0;
         while (::sfz::Region* region = q.next()) {
             if (!RegionSuspended(region)) {
@@ -211,13 +210,18 @@ namespace LinuxSampler { namespace sfz {
         LinuxSampler::EngineChannel*  pEngineChannel,
         RTList<Event>::Iterator&      itNoteOffEvent
     ) {
+        NoteIterator itNote = GetNotePool()->fromID(itNoteOffEvent->Param.Note.ID);
+        if (!itNote) {
+            dmsg(1,("sfz::Engine: No Note object for triggering new release voices!\n"));
+            return;
+        }
         EngineChannel* pChannel = static_cast<EngineChannel*>(pEngineChannel);
         ::sfz::Query q;
         q.chan        = itNoteOffEvent->Param.Note.Channel + 1;
-        q.key         = itNoteOffEvent->Param.Note.Key;
+        q.key         = itNote->cause.Param.Note.Key; //itNoteOffEvent->Param.Note.Key; <- using note object instead, since note nr might been modified by script
 
         // MIDI note-on velocity is used instead of note-off velocity
-        q.vel         = pChannel->pMIDIKeyInfo[q.key].Velocity;
+        q.vel         = itNote->cause.Param.Note.Velocity; //pChannel->pMIDIKeyInfo[q.key].Velocity; <- using note object instead, since velocity might been modified by script
         itNoteOffEvent->Param.Note.Velocity = q.vel;
 
         q.bend        = pChannel->Pitch;
@@ -234,12 +238,6 @@ namespace LinuxSampler { namespace sfz {
         q.trig        = TRIGGER_RELEASE;
 
         q.search(pChannel->pInstrument);
-
-        NoteIterator itNote = GetNotePool()->fromID(itNoteOffEvent->Param.Note.ID);
-        if (!itNote) {
-            dmsg(1,("sfz::Engine: No Note object for triggering new release voices!\n"));
-            return;
-        }
 
         // now launch the required amount of voices
         int i = 0;

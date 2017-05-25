@@ -82,20 +82,19 @@ namespace LinuxSampler { namespace sf2 {
         RTList<Event>::Iterator&     itNoteOnEvent,
         bool                         HandleKeyGroupConflicts
     ) {
-        EngineChannel* pChannel = static_cast<EngineChannel*>(pEngineChannel);
-
-        //uint8_t  chan     = pChannel->MidiChannel();
-        int      key      = itNoteOnEvent->Param.Note.Key;
-        uint8_t  vel      = itNoteOnEvent->Param.Note.Velocity;
-        //int      bend     = pChannel->Pitch;
-        //uint8_t  chanaft  = pChannel->ControllerTable[128];
-        //uint8_t* cc       = pChannel->ControllerTable;
-
         NoteIterator itNote = GetNotePool()->fromID(itNoteOnEvent->Param.Note.ID);
         if (!itNote) {
             dmsg(1,("sf2::Engine: No Note object for triggering new voices!\n"));
             return;
         }
+        EngineChannel* pChannel = static_cast<EngineChannel*>(pEngineChannel);
+
+        //uint8_t  chan     = pChannel->MidiChannel();
+        int      key      = itNote->cause.Param.Note.Key; //itNoteOnEvent->Param.Note.Key; <- using note object instead, since note nr might been modified by script
+        uint8_t  vel      = itNote->cause.Param.Note.Velocity; //itNoteOnEvent->Param.Note.Velocity; <- using note object instead, since velocity might been modified by script
+        //int      bend     = pChannel->Pitch;
+        //uint8_t  chanaft  = pChannel->ControllerTable[128];
+        //uint8_t* cc       = pChannel->ControllerTable;
 
         int layer = 0;
         ::sf2::Query query(*pChannel->pInstrument);
