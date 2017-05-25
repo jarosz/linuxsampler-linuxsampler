@@ -13,8 +13,8 @@
 #include "../../common/Pool.h"
 #include "Event.h"
 
-#define DEFAULT_NOTE_VOLUME_TIME_S  0.013 /* 13ms */
-#define DEFAULT_NOTE_PITCH_TIME_S   0.013 /* 13ms */
+#define DEFAULT_NOTE_VOLUME_TIME_S  0.013f /* 13ms */
+#define DEFAULT_NOTE_PITCH_TIME_S   0.013f /* 13ms */
 
 namespace LinuxSampler {
 

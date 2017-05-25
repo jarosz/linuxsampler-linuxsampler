@@ -385,8 +385,11 @@ namespace LinuxSampler {
             if (!pNote) return successResult();
 
             // if change_vol() was called immediately after note was triggered
-            // then immediately apply the volume to note object
-            if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
+            // then immediately apply the volume to note object, but only if
+            // change_vol_time() has not been called before
+            if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime &&
+                pNote->Override.VolumeTime <= DEFAULT_NOTE_VOLUME_TIME_S)
+            {
                 if (relative)
                     pNote->Override.Volume *= fVolumeLin;
                 else
@@ -412,8 +415,11 @@ namespace LinuxSampler {
                 if (!pNote) continue;
 
                 // if change_vol() was called immediately after note was triggered
-                // then immediately apply the volume to Note object
-                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
+                // then immediately apply the volume to Note object, but only if
+                // change_vol_time() has not been called before
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime &&
+                    pNote->Override.VolumeTime <= DEFAULT_NOTE_VOLUME_TIME_S)
+                {
                     if (relative)
                         pNote->Override.Volume *= fVolumeLin;
                     else
@@ -472,8 +478,11 @@ namespace LinuxSampler {
             if (!pNote) return successResult();
 
             // if change_tune() was called immediately after note was triggered
-            // then immediately apply the tuning to Note object
-            if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
+            // then immediately apply the tuning to Note object, but only if
+            // change_tune_time() has not been called before
+            if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime &&
+                pNote->Override.PitchTime <= DEFAULT_NOTE_PITCH_TIME_S)
+            {
                 if (relative) 
                     pNote->Override.Pitch *= fFreqRatio;
                 else
@@ -499,8 +508,11 @@ namespace LinuxSampler {
                 if (!pNote) continue;
 
                 // if change_tune() was called immediately after note was triggered
-                // then immediately apply the tuning to Note object
-                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
+                // then immediately apply the tuning to Note object, but only if
+                // change_tune_time() has not been called before
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime &&
+                    pNote->Override.PitchTime <= DEFAULT_NOTE_PITCH_TIME_S)
+                {
                     if (relative) 
                         pNote->Override.Pitch *= fFreqRatio;
                     else

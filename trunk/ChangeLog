@@ -167,6 +167,13 @@ Version SVN trunk (?)
       built-in function "ignore_controller()".
     - Implemented built-in script function "change_velo()".
     - Implemented built-in script function "change_note()".
+    - Adjusted behavior of "change_vol()" and "change_tune()" to a more
+      intuitive behavior if used in combination with "change_vol_time()" or
+      "change_tune_time()" respectively: now tuning/volume changes are only
+      assigned (without delay) immediately to a new note if the respective
+      timing function has not been called before, otherwise the volume/tuning
+      changes are automatically faded (before, only the event's time stamp was
+      relevant).
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to
