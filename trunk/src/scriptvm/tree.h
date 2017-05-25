@@ -20,6 +20,7 @@
 #include <iostream>
 #include <map>
 #include <set>
+#include <string.h> // for memset()
 #include "../common/global.h"
 #include "../common/Ref.h"
 #include "../common/ArrayList.h"
