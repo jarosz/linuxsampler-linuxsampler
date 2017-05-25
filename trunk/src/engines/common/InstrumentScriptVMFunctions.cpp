@@ -1631,7 +1631,7 @@ namespace LinuxSampler {
         if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
             pNote->cause.Param.Note.Key = value;
             m_vm->m_event->cause.Param.Note.Key = value;
-        } else {
+        } else {
             wrnMsg("change_note(): note number can only be changed when note is new");
         }
 
@@ -1671,7 +1671,7 @@ namespace LinuxSampler {
         if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
             pNote->cause.Param.Note.Velocity = value;
             m_vm->m_event->cause.Param.Note.Velocity = value;
-        } else {
+        } else {
             wrnMsg("change_velo(): velocity can only be changed when note is new");
         }
 
