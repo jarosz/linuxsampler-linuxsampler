@@ -709,6 +709,11 @@ public:
     int suspensionTimeMicroseconds() const OVERRIDE {
         return suspendMicroseconds;
     }
+
+    void resetPolyphonicData() OVERRIDE {
+        if (polyphonicIntMemory.empty()) return;
+        memset(&polyphonicIntMemory[0], 0, polyphonicIntMemory.size() * sizeof(int));
+    }
 };
 
 } // namespace LinuxSampler

@@ -162,6 +162,7 @@ Version SVN trunk (?)
     - Added built-in script function "set_event_par()" and implemented some
       of its possible parameter selections.
     - Fixed a bunch of scheduler time related bugs.
+    - Fixed polyphonic variables not being reset to zero after usage.
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

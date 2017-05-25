@@ -984,6 +984,10 @@ namespace LinuxSampler {
                     // script event object
                     RTList<ScriptEvent>::Iterator itScriptEvent =
                         pChannel->pScript->pEvents->allocAppend();
+                    // if event handler uses polyphonic variables, reset them
+                    // to zero values before starting to execute the handler
+                    if (pEventHandler->isPolyphonic())
+                        itScriptEvent->execCtx->resetPolyphonicData();
                     ProcessScriptEvent(
                         pChannel, itEvent, pEventHandler, itScriptEvent
                     );

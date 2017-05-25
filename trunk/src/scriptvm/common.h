@@ -850,6 +850,17 @@ namespace LinuxSampler {
          * @see ScriptVM::exec()
          */
         virtual int suspensionTimeMicroseconds() const = 0;
+
+        /**
+         * Causes all polyphonic variables to be reset to zero values. A
+         * polyphonic variable is expected to be zero when entering a new event
+         * handler instance. As an exception the values of polyphonic variables
+         * shall only be preserved from an note event handler instance to its
+         * correspending specific release handler instance. So in the latter
+         * case the script author may pass custom data from the note handler to
+         * the release handler, but only for the same specific note!
+         */
+        virtual void resetPolyphonicData() = 0;
     };
 
     /** @brief Script callback for a certain event.
