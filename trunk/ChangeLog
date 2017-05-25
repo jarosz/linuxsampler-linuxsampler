@@ -165,6 +165,8 @@ Version SVN trunk (?)
     - Fixed polyphonic variables not being reset to zero after usage.
     - Built-in "ignore_event()" function: argument is now optional, like with
       built-in function "ignore_controller()".
+    - Implemented built-in script function "change_velo()".
+    - Implemented built-in script function "change_note()".
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

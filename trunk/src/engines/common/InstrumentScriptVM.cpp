@@ -236,6 +236,7 @@ namespace LinuxSampler {
         m_fnChangeDecay(this), m_fnChangeRelease(this),
         m_fnChangeAmpLFODepth(this), m_fnChangeAmpLFOFreq(this),
         m_fnChangePitchLFODepth(this), m_fnChangePitchLFOFreq(this),
+        m_fnChangeNote(this), m_fnChangeVelo(this),
         m_fnEventStatus(this), m_fnWait2(this), m_fnStopWait(this),
         m_fnFadeIn(this), m_fnFadeOut(this),
         m_fnGetEventPar(this), m_fnSetEventPar(this),
@@ -372,6 +373,8 @@ namespace LinuxSampler {
         else if (name == "change_vol_time") return &m_fnChangeVolTime;
         else if (name == "change_tune") return &m_fnChangeTune;
         else if (name == "change_tune_time") return &m_fnChangeTuneTime;
+        else if (name == "change_note") return &m_fnChangeNote;
+        else if (name == "change_velo") return &m_fnChangeVelo;
         else if (name == "change_pan") return &m_fnChangePan;
         else if (name == "change_cutoff") return &m_fnChangeCutoff;
         else if (name == "change_reso") return &m_fnChangeReso;

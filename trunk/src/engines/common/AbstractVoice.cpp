@@ -129,7 +129,7 @@ namespace LinuxSampler {
         AboutToTrigger();
 
         // calculate volume
-        const double velocityAttenuation = GetVelocityAttenuation(itNoteOnEvent->Param.Note.Velocity);
+        const double velocityAttenuation = GetVelocityAttenuation(MIDIVelocity());
         float volume = CalculateVolume(velocityAttenuation) * pKeyInfo->Volume;
         if (volume <= 0) return -1;
 
@@ -139,7 +139,7 @@ namespace LinuxSampler {
         SYNTHESIS_MODE_SET_BITDEPTH24(SynthesisMode, SmplInfo.BitDepth == 24);
 
         // get starting crossfade volume level
-        float crossfadeVolume = CalculateCrossfadeVolume(itNoteOnEvent->Param.Note.Velocity);
+        float crossfadeVolume = CalculateCrossfadeVolume(MIDIVelocity());
 
         VolumeLeft  = volume * pKeyInfo->PanLeft;
         VolumeRight = volume * pKeyInfo->PanRight;
@@ -198,11 +198,11 @@ namespace LinuxSampler {
         NoteResonance = (pNote) ? pNote->Override.Resonance : 1.0f;
 
         // the length of the decay and release curves are dependent on the velocity
-        const double velrelease = 1 / GetVelocityRelease(itNoteOnEvent->Param.Note.Velocity);
+        const double velrelease = 1 / GetVelocityRelease(MIDIVelocity());
 
         if (pSignalUnitRack == NULL) { // setup EG 1 (VCA EG)
             // get current value of EG1 controller
-            double eg1controllervalue = GetEG1ControllerValue(itNoteOnEvent->Param.Note.Velocity);
+            double eg1controllervalue = GetEG1ControllerValue(MIDIVelocity());
 
             // calculate influence of EG1 controller on EG1's parameters
             EGInfo egInfo = CalculateEG1ControllerInfluence(eg1controllervalue);
@@ -213,7 +213,7 @@ namespace LinuxSampler {
                 egInfo.Release *= pNote->Override.Release;
             }
 
-            TriggerEG1(egInfo, velrelease, velocityAttenuation, GetEngine()->SampleRate, itNoteOnEvent->Param.Note.Velocity);
+            TriggerEG1(egInfo, velrelease, velocityAttenuation, GetEngine()->SampleRate, MIDIVelocity());
         } else {
             pSignalUnitRack->Trigger();
         }
@@ -257,12 +257,12 @@ namespace LinuxSampler {
             // setup EG 2 (VCF Cutoff EG)
             {
                 // get current value of EG2 controller
-                double eg2controllervalue = GetEG2ControllerValue(itNoteOnEvent->Param.Note.Velocity);
+                double eg2controllervalue = GetEG2ControllerValue(MIDIVelocity());
 
                 // calculate influence of EG2 controller on EG2's parameters
                 EGInfo egInfo = CalculateEG2ControllerInfluence(eg2controllervalue);
 
-                TriggerEG2(egInfo, velrelease, velocityAttenuation, GetEngine()->SampleRate, itNoteOnEvent->Param.Note.Velocity);
+                TriggerEG2(egInfo, velrelease, velocityAttenuation, GetEngine()->SampleRate, MIDIVelocity());
             }
 
 
@@ -321,7 +321,7 @@ namespace LinuxSampler {
             VCFResonanceCtrl.value = pEngineChannel->ControllerTable[VCFResonanceCtrl.controller];
 
             // calculate cutoff frequency
-            CutoffBase = CalculateCutoffBase(itNoteOnEvent->Param.Note.Velocity);
+            CutoffBase = CalculateCutoffBase(MIDIVelocity());
 
             VCFCutoffCtrl.fvalue = CalculateFinalCutoff(CutoffBase);
 

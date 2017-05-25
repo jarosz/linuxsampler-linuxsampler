@@ -327,6 +327,30 @@ namespace LinuxSampler {
         InstrumentScriptVM* m_vm;
     };
 
+    class InstrumentScriptVMFunction_change_note : public VMEmptyResultFunction {
+    public:
+        InstrumentScriptVMFunction_change_note(InstrumentScriptVM* parent);
+        int minRequiredArgs() const { return 2; }
+        int maxAllowedArgs() const { return 2; }
+        bool acceptsArgType(int iArg, ExprType_t type) const { return type == INT_EXPR;}
+        ExprType_t argType(int iArg) const { return INT_EXPR; }
+        VMFnResult* exec(VMFnArgs* args);
+    protected:
+        InstrumentScriptVM* m_vm;
+    };
+
+    class InstrumentScriptVMFunction_change_velo : public VMEmptyResultFunction {
+    public:
+        InstrumentScriptVMFunction_change_velo(InstrumentScriptVM* parent);
+        int minRequiredArgs() const { return 2; }
+        int maxAllowedArgs() const { return 2; }
+        bool acceptsArgType(int iArg, ExprType_t type) const { return type == INT_EXPR;}
+        ExprType_t argType(int iArg) const { return INT_EXPR; }
+        VMFnResult* exec(VMFnArgs* args);
+    protected:
+        InstrumentScriptVM* m_vm;
+    };
+
     class InstrumentScriptVMFunction_event_status : public VMIntResultFunction {
     public:
         InstrumentScriptVMFunction_event_status(InstrumentScriptVM* parent);

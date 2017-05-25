@@ -1555,20 +1555,24 @@ namespace LinuxSampler {
                     wrnMsg("set_event_par(): note number of argument 3 is out of range");
                     return successResult();
                 }
-                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime)
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                     pNote->cause.Param.Note.Key = value;
-                else
+                    m_vm->m_event->cause.Param.Note.Key = value;
+                } else {
                     wrnMsg("set_event_par(): note number can only be changed when note is new");
+                }
                 return successResult();
             case EVENT_PAR_VELOCITY:
                 if (value < 0 || value > 127) {
                     wrnMsg("set_event_par(): velocity of argument 3 is out of range");
                     return successResult();
                 }
-                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime)
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
                     pNote->cause.Param.Note.Velocity = value;
-                else
+                    m_vm->m_event->cause.Param.Note.Velocity = value;
+                } else {
                     wrnMsg("set_event_par(): velocity can only be changed when note is new");
+                }
                 return successResult();
             case EVENT_PAR_VOLUME:
                 wrnMsg("set_event_par(): changing volume by this function is currently not supported, use change_vol() instead");
@@ -1591,6 +1595,86 @@ namespace LinuxSampler {
         }
 
         wrnMsg("set_event_par(): argument 2 is an invalid event parameter");
+        return successResult();
+    }
+
+    // change_note() function
+
+    InstrumentScriptVMFunction_change_note::InstrumentScriptVMFunction_change_note(InstrumentScriptVM* parent)
+    : m_vm(parent)
+    {
+    }
+
+    VMFnResult* InstrumentScriptVMFunction_change_note::exec(VMFnArgs* args) {
+        AbstractEngineChannel* pEngineChannel =
+            static_cast<AbstractEngineChannel*>(m_vm->m_event->cause.pEngineChannel);
+
+        const ScriptID id = args->arg(0)->asInt()->evalInt();
+        if (!id) {
+            wrnMsg("change_note(): note ID for argument 1 may not be zero");
+            return successResult();
+        }
+        if (!id.isNoteID()) {
+            wrnMsg("change_note(): argument 1 is not a note ID");
+            return successResult();
+        }
+
+        NoteBase* pNote = pEngineChannel->pEngine->NoteByID( id.noteID() );
+        if (!pNote) return successResult();
+
+        const int value = args->arg(1)->asInt()->evalInt();
+        if (value < 0 || value > 127) {
+            wrnMsg("change_note(): note number of argument 2 is out of range");
+            return successResult();
+        }
+
+        if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
+            pNote->cause.Param.Note.Key = value;
+            m_vm->m_event->cause.Param.Note.Key = value;
+        } else {
+            wrnMsg("change_note(): note number can only be changed when note is new");
+        }
+
+        return successResult();
+    }
+
+    // change_velo() function
+
+    InstrumentScriptVMFunction_change_velo::InstrumentScriptVMFunction_change_velo(InstrumentScriptVM* parent)
+    : m_vm(parent)
+    {
+    }
+
+    VMFnResult* InstrumentScriptVMFunction_change_velo::exec(VMFnArgs* args) {
+        AbstractEngineChannel* pEngineChannel =
+            static_cast<AbstractEngineChannel*>(m_vm->m_event->cause.pEngineChannel);
+
+        const ScriptID id = args->arg(0)->asInt()->evalInt();
+        if (!id) {
+            wrnMsg("change_velo(): note ID for argument 1 may not be zero");
+            return successResult();
+        }
+        if (!id.isNoteID()) {
+            wrnMsg("change_velo(): argument 1 is not a note ID");
+            return successResult();
+        }
+
+        NoteBase* pNote = pEngineChannel->pEngine->NoteByID( id.noteID() );
+        if (!pNote) return successResult();
+
+        const int value = args->arg(1)->asInt()->evalInt();
+        if (value < 0 || value > 127) {
+            wrnMsg("change_velo(): velocity of argument 2 is out of range");
+            return successResult();
+        }
+
+        if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
+            pNote->cause.Param.Note.Velocity = value;
+            m_vm->m_event->cause.Param.Note.Velocity = value;
+        } else {
+            wrnMsg("change_velo(): velocity can only be changed when note is new");
+        }
+
         return successResult();
     }
 

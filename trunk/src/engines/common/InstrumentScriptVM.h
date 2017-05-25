@@ -293,6 +293,8 @@ namespace LinuxSampler {
         InstrumentScriptVMFunction_change_amp_lfo_freq m_fnChangeAmpLFOFreq;
         InstrumentScriptVMFunction_change_pitch_lfo_depth m_fnChangePitchLFODepth;
         InstrumentScriptVMFunction_change_pitch_lfo_freq m_fnChangePitchLFOFreq;
+        InstrumentScriptVMFunction_change_note m_fnChangeNote;
+        InstrumentScriptVMFunction_change_velo m_fnChangeVelo;
         InstrumentScriptVMFunction_event_status m_fnEventStatus;
         InstrumentScriptVMFunction_wait m_fnWait2;
         InstrumentScriptVMFunction_stop_wait m_fnStopWait;
@@ -331,6 +333,8 @@ namespace LinuxSampler {
         friend class InstrumentScriptVMFunction_fade_out;
         friend class InstrumentScriptVMFunction_get_event_par;
         friend class InstrumentScriptVMFunction_set_event_par;
+        friend class InstrumentScriptVMFunction_change_note;
+        friend class InstrumentScriptVMFunction_change_velo;
         friend class InstrumentScriptVMFunction_event_status;
         friend class InstrumentScriptVMFunction_wait;
         friend class InstrumentScriptVMFunction_stop_wait;
