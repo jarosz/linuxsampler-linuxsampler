@@ -163,6 +163,8 @@ Version SVN trunk (?)
       of its possible parameter selections.
     - Fixed a bunch of scheduler time related bugs.
     - Fixed polyphonic variables not being reset to zero after usage.
+    - Built-in "ignore_event()" function: argument is now optional, like with
+      built-in function "ignore_controller()".
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

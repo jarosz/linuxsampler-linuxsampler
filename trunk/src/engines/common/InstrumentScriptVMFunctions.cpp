@@ -136,9 +136,9 @@ namespace LinuxSampler {
         AbstractEngineChannel* pEngineChannel =
                 static_cast<AbstractEngineChannel*>(m_vm->m_event->cause.pEngineChannel);
 
-        if (args->arg(0)->exprType() == INT_EXPR) {
-            const ScriptID id = args->arg(0)->asInt()->evalInt();
-            if (!id) {
+        if (args->argsCount() == 0 || args->arg(0)->exprType() == INT_EXPR) {
+            const ScriptID id = (args->argsCount() >= 1) ? args->arg(0)->asInt()->evalInt() : m_vm->m_event->id;
+            if (!id && args->argsCount() >= 1) {
                 wrnMsg("ignore_event(): event ID argument may not be zero");
                 // not errorResult(), because that would abort the script, not intentional in this case
                 return successResult();

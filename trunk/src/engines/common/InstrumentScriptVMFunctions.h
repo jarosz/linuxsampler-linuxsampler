@@ -46,7 +46,7 @@ namespace LinuxSampler {
     class InstrumentScriptVMFunction_ignore_event : public VMEmptyResultFunction {
     public:
         InstrumentScriptVMFunction_ignore_event(InstrumentScriptVM* parent);
-        int minRequiredArgs() const { return 1; }
+        int minRequiredArgs() const { return 0; }
         int maxAllowedArgs() const { return 1; }
         bool acceptsArgType(int iArg, ExprType_t type) const;
         ExprType_t argType(int iArg) const { return INT_EXPR; }
