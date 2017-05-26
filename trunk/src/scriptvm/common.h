@@ -861,6 +861,15 @@ namespace LinuxSampler {
          * the release handler, but only for the same specific note!
          */
         virtual void resetPolyphonicData() = 0;
+
+        /**
+         * Returns amount of virtual machine instructions which have been
+         * performed the last time when this execution context was executing a
+         * script. So in case you need the overall amount of instructions
+         * instead, then you need to add them by yourself after each
+         * ScriptVM::exec() call.
+         */
+        virtual size_t instructionsPerformed() const = 0;
     };
 
     /** @brief Script callback for a certain event.

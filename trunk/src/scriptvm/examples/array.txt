@@ -17,11 +17,11 @@ on init
     $i := $i + 1
   end while
 
-  %a[0] := 2
-  %a[1] := 3
-  %a[2] := 5
+  %a[0] := 5
+  %a[1] := 11
+  %a[2] := 2
   %a[3] := 7
-  %a[4] := 11
+  %a[4] := 3
 
   message("")
   message("New values of array:")
@@ -32,4 +32,15 @@ on init
     $i := $i + 1
   end while
 
-end on 
+  sort(%a)
+
+  message("")
+  message("Sorted values of array:")
+
+  $i := 0
+  while ($i < $SIZE)
+    message("array[" & $i & "] = " & %a[$i])
+    $i := $i + 1
+  end while
+
+end on

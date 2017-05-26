@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 Christian Schoenebeck
+ * Copyright (c) 2014-2017 Christian Schoenebeck
  *
  * http://www.linuxsampler.org
  *
@@ -274,6 +274,43 @@ public:
     int maxAllowedArgs() const { return 2; }
     bool acceptsArgType(int iArg, ExprType_t type) const { return type == INT_EXPR; }
     ExprType_t argType(int iArg) const { return INT_EXPR; }
+    VMFnResult* exec(VMFnArgs* args);
+};
+
+/**
+ * Implements the built-in array_equal() script function.
+ */
+class CoreVMFunction_array_equal : public VMIntResultFunction {
+public:
+    int minRequiredArgs() const { return 2; }
+    int maxAllowedArgs() const { return 2; }
+    bool acceptsArgType(int iArg, ExprType_t type) const { return type == INT_ARR_EXPR; }
+    ExprType_t argType(int iArg) const { return INT_ARR_EXPR; }
+    VMFnResult* exec(VMFnArgs* args);
+};
+
+/**
+ * Implements the built-in search() script function.
+ */
+class CoreVMFunction_search : public VMIntResultFunction {
+public:
+    int minRequiredArgs() const { return 2; }
+    int maxAllowedArgs() const { return 2; }
+    bool acceptsArgType(int iArg, ExprType_t type) const;
+    ExprType_t argType(int iArg) const;
+    VMFnResult* exec(VMFnArgs* args);
+};
+
+/**
+ * Implements the built-in sort() script function.
+ */
+class CoreVMFunction_sort : public VMEmptyResultFunction {
+public:
+    int minRequiredArgs() const { return 1; }
+    int maxAllowedArgs() const { return 2; }
+    bool acceptsArgType(int iArg, ExprType_t type) const;
+    ExprType_t argType(int iArg) const;
+    bool modifiesArg(int iArg) const { return iArg == 0; }
     VMFnResult* exec(VMFnArgs* args);
 };
 

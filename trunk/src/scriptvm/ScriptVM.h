@@ -277,6 +277,9 @@ namespace LinuxSampler {
         class CoreVMFunction_sh_right* m_fnShRight;
         class CoreVMFunction_min* m_fnMin;
         class CoreVMFunction_max* m_fnMax;
+        class CoreVMFunction_array_equal* m_fnArrayEqual;
+        class CoreVMFunction_search* m_fnSearch;
+        class CoreVMFunction_sort* m_fnSort;
         class CoreVMDynVar_NKSP_REAL_TIMER* m_varRealTimer;
         class CoreVMDynVar_NKSP_PERF_TIMER* m_varPerfTimer;
     };

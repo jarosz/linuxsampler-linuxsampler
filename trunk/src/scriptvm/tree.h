@@ -680,9 +680,11 @@ public:
     ArrayList<StackFrame> stack;
     int stackFrame;
     int suspendMicroseconds;
+    size_t instructionsCount;
 
     ExecContext() :
-        status(VM_EXEC_NOT_RUNNING), stackFrame(-1), suspendMicroseconds(0) {}
+        status(VM_EXEC_NOT_RUNNING), stackFrame(-1), suspendMicroseconds(0),
+        instructionsCount(0) {}
 
     virtual ~ExecContext() {}
 
@@ -714,6 +716,10 @@ public:
     void resetPolyphonicData() OVERRIDE {
         if (polyphonicIntMemory.empty()) return;
         memset(&polyphonicIntMemory[0], 0, polyphonicIntMemory.size() * sizeof(int));
+    }
+
+    size_t instructionsPerformed() const OVERRIDE {
+        return instructionsCount;
     }
 };
 

@@ -1304,9 +1304,20 @@ namespace LinuxSampler {
                             itScriptEvent->ignoreAllWaitCalls = false;
                             itScriptEvent->handlerType = VM_EVENT_HANDLER_INIT;
 
-                            /*VMExecStatus_t res = */ pScriptVM->exec(
-                                pEngineChannel->pScript->parserContext, &*itScriptEvent
-                            );
+                            VMExecStatus_t res;
+                            size_t instructionsCount = 0;
+                            const size_t maxInstructions = 200000; // aiming approx. 1 second max. (based on very roughly 5us / instruction)
+                            bool bWarningShown = false;
+                            do {
+                                res = pScriptVM->exec(
+                                    pEngineChannel->pScript->parserContext, &*itScriptEvent
+                                );
+                                instructionsCount += itScriptEvent->execCtx->instructionsPerformed();
+                                if (instructionsCount > maxInstructions && !bWarningShown) {
+                                    bWarningShown = true;
+                                    dmsg(0,("[ScriptVM] WARNING: \"init\" event handler of instrument script executing for long time!\n"));
+                                }
+                            } while (res & VM_EXEC_SUSPENDED && !(res & VM_EXEC_ERROR));
 
                             pEngineChannel->pScript->pEvents->free(itScriptEvent);
                         }

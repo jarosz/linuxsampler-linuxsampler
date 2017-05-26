@@ -147,6 +147,9 @@ namespace LinuxSampler {
         m_fnShRight = new CoreVMFunction_sh_right;
         m_fnMin = new CoreVMFunction_min;
         m_fnMax = new CoreVMFunction_max;
+        m_fnArrayEqual = new CoreVMFunction_array_equal;
+        m_fnSearch = new CoreVMFunction_search;
+        m_fnSort = new CoreVMFunction_sort;
     }
 
     ScriptVM::~ScriptVM() {
@@ -163,6 +166,9 @@ namespace LinuxSampler {
         delete m_fnShRight;
         delete m_fnMin;
         delete m_fnMax;
+        delete m_fnArrayEqual;
+        delete m_fnSearch;
+        delete m_fnSort;
         delete m_varRealTimer;
         delete m_varPerfTimer;
     }
@@ -269,6 +275,9 @@ namespace LinuxSampler {
         else if (name == "sh_right") return m_fnShRight;
         else if (name == "min") return m_fnMin;
         else if (name == "max") return m_fnMax;
+        else if (name == "array_equal") return m_fnArrayEqual;
+        else if (name == "search") return m_fnSearch;
+        else if (name == "sort") return m_fnSort;
         return NULL;
     }
 
@@ -344,6 +353,7 @@ namespace LinuxSampler {
         m_parserContext->execContext = ctx;
 
         ctx->status = VM_EXEC_RUNNING;
+        ctx->instructionsCount = 0;
         StmtFlags_t flags = STMT_SUCCESS;
         int instructionsCounter = 0;
 
@@ -451,6 +461,8 @@ namespace LinuxSampler {
                 ctx->status = VM_EXEC_ERROR;
             ctx->reset();
         }
+
+        ctx->instructionsCount = instructionsCounter;
 
         m_eventHandler = NULL;
         m_parserContext->execContext = NULL;
