@@ -291,7 +291,7 @@ struct ArrElemPOD {
     int m_index;
 };
 
-static inline void swap(class ArrElemRef& a, class ArrElemRef& b);
+static inline void swap(class ArrElemRef a, class ArrElemRef b);
 
 class ArrElemRef : protected ArrElemPOD {
 public:
@@ -368,7 +368,7 @@ protected:
         m_array->assignIntElement(m_index, value);
     }
 
-    friend void swap(class ArrElemRef& a, class ArrElemRef& b);
+    friend void swap(class ArrElemRef a, class ArrElemRef b);
 };
 
 class ArrElemPtr : protected ArrElemPOD {
@@ -386,7 +386,7 @@ public:
     }
 };
 
-static inline void swap(ArrElemRef& a, ArrElemRef& b) {
+static inline void swap(ArrElemRef a, ArrElemRef b) {
     int valueA = a.getValue();
     int valueB = b.getValue();
     a.setValue(valueB);
