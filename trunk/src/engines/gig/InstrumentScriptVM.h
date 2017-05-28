@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Christian Schoenebeck
+ * Copyright (c) 2014 - 2017 Christian Schoenebeck
  *
  * http://www.linuxsampler.org
  *
@@ -32,8 +32,10 @@ namespace LinuxSampler { namespace gig {
         std::map<String,int> builtInConstIntVariables() OVERRIDE;
     protected:
         InstrumentScriptVMFunction_gig_set_dim_zone   m_fnGigSetDimZone;
+        InstrumentScriptVMFunction_same_region        m_fnSameRegion;
 
         friend class InstrumentScriptVMFunction_gig_set_dim_zone;
+        friend class InstrumentScriptVMFunction_same_region;
     };
 
 }} // namespace LinuxSampler::gig

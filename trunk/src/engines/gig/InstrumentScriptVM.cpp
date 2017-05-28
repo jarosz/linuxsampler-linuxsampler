@@ -14,7 +14,8 @@
 namespace LinuxSampler { namespace gig {
 
     InstrumentScriptVM::InstrumentScriptVM() :
-        LinuxSampler::InstrumentScriptVM(), m_fnGigSetDimZone(this)
+        LinuxSampler::InstrumentScriptVM(), m_fnGigSetDimZone(this),
+        m_fnSameRegion(this)
     {
     }
 
@@ -64,6 +65,7 @@ namespace LinuxSampler { namespace gig {
     VMFunction* InstrumentScriptVM::functionByName(const String& name) {
         // built-in script functions of this class
         if (name == "gig_set_dim_zone") return &m_fnGigSetDimZone;
+        if (name == "same_region") return &m_fnSameRegion;
 
         // built-in script functions of derived VM class
         return ::LinuxSampler::InstrumentScriptVM::functionByName(name);

@@ -178,6 +178,8 @@ Version SVN trunk (?)
      - Implemented built-in script function "search()".
      - Implemented built-in script function "sort()".
      - NKSP Fix: Never suspend "init" event handlers.
+     - Implemented built-in script function "same_region()" (currently only
+       available for gig format engine).
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

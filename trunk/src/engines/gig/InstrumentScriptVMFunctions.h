@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Christian Schoenebeck
+ * Copyright (c) 2014 - 2017 Christian Schoenebeck
  *
  * http://www.linuxsampler.org
  *
@@ -27,6 +27,23 @@ namespace LinuxSampler { namespace gig {
         int minRequiredArgs() const { return 3; }
         int maxAllowedArgs() const { return 3; }
         bool acceptsArgType(int iArg, ExprType_t type) const;
+        ExprType_t argType(int iArg) const { return INT_EXPR; }
+        VMFnResult* exec(VMFnArgs* args);
+    protected:
+        InstrumentScriptVM* m_vm;
+    };
+
+    /**
+     * Built-in script function:
+     * 
+     *     same_region(key1, key2)
+     */
+    class InstrumentScriptVMFunction_same_region : public VMIntResultFunction {
+    public:
+        InstrumentScriptVMFunction_same_region(InstrumentScriptVM* parent);
+        int minRequiredArgs() const { return 2; }
+        int maxAllowedArgs() const { return 2; }
+        bool acceptsArgType(int iArg, ExprType_t type) const { return INT_EXPR; }
         ExprType_t argType(int iArg) const { return INT_EXPR; }
         VMFnResult* exec(VMFnArgs* args);
     protected:

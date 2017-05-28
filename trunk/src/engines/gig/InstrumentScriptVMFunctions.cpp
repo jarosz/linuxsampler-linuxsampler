@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 Christian Schoenebeck
+ * Copyright (c) 2014-2017 Christian Schoenebeck
  *
  * http://www.linuxsampler.org
  *
@@ -115,6 +115,47 @@ namespace LinuxSampler { namespace gig {
         }
 
         return successResult();
+    }
+
+  /////////////////////////////////////////////////////////////////////////
+  // Function:
+  //     same_region(key1, key2)
+
+    InstrumentScriptVMFunction_same_region::InstrumentScriptVMFunction_same_region(InstrumentScriptVM* parent)
+    : m_vm(parent)
+    {
+    }
+
+    VMFnResult* InstrumentScriptVMFunction_same_region::exec(VMFnArgs* args) {
+        EngineChannel* pEngineChannel =
+            static_cast<EngineChannel*>(m_vm->m_event->cause.pEngineChannel);
+
+        int key1 = args->arg(0)->asInt()->evalInt();
+        int key2 = args->arg(1)->asInt()->evalInt();
+
+        if (key1 < 0 || key1 > 127) {
+            wrnMsg("same_region(): key number for argument 1 out of range");
+            return successResult(-1);
+        }
+        if (key2 < 0 || key2 > 127) {
+            wrnMsg("same_region(): key number for argument 2 out of range");
+            return successResult(-1);
+        }
+
+        ::gig::Region* pRgn1 = pEngineChannel->pInstrument->GetRegion(key1);
+        ::gig::Region* pRgn2 = pEngineChannel->pInstrument->GetRegion(key2);
+
+        if (!pRgn1 && !pRgn2)
+            return successResult(5);
+        if (pRgn1 == pRgn2)
+            return successResult(1);
+        if (pRgn1 && !pRgn2)
+            return successResult(3);
+        if (!pRgn1 && pRgn2)
+            return successResult(4);
+        if (pRgn1->KeyRange.overlaps(pRgn2->KeyRange))
+            return successResult(2);
+        return successResult(0);
     }
 
 }} // namespace LinuxSampler::gig
