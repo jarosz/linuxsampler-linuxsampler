@@ -172,8 +172,10 @@ namespace LinuxSampler {
             enum synth_param_t {
                 synth_param_volume,
                 synth_param_volume_time,
+                synth_param_volume_curve,
                 synth_param_pitch,
                 synth_param_pitch_time,
+                synth_param_pitch_curve,
                 synth_param_pan,
                 synth_param_cutoff,
                 synth_param_resonance,

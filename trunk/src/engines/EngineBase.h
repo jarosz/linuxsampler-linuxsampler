@@ -2005,6 +2005,10 @@ namespace LinuxSampler {
                     case Event::synth_param_volume_time:
                         pNote->Override.VolumeTime = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
                         break;
+                    case Event::synth_param_volume_curve:
+                        itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
+                        pNote->Override.VolumeCurve = (fade_curve_t) itEvent->Param.NoteSynthParam.AbsValue;
+                        break;
                     case Event::synth_param_pitch:
                         if (relative)
                             pNote->Override.Pitch *= itEvent->Param.NoteSynthParam.Delta;
@@ -2014,6 +2018,10 @@ namespace LinuxSampler {
                         break;
                     case Event::synth_param_pitch_time:
                         pNote->Override.PitchTime = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
+                        break;
+                    case Event::synth_param_pitch_curve:
+                        itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
+                        pNote->Override.PitchCurve = (fade_curve_t) itEvent->Param.NoteSynthParam.AbsValue;
                         break;
                     case Event::synth_param_pan:
                         if (relative) {

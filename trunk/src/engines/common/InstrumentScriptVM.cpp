@@ -13,6 +13,7 @@
 #include "../../common/global_private.h"
 #include "AbstractInstrumentManager.h"
 #include "MidiKeyboardManager.h"
+#include "Fade.h"
 
 namespace LinuxSampler {
 
@@ -239,6 +240,7 @@ namespace LinuxSampler {
         m_fnChangeNote(this), m_fnChangeVelo(this),
         m_fnEventStatus(this), m_fnWait2(this), m_fnStopWait(this),
         m_fnFadeIn(this), m_fnFadeOut(this),
+        m_fnChangeVolCurve(this), m_fnChangeTuneCurve(this),
         m_fnGetEventPar(this), m_fnSetEventPar(this),
         m_varEngineUptime(this), m_varCallbackID(this), m_varAllEvents(this)
     {
@@ -344,6 +346,8 @@ namespace LinuxSampler {
         m["$EVENT_PAR_1"] = EVENT_PAR_1;
         m["$EVENT_PAR_2"] = EVENT_PAR_2;
         m["$EVENT_PAR_3"] = EVENT_PAR_3;
+        m["$NKSP_LINEAR"] = FADE_CURVE_LINEAR;
+        m["$NKSP_EASE_IN_EASE_OUT"] = FADE_CURVE_EASE_IN_EASE_OUT;
 
         return m;
     }
@@ -387,6 +391,8 @@ namespace LinuxSampler {
         else if (name == "change_pitch_lfo_freq") return &m_fnChangePitchLFOFreq;
         else if (name == "fade_in") return &m_fnFadeIn;
         else if (name == "fade_out") return &m_fnFadeOut;
+        else if (name == "change_vol_curve") return &m_fnChangeVolCurve;
+        else if (name == "change_tune_curve") return &m_fnChangeTuneCurve;
         else if (name == "get_event_par") return &m_fnGetEventPar;
         else if (name == "set_event_par") return &m_fnSetEventPar;
         else if (name == "event_status") return &m_fnEventStatus;

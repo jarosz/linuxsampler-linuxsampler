@@ -12,6 +12,7 @@
 
 #include "../../common/Pool.h"
 #include "Event.h"
+#include "Fade.h"
 
 #define DEFAULT_NOTE_VOLUME_TIME_S  0.013f /* 13ms */
 #define DEFAULT_NOTE_PITCH_TIME_S   0.013f /* 13ms */
@@ -49,6 +50,8 @@ namespace LinuxSampler {
             float AmpLFOFreq;   ///< between 0.0 and 1.0
             float PitchLFODepth; ///< between 0.0 and 1.0
             float PitchLFOFreq; ///< between 0.0 and 1.0
+            fade_curve_t VolumeCurve;
+            fade_curve_t PitchCurve;
         } Override;
         /// Sampler format specific informations and variables.
         union _Format {
@@ -76,6 +79,8 @@ namespace LinuxSampler {
             Override.AmpLFOFreq    = 1.f;
             Override.PitchLFODepth = 1.f;
             Override.PitchLFOFreq  = 1.f;
+            Override.VolumeCurve = DEFAULT_FADE_CURVE;
+            Override.PitchCurve  = DEFAULT_FADE_CURVE;
 
             Format = _Format();
 
@@ -151,6 +156,8 @@ namespace LinuxSampler {
             Override.AmpLFOFreq    = 1.f;
             Override.PitchLFODepth = 1.f;
             Override.PitchLFOFreq  = 1.f;
+            Override.VolumeCurve = DEFAULT_FADE_CURVE;
+            Override.PitchCurve  = DEFAULT_FADE_CURVE;
             Format = _Format();
             userPar[0] = 0;
             userPar[1] = 0;

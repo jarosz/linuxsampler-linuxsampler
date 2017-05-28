@@ -5,7 +5,7 @@
  *   Copyright (C) 2003,2004 by Benno Senoner and Christian Schoenebeck    *
  *   Copyright (C) 2005-2008 Christian Schoenebeck                         *
  *   Copyright (C) 2009-2012 Christian Schoenebeck and Grigor Iliev        *
- *   Copyright (C) 2013-2016 Christian Schoenebeck and Andreas Persson     *
+ *   Copyright (C) 2013-2017 Christian Schoenebeck and Andreas Persson     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -151,6 +151,7 @@ namespace LinuxSampler {
         CrossfadeSmoother.trigger(crossfadeVolume, subfragmentRate);
 
         VolumeSmoother.trigger(pEngineChannel->MidiVolume, subfragmentRate);
+        NoteVolume.setCurveOnly(pNote ? pNote->Override.VolumeCurve : DEFAULT_FADE_CURVE);
         NoteVolume.setCurrentValue(pNote ? pNote->Override.Volume : 1.f);
         NoteVolume.setDefaultDuration(pNote ? pNote->Override.VolumeTime : DEFAULT_NOTE_VOLUME_TIME_S);
 
@@ -192,6 +193,7 @@ namespace LinuxSampler {
         }
 
         Pitch = CalculatePitchInfo(PitchBend);
+        NotePitch.setCurveOnly(pNote ? pNote->Override.PitchCurve : DEFAULT_FADE_CURVE);
         NotePitch.setCurrentValue(pNote ? pNote->Override.Pitch : 1.0f);
         NotePitch.setDefaultDuration(pNote ? pNote->Override.PitchTime : DEFAULT_NOTE_PITCH_TIME_S);
         NoteCutoff = (pNote) ? pNote->Override.Cutoff : 1.0f;
@@ -748,11 +750,17 @@ namespace LinuxSampler {
                     case Event::synth_param_volume_time:
                         NoteVolume.setDefaultDuration(itEvent->Param.NoteSynthParam.AbsValue);
                         break;
+                    case Event::synth_param_volume_curve:
+                        NoteVolume.setCurve((fade_curve_t)itEvent->Param.NoteSynthParam.AbsValue, GetEngine()->SampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE);
+                        break;
                     case Event::synth_param_pitch:
                         NotePitch.fadeTo(itEvent->Param.NoteSynthParam.AbsValue, GetEngine()->SampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE);
                         break;
                     case Event::synth_param_pitch_time:
                         NotePitch.setDefaultDuration(itEvent->Param.NoteSynthParam.AbsValue);
+                        break;
+                    case Event::synth_param_pitch_curve:
+                        NotePitch.setCurve((fade_curve_t)itEvent->Param.NoteSynthParam.AbsValue, GetEngine()->SampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE);
                         break;
                     case Event::synth_param_pan:
                         NotePanLeft  = AbstractEngine::PanCurveValueNorm(itEvent->Param.NoteSynthParam.AbsValue, 0 /*left*/);

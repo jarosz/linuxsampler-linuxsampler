@@ -180,6 +180,10 @@ Version SVN trunk (?)
      - NKSP Fix: Never suspend "init" event handlers.
      - Implemented built-in script function "same_region()" (currently only
        available for gig format engine).
+     - Added built-in script constant "$NKSP_LINEAR".
+     - Added built-in script constant "$NKSP_EASE_IN_EASE_OUT".
+     - Implemented built-in script function "change_vol_curve()".
+     - Implemented built-in script function "change_tune_curve()".
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

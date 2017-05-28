@@ -279,6 +279,32 @@ namespace LinuxSampler {
         VMFnResult* exec(VMFnArgs* args);
     };
 
+    class VMChangeFadeCurveFunction : public VMEmptyResultFunction {
+    public:
+        VMChangeFadeCurveFunction(InstrumentScriptVM* parent) : m_vm(parent) {}
+        int minRequiredArgs() const { return 2; }
+        int maxAllowedArgs() const { return 2; }
+        bool acceptsArgType(int iArg, ExprType_t type) const;
+        ExprType_t argType(int iArg) const { return INT_EXPR; }
+
+        template<fade_curve_t NoteBase::_Override::*T_noteParam, int T_synthParam>
+        VMFnResult* execTemplate(VMFnArgs* args, const char* functionName);
+    protected:
+        InstrumentScriptVM* m_vm;
+    };
+
+    class InstrumentScriptVMFunction_change_vol_curve : public VMChangeFadeCurveFunction {
+    public:
+        InstrumentScriptVMFunction_change_vol_curve(InstrumentScriptVM* parent) : VMChangeFadeCurveFunction(parent) {}
+        VMFnResult* exec(VMFnArgs* args);
+    };
+
+    class InstrumentScriptVMFunction_change_tune_curve : public VMChangeFadeCurveFunction {
+    public:
+        InstrumentScriptVMFunction_change_tune_curve(InstrumentScriptVM* parent) : VMChangeFadeCurveFunction(parent) {}
+        VMFnResult* exec(VMFnArgs* args);
+    };
+
     class InstrumentScriptVMFunction_fade_in : public VMEmptyResultFunction {
     public:
         InstrumentScriptVMFunction_fade_in(InstrumentScriptVM* parent);

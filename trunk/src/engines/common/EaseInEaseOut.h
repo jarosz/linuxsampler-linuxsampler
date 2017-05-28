@@ -87,7 +87,7 @@ public:
         return value;
     }
 
-private:
+protected:
     int64_t steps;
     float value;
     float endValue;

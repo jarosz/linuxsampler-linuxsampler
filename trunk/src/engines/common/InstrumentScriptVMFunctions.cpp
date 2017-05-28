@@ -1071,6 +1071,8 @@ namespace LinuxSampler {
         return successResult();
     }
 
+    // template for change_*() functions
+
     bool VMChangeSynthParamFunction::acceptsArgType(int iArg, ExprType_t type) const {
         if (iArg == 0)
             return type == INT_EXPR || type == INT_ARR_EXPR;
@@ -1215,6 +1217,107 @@ namespace LinuxSampler {
                     &NoteBase::_Override::PitchTime,
                     Event::synth_param_pitch_time,
                     false, NO_LIMIT, 0>( args, "change_tune_time" );
+    }
+
+    // template for change_*_curve() functions
+
+    bool VMChangeFadeCurveFunction::acceptsArgType(int iArg, ExprType_t type) const {
+        if (iArg == 0)
+            return type == INT_EXPR || type == INT_ARR_EXPR;
+        else
+            return type == INT_EXPR;
+    }
+
+    template<fade_curve_t NoteBase::_Override::*T_noteParam, int T_synthParam>
+    VMFnResult* VMChangeFadeCurveFunction::execTemplate(VMFnArgs* args, const char* functionName) {
+        int value = args->arg(1)->asInt()->evalInt();
+        switch (value) {
+            case FADE_CURVE_LINEAR:
+            case FADE_CURVE_EASE_IN_EASE_OUT:
+                break;
+            default:
+                wrnMsg(String(functionName) + "(): invalid curve type passed as argument 2");
+                return successResult();
+        }
+
+        AbstractEngineChannel* pEngineChannel =
+            static_cast<AbstractEngineChannel*>(m_vm->m_event->cause.pEngineChannel);
+
+        if (args->arg(0)->exprType() == INT_EXPR) {
+            const ScriptID id = args->arg(0)->asInt()->evalInt();
+            if (!id) {
+                wrnMsg(String(functionName) + "(): note ID for argument 1 may not be zero");
+                return successResult();
+            }
+            if (!id.isNoteID()) {
+                wrnMsg(String(functionName) + "(): argument 1 is not a note ID");
+                return successResult();
+            }
+
+            NoteBase* pNote = pEngineChannel->pEngine->NoteByID( id.noteID() );
+            if (!pNote) return successResult();
+
+            // if this change_*_curve() script function was called immediately after
+            // note was triggered then immediately apply the synth parameter
+            // change to Note object
+            if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
+                pNote->Override.*T_noteParam = (fade_curve_t) value;
+            } else { // otherwise schedule this synth parameter change ...
+                Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
+                e.Init(); // clear IDs
+                e.Type = Event::type_note_synth_param;
+                e.Param.NoteSynthParam.NoteID   = id.noteID();
+                e.Param.NoteSynthParam.Type     = (Event::synth_param_t) T_synthParam;
+                e.Param.NoteSynthParam.Delta    = value;
+                e.Param.NoteSynthParam.Relative = false;
+
+                pEngineChannel->ScheduleEventMicroSec(&e, 0);
+            }
+        } else if (args->arg(0)->exprType() == INT_ARR_EXPR) {
+            VMIntArrayExpr* ids = args->arg(0)->asIntArray();
+            for (int i = 0; i < ids->arraySize(); ++i) {
+                const ScriptID id = ids->evalIntElement(i);
+                if (!id || !id.isNoteID()) continue;
+
+                NoteBase* pNote = pEngineChannel->pEngine->NoteByID( id.noteID() );
+                if (!pNote) continue;
+
+                // if this change_*_curve() script function was called immediately after
+                // note was triggered then immediately apply the synth parameter
+                // change to Note object
+                if (m_vm->m_event->scheduleTime == pNote->triggerSchedTime) {
+                    pNote->Override.*T_noteParam = (fade_curve_t) value;
+                } else { // otherwise schedule this synth parameter change ...
+                    Event e = m_vm->m_event->cause; // copy to get fragment time for "now"
+                    e.Init(); // clear IDs
+                    e.Type = Event::type_note_synth_param;
+                    e.Param.NoteSynthParam.NoteID   = id.noteID();
+                    e.Param.NoteSynthParam.Type     = (Event::synth_param_t) T_synthParam;
+                    e.Param.NoteSynthParam.Delta    = value;
+                    e.Param.NoteSynthParam.Relative = false;
+
+                    pEngineChannel->ScheduleEventMicroSec(&e, 0);
+                }
+            }
+        }
+
+        return successResult();
+    }
+
+    // change_vol_curve() function
+
+    VMFnResult* InstrumentScriptVMFunction_change_vol_curve::exec(VMFnArgs* args) {
+        return VMChangeFadeCurveFunction::execTemplate<
+                    &NoteBase::_Override::VolumeCurve,
+                    Event::synth_param_volume_curve>( args, "change_vol_curve" );
+    }
+
+    // change_tune_curve() function
+
+    VMFnResult* InstrumentScriptVMFunction_change_tune_curve::exec(VMFnArgs* args) {
+        return VMChangeFadeCurveFunction::execTemplate<
+                    &NoteBase::_Override::PitchCurve,
+                    Event::synth_param_pitch_curve>( args, "change_tune_curve" );
     }
 
     // fade_in() function
