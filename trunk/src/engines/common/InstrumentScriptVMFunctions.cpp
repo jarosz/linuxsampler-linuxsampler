@@ -23,7 +23,6 @@ namespace LinuxSampler {
     VMFnResult* InstrumentScriptVMFunction_play_note::exec(VMFnArgs* args) {
         int note = args->arg(0)->asInt()->evalInt();
         int velocity = (args->argsCount() >= 2) ? args->arg(1)->asInt()->evalInt() : 127;
-        int sampleoffset = (args->argsCount() >= 3) ? args->arg(2)->asInt()->evalInt() : 0;
         int duration = (args->argsCount() >= 4) ? args->arg(3)->asInt()->evalInt() : 0; //TODO: -1 might be a better default value instead of 0
 
         if (note < 0 || note > 127) {
@@ -34,13 +33,6 @@ namespace LinuxSampler {
         if (velocity < 0 || velocity > 127) {
             errMsg("play_note(): argument 2 is an invalid velocity value");
             return errorResult(0);
-        }
-
-        if (sampleoffset < 0) {
-            errMsg("play_note(): argument 3 may not be a negative sample offset");
-            return errorResult(0);
-        } else if (sampleoffset != 0) {
-            wrnMsg("play_note(): argument 3 does not support a sample offset other than 0 yet");
         }
 
         if (duration < -1) {
@@ -66,6 +58,20 @@ namespace LinuxSampler {
         }
 
         const note_id_t id = pEngineChannel->ScheduleNoteMicroSec(&e, 0);
+
+        // if a sample offset is supplied, assign the offset as override
+        // to the previously created Note object
+        if (args->argsCount() >= 3) {
+            int sampleoffset = args->arg(2)->asInt()->evalInt();
+            if (sampleoffset >= 0) {
+                NoteBase* pNote = pEngineChannel->pEngine->NoteByID(id);
+                if (pNote) {
+                    pNote->Override.SampleOffset = sampleoffset;
+                }
+            } else if (sampleoffset < -1) {
+                errMsg("play_note(): sample offset of argument 3 may not be less than -1");
+            }
+        }
 
         // if a duration is supplied (and play-note event was scheduled
         // successfully above), then schedule a subsequent stop-note event

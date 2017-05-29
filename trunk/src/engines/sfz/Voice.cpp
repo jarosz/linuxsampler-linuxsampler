@@ -295,15 +295,14 @@ namespace LinuxSampler { namespace sfz {
             }
         }
     }
-    
+
     void Voice::SetSampleStartOffset() {
-        if (DiskVoice && RgnInfo.SampleStartOffset > pSample->MaxOffset) {
+        AbstractVoice::SetSampleStartOffset();
+
+        if (DiskVoice && Pos > pSample->MaxOffset) {
             // The offset is applied to the RAM buffer
             finalSynthesisParameters.dPos = 0;
             Pos = 0;
-        } else {
-            finalSynthesisParameters.dPos = RgnInfo.SampleStartOffset; // offset where we should start playback of sample
-            Pos = RgnInfo.SampleStartOffset;
         }
     }
 

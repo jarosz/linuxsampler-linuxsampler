@@ -52,6 +52,7 @@ namespace LinuxSampler {
             float PitchLFOFreq; ///< between 0.0 and 1.0
             fade_curve_t VolumeCurve;
             fade_curve_t PitchCurve;
+            int SampleOffset; ///< Where the sample shall start playback in microseconds (otherwise this is -1 for being ignored).
         } Override;
         /// Sampler format specific informations and variables.
         union _Format {
@@ -81,6 +82,7 @@ namespace LinuxSampler {
             Override.PitchLFOFreq  = 1.f;
             Override.VolumeCurve = DEFAULT_FADE_CURVE;
             Override.PitchCurve  = DEFAULT_FADE_CURVE;
+            Override.SampleOffset = -1;
 
             Format = _Format();
 
@@ -158,6 +160,7 @@ namespace LinuxSampler {
             Override.PitchLFOFreq  = 1.f;
             Override.VolumeCurve = DEFAULT_FADE_CURVE;
             Override.PitchCurve  = DEFAULT_FADE_CURVE;
+            Override.SampleOffset = -1;
             Format = _Format();
             userPar[0] = 0;
             userPar[1] = 0;

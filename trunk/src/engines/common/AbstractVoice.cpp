@@ -348,8 +348,19 @@ namespace LinuxSampler {
     }
     
     void AbstractVoice::SetSampleStartOffset() {
-        finalSynthesisParameters.dPos = RgnInfo.SampleStartOffset; // offset where we should start playback of sample (0 - 2000 sample points)
-        Pos = RgnInfo.SampleStartOffset;
+        double pos = RgnInfo.SampleStartOffset; // offset where we should start playback of sample
+
+        // if another sample playback start position was requested by instrument
+        // script (built-in script function play_note())
+        if (pNote && pNote->Override.SampleOffset >= 0) {
+            double overridePos =
+                double(SmplInfo.SampleRate) * double(pNote->Override.SampleOffset) / 1000000.0;
+            if (overridePos < SmplInfo.TotalFrameCount)
+                pos = overridePos;
+        }
+
+        finalSynthesisParameters.dPos = pos;
+        Pos = pos;
     }
 
     /**

@@ -184,6 +184,9 @@ Version SVN trunk (?)
      - Added built-in script constant "$NKSP_EASE_IN_EASE_OUT".
      - Implemented built-in script function "change_vol_curve()".
      - Implemented built-in script function "change_tune_curve()".
+     - built-in "play_note()" function now supports a sample playback start
+       offset with argument 3, where special value -1 means to use the regular
+       sample offset as defined by the instrument file.
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to
