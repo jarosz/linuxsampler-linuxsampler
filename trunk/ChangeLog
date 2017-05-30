@@ -187,6 +187,15 @@ Version SVN trunk (?)
      - built-in "play_note()" function now supports a sample playback start
        offset with argument 3, where special value -1 means to use the regular
        sample offset as defined by the instrument file.
+     - Built-in array variable %KEY_DOWN[] is now a read-only variable.
+     - Built-in variable $EVENT_NOTE is now a read-only variable.
+     - Built-in variable $EVENT_VELOCITY is now a read-only variable.
+     - built-in "play_note()" function now accepts -2 for its fourth argument
+       (note duration) which means the life time of the note shall be sticked
+       to the requested note number of argument 1.
+     - Fix: built-in "play_note()" function now returns 0 as result value if
+       -1 was passed for its fourth argument (note duration) and the respective
+       parent note is already gone.
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to
@@ -671,7 +680,7 @@ Version 2.0.0 (15 July 2015)
       $GIG_DIM_EFFECT3DEPTH, $GIG_DIM_EFFECT4DEPTH, $GIG_DIM_EFFECT5DEPTH.
     - Giga format scripts: Implemented built-in script function
       "gig_set_dim_zone(event_id, dimension, zone)".
-    - Implemented built-in script int array variable $KEY_DOWN.
+    - Implemented built-in script int array variable %KEY_DOWN.
     - Implemented built-in script function "abs()".
     - Implemented built-in script function "random()".
     - Implemented built-in script function "num_elements()".

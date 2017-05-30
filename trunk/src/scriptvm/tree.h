@@ -197,6 +197,7 @@ public:
     BuiltInIntArrayVariable(const String& name, VMInt8Array* array);
     int arraySize() const { return array->size; }
     int evalIntElement(uint i);
+    bool isAssignable() const OVERRIDE { return !array->readonly; }
     void assignIntElement(uint i, int value);
     void dump(int level = 0);
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 Christian Schoenebeck and Andreas Persson
+ * Copyright (c) 2014-2017 Christian Schoenebeck and Andreas Persson
  *
  * http://www.linuxsampler.org
  *
@@ -507,6 +507,10 @@ assignment:
             PARSE_ERR(@1, (String("No variable declared with name '") + name + "'.").c_str());
         else if (var->exprType() != INT_ARR_EXPR)
             PARSE_ERR(@2, (String("Variable '") + name + "' is not an array variable.").c_str());
+        else if (var->isConstExpr())
+            PARSE_ERR(@5, (String("Variable assignment: Cannot modify const array variable '") + name + "'.").c_str());
+        else if (!var->isAssignable())
+            PARSE_ERR(@5, (String("Variable assignment: Array variable '") + name + "' is not assignable.").c_str());
         else if ($3->exprType() != INT_EXPR)
             PARSE_ERR(@3, (String("Array variable '") + name + "' accessed with non integer expression.").c_str());
         else if ($6->exprType() != INT_EXPR)

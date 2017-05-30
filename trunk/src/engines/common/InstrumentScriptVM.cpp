@@ -247,9 +247,10 @@ namespace LinuxSampler {
         m_CC.size = _MEMBER_SIZEOF(AbstractEngineChannel, ControllerTable);
         m_CC_NUM = DECLARE_VMINT(m_event, class ScriptEvent, cause.Param.CC.Controller);
         m_EVENT_ID = DECLARE_VMINT_READONLY(m_event, class ScriptEvent, id);
-        m_EVENT_NOTE = DECLARE_VMINT(m_event, class ScriptEvent, cause.Param.Note.Key);
-        m_EVENT_VELOCITY = DECLARE_VMINT(m_event, class ScriptEvent, cause.Param.Note.Velocity);
+        m_EVENT_NOTE = DECLARE_VMINT_READONLY(m_event, class ScriptEvent, cause.Param.Note.Key);
+        m_EVENT_VELOCITY = DECLARE_VMINT_READONLY(m_event, class ScriptEvent, cause.Param.Note.Velocity);
         m_KEY_DOWN.size = 128;
+        m_KEY_DOWN.readonly = true;
         m_NI_CALLBACK_TYPE = DECLARE_VMINT_READONLY(m_event, class ScriptEvent, handlerType);
         m_NKSP_IGNORE_WAIT = DECLARE_VMINT(m_event, class ScriptEvent, ignoreAllWaitCalls);
     }

@@ -35,8 +35,8 @@ namespace LinuxSampler {
             return errorResult(0);
         }
 
-        if (duration < -1) {
-            errMsg("play_note(): argument 4 must be a duration value of at least -1 or higher");
+        if (duration < -2) {
+            errMsg("play_note(): argument 4 must be a duration value of at least -2 or higher");
             return errorResult(0);
         }
 
@@ -55,6 +55,12 @@ namespace LinuxSampler {
                 return errorResult(0);
             }
             e.Param.Note.ParentNoteID = m_vm->m_event->cause.Param.Note.ID;
+            // check if that requested parent note is actually still alive
+            NoteBase* pParentNote =
+                pEngineChannel->pEngine->NoteByID( e.Param.Note.ParentNoteID );
+            // if parent note is already gone then this new note is not required anymore
+            if (!pParentNote)
+                return successResult(0);
         }
 
         const note_id_t id = pEngineChannel->ScheduleNoteMicroSec(&e, 0);

@@ -644,8 +644,9 @@ namespace LinuxSampler {
     struct VMInt8Array {
         int8_t* data;
         int size;
+        bool readonly; ///< Whether the array data may be modified or just be read.
 
-        VMInt8Array() : data(NULL), size(0) {}
+        VMInt8Array() : data(NULL), size(0), readonly(false) {}
     };
 
     /** @brief Virtual machine script variable.
