@@ -463,8 +463,8 @@ IntArrayVariable::IntArrayVariable(ParserContext* ctx, int size)
     memset(&values[0], 0, size * sizeof(int));
 }
 
-IntArrayVariable::IntArrayVariable(ParserContext* ctx, int size, ArgsRef values)
-    : Variable(ctx, 0, false)
+IntArrayVariable::IntArrayVariable(ParserContext* ctx, int size, ArgsRef values, bool _bConst)
+    : Variable(ctx, 0, _bConst)
 {
     this->values.resize(size);
     for (int i = 0; i < values->argsCount(); ++i) {

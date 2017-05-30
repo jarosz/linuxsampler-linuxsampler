@@ -280,7 +280,7 @@ statement:
                 PARSE_ERR(@4, (String("Array variable '") + name + "' must be declared with positive array size.").c_str());
                 $$ = new FunctionCall("nothing", new Args, NULL); // whatever
             } else if (args->argsCount() > size) {
-                PARSE_ERR(@8, (String("Variable '") + name +
+                PARSE_ERR(@8, (String("Array variable '") + name +
                           "' was declared with size " + ToString(size) +
                           " but " + ToString(args->argsCount()) +
                           " values were assigned." ).c_str());
@@ -301,6 +301,62 @@ statement:
                 }
                 if (argsOK) {
                     context->vartable[name] = new IntArrayVariable(context, size, args);
+                    $$ = new NoOperation;
+                } else
+                    $$ = new FunctionCall("nothing", new Args, NULL); // whatever
+            }
+        }
+    }
+    | DECLARE CONST_ VARIABLE '[' expr ']' ASSIGNMENT '(' args ')'  {
+        const char* name = $3;
+        if (!$5->isConstExpr()) {
+            PARSE_ERR(@5, (String("Array variable '") + name + "' must be declared with constant array size.").c_str());
+            $$ = new FunctionCall("nothing", new Args, NULL); // whatever
+        } else if ($5->exprType() != INT_EXPR) {
+            PARSE_ERR(@5, (String("Size of array variable '") + name + "' declared with non integer expression.").c_str());
+            $$ = new FunctionCall("nothing", new Args, NULL); // whatever
+        } else if (context->variableByName(name)) {
+            PARSE_ERR(@3, (String("Redeclaration of variable '") + name + "'.").c_str());
+            $$ = new FunctionCall("nothing", new Args, NULL); // whatever
+        } else {
+            IntExprRef sizeExpr = $5;
+            ArgsRef args = $9;
+            int size = sizeExpr->evalInt();
+            if (size <= 0) {
+                PARSE_ERR(@5, (String("Array variable '") + name + "' must be declared with positive array size.").c_str());
+                $$ = new FunctionCall("nothing", new Args, NULL); // whatever
+            } else if (args->argsCount() > size) {
+                PARSE_ERR(@9, (String("Array variable '") + name +
+                          "' was declared with size " + ToString(size) +
+                          " but " + ToString(args->argsCount()) +
+                          " values were assigned." ).c_str());
+                $$ = new FunctionCall("nothing", new Args, NULL); // whatever           
+            } else {
+                bool argsOK = true;
+                for (int i = 0; i < args->argsCount(); ++i) {
+                    if (args->arg(i)->exprType() != INT_EXPR) {
+                        PARSE_ERR(
+                            @9,
+                            (String("Array variable '") + name +
+                            "' declared with invalid assignment values. Assigned element " +
+                            ToString(i+1) + " is not an integer expression.").c_str()
+                        );
+                        argsOK = false;
+                        break;
+                    }
+                    if (!args->arg(i)->isConstExpr()) {
+                        PARSE_ERR(
+                            @9,
+                            (String("const array variable '") + name +
+                            "' must be defined with const values. Assigned element " +
+                            ToString(i+1) + " is not a const expression though.").c_str()
+                        );
+                        argsOK = false;
+                        break;
+                    }
+                }
+                if (argsOK) {
+                    context->vartable[name] = new IntArrayVariable(context, size, args, true);
                     $$ = new NoOperation;
                 } else
                     $$ = new FunctionCall("nothing", new Args, NULL); // whatever
@@ -515,6 +571,11 @@ assignment:
             PARSE_ERR(@3, (String("Array variable '") + name + "' accessed with non integer expression.").c_str());
         else if ($6->exprType() != INT_EXPR)
             PARSE_ERR(@5, (String("Value assigned to array variable '") + name + "' must be an integer expression.").c_str());
+        else if ($3->isConstExpr() && $3->asInt()->evalInt() >= ((IntArrayVariableRef)var)->arraySize())
+            PARSE_WRN(@3, (String("Index ") + ToString($3->asInt()->evalInt()) +
+                          " exceeds size of array variable '" + name +
+                          "' which was declared with size " +
+                          ToString(((IntArrayVariableRef)var)->arraySize()) + ".").c_str());
         IntArrayElementRef element = new IntArrayElement(var, $3);
         $$ = new Assignment(element, $6);
     }
@@ -549,6 +610,11 @@ unary_expr:
             PARSE_ERR(@3, (String("Array variable '") + name + "' accessed with non integer expression.").c_str());
             $$ = new IntLiteral(0);
         } else {
+            if ($3->isConstExpr() && $3->asInt()->evalInt() >= ((IntArrayVariableRef)var)->arraySize())
+                PARSE_WRN(@3, (String("Index ") + ToString($3->asInt()->evalInt()) +
+                               " exceeds size of array variable '" + name +
+                               "' which was declared with size " +
+                               ToString(((IntArrayVariableRef)var)->arraySize()) + ".").c_str());
             $$ = new IntArrayElement(var, $3);
         }
     }

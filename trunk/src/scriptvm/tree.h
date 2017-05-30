@@ -176,7 +176,7 @@ class IntArrayVariable : public Variable, virtual public VMIntArrayExpr {
     ArrayList<int> values;
 public:
     IntArrayVariable(ParserContext* ctx, int size);
-    IntArrayVariable(ParserContext* ctx, int size, ArgsRef values);
+    IntArrayVariable(ParserContext* ctx, int size, ArgsRef values, bool _bConst = false);
     void assign(Expression* expr) {} // ignore scalar assignment
     String evalCastToStr() { return ""; } // ignore scalar cast to string
     ExprType_t exprType() const { return INT_ARR_EXPR; }

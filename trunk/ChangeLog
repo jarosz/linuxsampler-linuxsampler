@@ -197,6 +197,9 @@ Version SVN trunk (?)
        -1 was passed for its fourth argument (note duration) and the respective
        parent note is already gone.
     - Implemented built-in script function "change_play_pos()".
+    - NKSP language: Added support for user declared const array variables.
+    - NKSP language: Raise parser warning if array variable is accessed with
+      an index that exceeds the array's size.
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to
