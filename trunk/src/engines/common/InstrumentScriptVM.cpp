@@ -241,7 +241,7 @@ namespace LinuxSampler {
         m_fnEventStatus(this), m_fnWait2(this), m_fnStopWait(this),
         m_fnFadeIn(this), m_fnFadeOut(this),
         m_fnChangeVolCurve(this), m_fnChangeTuneCurve(this),
-        m_fnGetEventPar(this), m_fnSetEventPar(this),
+        m_fnGetEventPar(this), m_fnSetEventPar(this), m_fnChangePlayPos(this),
         m_varEngineUptime(this), m_varCallbackID(this), m_varAllEvents(this)
     {
         m_CC.size = _MEMBER_SIZEOF(AbstractEngineChannel, ControllerTable);
@@ -394,6 +394,7 @@ namespace LinuxSampler {
         else if (name == "fade_out") return &m_fnFadeOut;
         else if (name == "change_vol_curve") return &m_fnChangeVolCurve;
         else if (name == "change_tune_curve") return &m_fnChangeTuneCurve;
+        else if (name == "change_play_pos") return &m_fnChangePlayPos;
         else if (name == "get_event_par") return &m_fnGetEventPar;
         else if (name == "set_event_par") return &m_fnSetEventPar;
         else if (name == "event_status") return &m_fnEventStatus;

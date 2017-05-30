@@ -196,6 +196,7 @@ Version SVN trunk (?)
      - Fix: built-in "play_note()" function now returns 0 as result value if
        -1 was passed for its fourth argument (note duration) and the respective
        parent note is already gone.
+    - Implemented built-in script function "change_play_pos()".
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

@@ -304,6 +304,7 @@ namespace LinuxSampler {
         InstrumentScriptVMFunction_change_tune_curve m_fnChangeTuneCurve;
         InstrumentScriptVMFunction_get_event_par m_fnGetEventPar;
         InstrumentScriptVMFunction_set_event_par m_fnSetEventPar;
+        InstrumentScriptVMFunction_change_play_pos m_fnChangePlayPos;
         InstrumentScriptVMDynVar_ENGINE_UPTIME m_varEngineUptime;
         InstrumentScriptVMDynVar_NI_CALLBACK_ID m_varCallbackID;
         InstrumentScriptVMDynVar_ALL_EVENTS m_varAllEvents;
@@ -338,6 +339,7 @@ namespace LinuxSampler {
         friend class InstrumentScriptVMFunction_set_event_par;
         friend class InstrumentScriptVMFunction_change_note;
         friend class InstrumentScriptVMFunction_change_velo;
+        friend class InstrumentScriptVMFunction_change_play_pos;
         friend class InstrumentScriptVMFunction_event_status;
         friend class InstrumentScriptVMFunction_wait;
         friend class InstrumentScriptVMFunction_stop_wait;

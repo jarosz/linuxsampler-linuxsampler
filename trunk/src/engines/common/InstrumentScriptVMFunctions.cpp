@@ -1805,6 +1805,41 @@ namespace LinuxSampler {
         return successResult();
     }
 
+    // change_play_pos() function
+
+    InstrumentScriptVMFunction_change_play_pos::InstrumentScriptVMFunction_change_play_pos(InstrumentScriptVM* parent)
+    : m_vm(parent)
+    {
+    }
+
+    VMFnResult* InstrumentScriptVMFunction_change_play_pos::exec(VMFnArgs* args) {
+        const ScriptID id = args->arg(0)->asInt()->evalInt();
+        if (!id) {
+            wrnMsg("change_play_pos(): note ID for argument 1 may not be zero");
+            return successResult();
+        }
+        if (!id.isNoteID()) {
+            wrnMsg("change_play_pos(): argument 1 is not a note ID");
+            return successResult();
+        }
+
+        const int pos = args->arg(1)->asInt()->evalInt();
+        if (pos < 0) {
+            wrnMsg("change_play_pos(): playback position of argument 2 may not be negative");
+            return successResult();
+        }
+
+        AbstractEngineChannel* pEngineChannel =
+            static_cast<AbstractEngineChannel*>(m_vm->m_event->cause.pEngineChannel);
+
+        NoteBase* pNote = pEngineChannel->pEngine->NoteByID( id.noteID() );
+        if (!pNote) return successResult();
+
+        pNote->Override.SampleOffset = pos;
+
+        return successResult();
+    }
+
     // event_status() function
 
     InstrumentScriptVMFunction_event_status::InstrumentScriptVMFunction_event_status(InstrumentScriptVM* parent)
