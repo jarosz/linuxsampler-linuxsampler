@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 Christian Schoenebeck and Andreas Persson
+ * Copyright (c) 2014-2017 Christian Schoenebeck and Andreas Persson
  *
  * http://www.linuxsampler.org
  *
@@ -278,7 +278,10 @@ ID       [a-zA-Z0-9_]+
 
 [ \t\r]+ /* eat up whitespace */
 
-. printf( "Unrecognized character: '%s' (line %d, column %d)\n", yytext, yylineno, yycolumn);
+. {
+    printf( "Unrecognized character: '%s' (line %d, column %d)\n", yytext, yylineno, yycolumn);
+    return UNKNOWN_CHAR;
+}
 
 %%
 

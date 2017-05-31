@@ -69,6 +69,7 @@
 %token LE "operator '<='"
 %token GE "operator '>='"
 %token END_OF_FILE 0 "end of file"
+%token UNKNOWN_CHAR "unknown character"
 
 %type <nEventHandlers> script sections
 %type <nEventHandler> section eventhandler

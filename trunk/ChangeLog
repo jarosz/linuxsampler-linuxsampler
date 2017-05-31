@@ -200,6 +200,7 @@ Version SVN trunk (?)
     - NKSP language: Added support for user declared const array variables.
     - NKSP language: Raise parser warning if array variable is accessed with
       an index that exceeds the array's size.
+    - NKSP language fix: Unknown characters were not handled correctly.
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to
