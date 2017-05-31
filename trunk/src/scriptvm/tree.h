@@ -36,6 +36,7 @@ enum StmtType_t {
     STMT_LIST,
     STMT_BRANCH,
     STMT_LOOP,
+    STMT_SYNC,
 };
 
 class Node {
@@ -494,6 +495,17 @@ public:
     Statements* statements() const;
     bool isPolyphonic() const { return m_condition->isPolyphonic() || m_statements->isPolyphonic(); }
 };
+
+class SyncBlock : public Statement {
+    StatementsRef m_statements;
+public:
+    SyncBlock(StatementsRef statements) : m_statements(statements) {}
+    StmtType_t statementType() const { return STMT_SYNC; }
+    void dump(int level = 0);
+    Statements* statements() const;
+    bool isPolyphonic() const { return m_statements->isPolyphonic(); }
+};
+typedef Ref<SyncBlock,Node> SyncBlockRef;
 
 class Neg : public IntExpr {
     IntExprRef expr;

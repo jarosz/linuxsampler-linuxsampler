@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 Christian Schoenebeck
+ * Copyright (c) 2015-2017 Christian Schoenebeck
  *
  * http://www.linuxsampler.org
  *
@@ -230,7 +230,7 @@ end {
     return yyextra->token.baseType;
 }
 
-declare|while|if|or|and|not|else|case|select|to|mod|const|polyphonic|function|call {
+declare|while|if|or|and|not|else|case|select|to|mod|const|polyphonic|function|call|synchronized {
     yyextra->token = KeywordToken(yytext);
     return yyextra->token.baseType;
 }

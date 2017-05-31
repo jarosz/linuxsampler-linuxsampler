@@ -201,6 +201,8 @@ Version SVN trunk (?)
     - NKSP language: Raise parser warning if array variable is accessed with
       an index that exceeds the array's size.
     - NKSP language fix: Unknown characters were not handled correctly.
+    - NKSP language: Added support for "synchronized .. end synchronized"
+      code blocks.
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

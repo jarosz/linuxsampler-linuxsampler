@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 - 2016 Christian Schoenebeck and Andreas Persson
+ * Copyright (c) 2014 - 2017 Christian Schoenebeck and Andreas Persson
  *
  * http://www.linuxsampler.org
  *
@@ -722,6 +722,18 @@ Statements* While::statements() const {
 bool While::evalLoopStartCondition() {
     if (!m_condition) return false;
     return m_condition->evalInt();
+}
+
+void SyncBlock::dump(int level) {
+    printIndents(level);
+    printf("sync {\n");
+    m_statements->dump(level+1);
+    printIndents(level);
+    printf("}\n");
+}
+
+Statements* SyncBlock::statements() const {
+    return (m_statements) ? const_cast<Statements*>( &*m_statements ) : NULL;
 }
 
 void Neg::dump(int level) {

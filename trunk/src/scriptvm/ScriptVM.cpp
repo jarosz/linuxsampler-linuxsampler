@@ -117,6 +117,18 @@ namespace LinuxSampler {
                 else
                     return 1;
             }
+
+            case STMT_SYNC: {
+                #if DEBUG_SCRIPTVM_CORE
+                _printIndents(depth);
+                printf("-> STMT_SYNC\n");
+                #endif
+                SyncBlock* syncStmt = (SyncBlock*) statement;
+                if (syncStmt->statements())
+                    return _requiredMaxStackSizeFor( syncStmt->statements() ) + 1;
+                else
+                    return 1;
+            }
         }
 
         return 1; // actually just to avoid compiler warning
@@ -356,6 +368,7 @@ namespace LinuxSampler {
         ctx->instructionsCount = 0;
         StmtFlags_t flags = STMT_SUCCESS;
         int instructionsCounter = 0;
+        int synced = m_autoSuspend ? 0 : 1;
 
         int& frameIdx = ctx->stackFrame;
         if (frameIdx < 0) { // start condition ...
@@ -432,7 +445,7 @@ namespace LinuxSampler {
                         ctx->pushStack(
                             whileStmt->statements()
                         );
-                        if (flags == STMT_SUCCESS && m_autoSuspend &&
+                        if (flags == STMT_SUCCESS && !synced &&
                             instructionsCounter > SCRIPTVM_MAX_INSTR_PER_CYCLE_SOFT)
                         {
                             flags = StmtFlags_t(STMT_SUSPEND_SIGNALLED);
@@ -441,9 +454,27 @@ namespace LinuxSampler {
                     } else ctx->popStack();
                     break;
                 }
+
+                case STMT_SYNC: {
+                    #if DEBUG_SCRIPTVM_CORE
+                    _printIndents(frameIdx);
+                    printf("-> STMT_SYNC\n");
+                    #endif
+                    SyncBlock* syncStmt = (SyncBlock*) frame.statement;
+                    if (!frame.subindex++ && syncStmt->statements()) {
+                        ++synced;
+                        ctx->pushStack(
+                            syncStmt->statements()
+                        );
+                    } else {
+                        ctx->popStack();
+                        --synced;
+                    }
+                    break;
+                }
             }
 
-            if (flags == STMT_SUCCESS && m_autoSuspend &&
+            if (flags == STMT_SUCCESS && !synced &&
                 instructionsCounter > SCRIPTVM_MAX_INSTR_PER_CYCLE_HARD)
             {
                 flags = StmtFlags_t(STMT_SUSPEND_SIGNALLED);

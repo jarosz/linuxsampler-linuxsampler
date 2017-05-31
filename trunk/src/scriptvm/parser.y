@@ -52,6 +52,7 @@
 %token CONST_ "keyword 'const'"
 %token POLYPHONIC "keyword 'polyphonic'"
 %token WHILE "keyword 'while'"
+%token SYNCHRONIZED "keyword 'synchronized'"
 %token IF "keyword 'if'"
 %token ELSE "keyword 'else'"
 %token SELECT "keyword 'select'"
@@ -404,6 +405,9 @@ statement:
             PARSE_ERR(@3, "Condition for 'while' loops must be integer expression.");
             $$ = new While(new IntLiteral(0), $5);
         }
+    }
+    | SYNCHRONIZED opt_statements END SYNCHRONIZED  {
+        $$ = new SyncBlock($2);
     }
     | IF '(' expr ')' opt_statements ELSE opt_statements END IF  {
         $$ = new If($3, $5, $7);

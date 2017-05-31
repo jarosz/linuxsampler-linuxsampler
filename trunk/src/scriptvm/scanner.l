@@ -248,6 +248,7 @@ ID       [a-zA-Z0-9_]+
 "mod" return MOD;
 "function" return FUNCTION;
 "call" return CALL;
+"synchronized" return SYNCHRONIZED;
 
 [&,()[\]<>=*+#/-] {
     return *yytext;
