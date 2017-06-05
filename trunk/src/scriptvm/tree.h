@@ -690,14 +690,15 @@ public:
 
     ArrayList<int> polyphonicIntMemory;
     VMExecStatus_t status;
+    StmtFlags_t flags;
     ArrayList<StackFrame> stack;
     int stackFrame;
     int suspendMicroseconds;
     size_t instructionsCount;
 
     ExecContext() :
-        status(VM_EXEC_NOT_RUNNING), stackFrame(-1), suspendMicroseconds(0),
-        instructionsCount(0) {}
+        status(VM_EXEC_NOT_RUNNING), flags(STMT_SUCCESS), stackFrame(-1),
+        suspendMicroseconds(0), instructionsCount(0) {}
 
     virtual ~ExecContext() {}
 
@@ -720,6 +721,7 @@ public:
         stack[0].statement = NULL;
         stack[0].subindex  = -1;
         stackFrame = -1;
+        flags = STMT_SUCCESS;
     }
 
     int suspensionTimeMicroseconds() const OVERRIDE {
@@ -733,6 +735,10 @@ public:
 
     size_t instructionsPerformed() const OVERRIDE {
         return instructionsCount;
+    }
+
+    void signalAbort() OVERRIDE {
+        flags = StmtFlags_t(flags | STMT_ABORT_SIGNALLED);
     }
 };
 

@@ -1911,4 +1911,29 @@ namespace LinuxSampler {
         return successResult();
     }
 
+    // abort() function
+
+    InstrumentScriptVMFunction_abort::InstrumentScriptVMFunction_abort(InstrumentScriptVM* parent)
+    : m_vm(parent)
+    {
+    }
+
+    VMFnResult* InstrumentScriptVMFunction_abort::exec(VMFnArgs* args) {
+        const script_callback_id_t id = args->arg(0)->asInt()->evalInt();
+        if (!id) {
+            wrnMsg("abort(): callback ID for argument 1 may not be zero");
+            return successResult();
+        }
+
+        AbstractEngineChannel* pEngineChannel =
+            static_cast<AbstractEngineChannel*>(m_vm->m_event->cause.pEngineChannel);
+
+        RTList<ScriptEvent>::Iterator itCallback = pEngineChannel->ScriptCallbackByID(id);
+        if (!itCallback) return successResult(); // ignore if callback is i.e. not alive anymore
+
+        itCallback->execCtx->signalAbort();
+
+        return successResult();
+    }
+
 } // namespace LinuxSampler

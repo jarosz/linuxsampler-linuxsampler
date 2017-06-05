@@ -203,6 +203,8 @@ Version SVN trunk (?)
     - NKSP language fix: Unknown characters were not handled correctly.
     - NKSP language: Added support for "synchronized .. end synchronized"
       code blocks.
+    - Implemented built-in script function "abort()" which allows to abort
+      another script handler by passing its callback ID.
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

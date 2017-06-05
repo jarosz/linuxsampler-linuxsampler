@@ -239,7 +239,7 @@ namespace LinuxSampler {
         m_fnChangePitchLFODepth(this), m_fnChangePitchLFOFreq(this),
         m_fnChangeNote(this), m_fnChangeVelo(this),
         m_fnEventStatus(this), m_fnWait2(this), m_fnStopWait(this),
-        m_fnFadeIn(this), m_fnFadeOut(this),
+        m_fnAbort(this), m_fnFadeIn(this), m_fnFadeOut(this),
         m_fnChangeVolCurve(this), m_fnChangeTuneCurve(this),
         m_fnGetEventPar(this), m_fnSetEventPar(this), m_fnChangePlayPos(this),
         m_varEngineUptime(this), m_varCallbackID(this), m_varAllEvents(this)
@@ -400,6 +400,7 @@ namespace LinuxSampler {
         else if (name == "event_status") return &m_fnEventStatus;
         else if (name == "wait") return &m_fnWait2; // override wait() core implementation
         else if (name == "stop_wait") return &m_fnStopWait;
+        else if (name == "abort") return &m_fnAbort;
 
         // built-in script functions of derived VM class
         return ScriptVM::functionByName(name);

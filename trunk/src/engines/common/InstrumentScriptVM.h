@@ -298,6 +298,7 @@ namespace LinuxSampler {
         InstrumentScriptVMFunction_event_status m_fnEventStatus;
         InstrumentScriptVMFunction_wait m_fnWait2;
         InstrumentScriptVMFunction_stop_wait m_fnStopWait;
+        InstrumentScriptVMFunction_abort m_fnAbort;
         InstrumentScriptVMFunction_fade_in m_fnFadeIn;
         InstrumentScriptVMFunction_fade_out m_fnFadeOut;
         InstrumentScriptVMFunction_change_vol_curve m_fnChangeVolCurve;
@@ -343,6 +344,7 @@ namespace LinuxSampler {
         friend class InstrumentScriptVMFunction_event_status;
         friend class InstrumentScriptVMFunction_wait;
         friend class InstrumentScriptVMFunction_stop_wait;
+        friend class InstrumentScriptVMFunction_abort;
         friend class InstrumentScriptVMDynVar_ENGINE_UPTIME;
         friend class InstrumentScriptVMDynVar_NI_CALLBACK_ID;
         friend class InstrumentScriptVMDynVar_ALL_EVENTS;

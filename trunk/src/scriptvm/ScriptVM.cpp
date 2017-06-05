@@ -366,7 +366,7 @@ namespace LinuxSampler {
 
         ctx->status = VM_EXEC_RUNNING;
         ctx->instructionsCount = 0;
-        StmtFlags_t flags = STMT_SUCCESS;
+        StmtFlags_t& flags = ctx->flags;
         int instructionsCounter = 0;
         int synced = m_autoSuspend ? 0 : 1;
 
@@ -484,8 +484,9 @@ namespace LinuxSampler {
             ++instructionsCounter;
         }
 
-        if (flags & STMT_SUSPEND_SIGNALLED) {
+        if ((flags & STMT_SUSPEND_SIGNALLED) && !(flags & STMT_ABORT_SIGNALLED)) {
             ctx->status = VM_EXEC_SUSPENDED;
+            ctx->flags  = STMT_SUCCESS;
         } else {
             ctx->status = VM_EXEC_NOT_RUNNING;
             if (flags & STMT_ERROR_OCCURRED)

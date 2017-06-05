@@ -871,6 +871,14 @@ namespace LinuxSampler {
          * ScriptVM::exec() call.
          */
         virtual size_t instructionsPerformed() const = 0;
+
+        /**
+         * Sends a signal to this script execution instance to abort its script
+         * execution as soon as possible. This method is called i.e. when one
+         * script execution instance intends to stop another script execution
+         * instance.
+         */
+        virtual void signalAbort() = 0;
     };
 
     /** @brief Script callback for a certain event.
