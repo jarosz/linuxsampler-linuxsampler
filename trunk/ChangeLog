@@ -205,6 +205,8 @@ Version SVN trunk (?)
       code blocks.
     - Implemented built-in script function "abort()" which allows to abort
       another script handler by passing its callback ID.
+    - Fixed potential memory access bug and potential undefined behavior of
+      "init" event handlers.
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

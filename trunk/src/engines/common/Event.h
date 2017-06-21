@@ -58,6 +58,7 @@ namespace LinuxSampler {
         public:
             EventGenerator(uint SampleRate);
             void UpdateFragmentTime(uint SamplesToProcess);
+            void SetSampleRate(uint SampleRate);
             Event CreateEvent();
             Event CreateEvent(int32_t FragmentPos);
 

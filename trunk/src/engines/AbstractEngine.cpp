@@ -75,7 +75,7 @@ namespace LinuxSampler {
 
     AbstractEngine::AbstractEngine() {
         pAudioOutputDevice = NULL;
-        pEventGenerator    = NULL;
+        pEventGenerator    = new EventGenerator(44100);
         pSysexBuffer       = new RingBuffer<uint8_t,false>(CONFIG_SYSEX_BUFFER_SIZE, 0);
         pEventQueue        = new RingBuffer<Event,false>(CONFIG_MAX_EVENTS_PER_FRAGMENT, 0);
         pEventPool         = new Pool<Event>(CONFIG_MAX_EVENTS_PER_FRAGMENT);

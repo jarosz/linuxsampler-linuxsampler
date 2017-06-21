@@ -38,6 +38,10 @@ namespace LinuxSampler {
         uiTotalSamplesProcessed = 0;
     }
 
+    void EventGenerator::SetSampleRate(uint SampleRate) {
+        uiSampleRate = SampleRate;
+    }
+
     /**
      * Updates the time stamps for the beginning and end of the current audio
      * fragment. This is needed to be able to calculate the respective sample
