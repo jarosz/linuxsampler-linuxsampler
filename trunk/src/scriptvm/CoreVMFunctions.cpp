@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include "tree.h"
 #include "ScriptVM.h"
+#include "../common/RTMath.h"
 
 namespace LinuxSampler {
 
@@ -71,15 +72,17 @@ bool CoreVMFunction_message::acceptsArgType(int iArg, ExprType_t type) const {
 VMFnResult* CoreVMFunction_message::exec(VMFnArgs* args) {
     if (!args->argsCount()) return errorResult();
 
+    uint64_t usecs = RTMath::unsafeMicroSeconds(RTMath::real_clock);
+
     VMStringExpr* strExpr = dynamic_cast<VMStringExpr*>(args->arg(0));
     if (strExpr) {
-        std::cout << "[ScriptVM] " << strExpr->evalStr() << "\n";
+        printf("[ScriptVM %.3f] %s\n", usecs/1000000.f, strExpr->evalStr().c_str());
         return successResult();
     }
 
     VMIntExpr* intExpr = dynamic_cast<VMIntExpr*>(args->arg(0));
     if (intExpr) {
-        std::cout << "[ScriptVM] " << intExpr->evalInt() << "\n";
+        printf("[ScriptVM %.3f] %d\n", usecs/1000000.f, intExpr->evalInt());
         return successResult();
     }
 

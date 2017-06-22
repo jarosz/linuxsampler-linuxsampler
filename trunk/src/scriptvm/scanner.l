@@ -216,7 +216,8 @@ ID       [a-zA-Z0-9_]+
     processLocation();
 }
 <PREPROC_BODY_EAT>.* { /* eat up code block filtered out by preprocessor */
-    processLocation();
+    yyextra->addPreprocessorComment(yylloc->first_line, yylloc->last_line,
+                                    yylloc->first_column+1, yylloc->last_column+1);
 }
 
 

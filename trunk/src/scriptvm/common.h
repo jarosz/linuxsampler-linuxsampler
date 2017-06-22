@@ -910,6 +910,20 @@ namespace LinuxSampler {
     };
 
     /**
+     * Reflects the precise position and span of a specific code block within
+     * a script. This is currently only used for the locations of commented
+     * code blocks due to preprocessor statements.
+     *
+     * @see VMParserContext::preprocessorComments()
+     */
+    struct CodeBlock {
+        int firstLine; ///< The first line number of this code block within the script (indexed with 1 being the very first line).
+        int lastLine; ///< The last line number of this code block within the script.
+        int firstColumn; ///< The first column of this code block within the script (indexed with 1 being the very first column).
+        int lastColumn; ///< The last column of this code block within the script.
+    };
+
+    /**
      * Encapsulates a noteworty parser issue. This encompasses the type of the
      * issue (either a parser error or parser warning), a human readable
      * explanation text of the error or warning and the location of the
@@ -1000,6 +1014,12 @@ namespace LinuxSampler {
          * Same as issues(), but this method only returns parser warnings.
          */
         virtual std::vector<ParserIssue> warnings() const = 0;
+
+        /**
+         * Returns all code blocks of the script which were filtered out by the
+         * preprocessor.
+         */
+        virtual std::vector<CodeBlock> preprocessorComments() const = 0;
 
         /**
          * Returns the translated virtual machine representation of an event

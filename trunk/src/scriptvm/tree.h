@@ -620,6 +620,7 @@ public:
     std::vector<ParserIssue> vErrors;
     std::vector<ParserIssue> vWarnings;
     std::vector<ParserIssue> vIssues;
+    std::vector<CodeBlock>   vPreprocessorComments;
 
     std::set<String> builtinPreprocessorConditions;
     std::set<String> userPreprocessorConditions;
@@ -660,6 +661,7 @@ public:
     StatementsRef userFunctionByName(const String& name);
     void addErr(int firstLine, int lastLine, int firstColumn, int lastColumn, const char* txt);
     void addWrn(int firstLine, int lastLine, int firstColumn, int lastColumn, const char* txt);
+    void addPreprocessorComment(int firstLine, int lastLine, int firstColumn, int lastColumn);
     void createScanner(std::istream* is);
     void destroyScanner();
     bool setPreprocessorCondition(const char* name);
@@ -668,6 +670,7 @@ public:
     std::vector<ParserIssue> issues() const OVERRIDE;
     std::vector<ParserIssue> errors() const OVERRIDE;
     std::vector<ParserIssue> warnings() const OVERRIDE;
+    std::vector<CodeBlock> preprocessorComments() const OVERRIDE;
     VMEventHandler* eventHandler(uint index) OVERRIDE;
     VMEventHandler* eventHandlerByName(const String& name) OVERRIDE;
     void registerBuiltInConstIntVariables(const std::map<String,int>& vars);

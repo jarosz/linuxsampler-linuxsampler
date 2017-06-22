@@ -977,6 +977,15 @@ void ParserContext::addWrn(int firstLine, int lastLine, int firstColumn, int las
     vIssues.push_back(w);
 }
 
+void ParserContext::addPreprocessorComment(int firstLine, int lastLine, int firstColumn, int lastColumn) {
+    CodeBlock block;
+    block.firstLine = firstLine;
+    block.lastLine = lastLine;
+    block.firstColumn = firstColumn;
+    block.lastColumn = lastColumn;
+    vPreprocessorComments.push_back(block);
+}
+
 bool ParserContext::setPreprocessorCondition(const char* name) {
     if (builtinPreprocessorConditions.count(name)) return false;
     if (userPreprocessorConditions.count(name)) return false;
@@ -1006,6 +1015,10 @@ std::vector<ParserIssue> ParserContext::errors() const {
 
 std::vector<ParserIssue> ParserContext::warnings() const {
     return vWarnings;
+}
+
+std::vector<CodeBlock> ParserContext::preprocessorComments() const {
+    return vPreprocessorComments;
 }
 
 VMEventHandler* ParserContext::eventHandler(uint index) {

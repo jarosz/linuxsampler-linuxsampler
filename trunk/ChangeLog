@@ -207,6 +207,9 @@ Version SVN trunk (?)
       another script handler by passing its callback ID.
     - Fixed potential memory access bug and potential undefined behavior of
       "init" event handlers.
+    - Print a time stamp along to each call of built-in function "message()".
+    - ScriptVM API: Added VMParserContext::preprocessorComments() which allows
+      to retrieve all code blocks filtered out by the preprocessor.
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to
