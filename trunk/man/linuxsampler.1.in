@@ -1,4 +1,4 @@
-.TH "linuxsampler" "1" "16 Jan 2017" "linuxsampler @VERSION@" "User Manuals"
+.TH "linuxsampler" "1" "13 Jun 2017" "linuxsampler @VERSION@" "User Manuals"
 .SH NAME
 linuxsampler \- modular, streaming capable sampler
 .SH SYNOPSIS
@@ -41,6 +41,12 @@ which can directly be launched by LinuxSampler, allowing to edit instruments in
 real-time (changes immediately being audible, without needing to reload the
 sound files in the sampler).
 .SH OPTIONS
+.IP "--exec-after-init"
+Executes the provided shell command(s) after initialization of application
+completed. You may use this to automatically restore a previous sampler
+session on startup, i.e. by sending a previously stored LSCP file via
+.BR netcat (1).
+to the sampler.
 .IP "--help"
 Print command line help and exit.
 .IP "--version"
