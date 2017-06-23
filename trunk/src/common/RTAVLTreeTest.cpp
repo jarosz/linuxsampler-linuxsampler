@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Christian Schoenebeck
+ * Copyright (c) 2015 - 2017 Christian Schoenebeck
  *
  * http://www.linuxsampler.org
  *
@@ -15,6 +15,10 @@
 #include <time.h>
 #include <assert.h>
 
+#ifndef TEST_ASSERT
+# define TEST_ASSERT assert
+#endif
+
 class IntNode : public RTAVLNode {
 public:
     enum Dir_t {
@@ -23,9 +27,9 @@ public:
     };
 
     int value;
-    RTAVLNode::parent;
-    RTAVLNode::children;
-    RTAVLNode::reset;
+    using RTAVLNode::parent;
+    using RTAVLNode::children;
+    using RTAVLNode::reset;
 
     inline bool operator==(const IntNode& other) const {
         return this->value == other.value;
@@ -44,7 +48,9 @@ public:
     }
 
     void appendLeft(IntNode& child) {
+        #if !SILENT_TEST
         std::cout << "*** Insert " << child.value << " as left child of " << this->value << " ***\n";
+        #endif
         IntNode& root = *this;
         IntNode& l    = child;
         root.children[LEFT] = &l;
@@ -54,7 +60,9 @@ public:
     }
 
     void appendRight(IntNode& child) {
+        #if !SILENT_TEST
         std::cout << "*** Insert " << child.value << " as right child of " << this->value << " ***\n";
+        #endif
         IntNode& root = *this;
         IntNode& r    = child;
         root.children[RIGHT] = &r;
@@ -155,31 +163,47 @@ static void printMaximas(MyTree& tree) {
 }
 
 static void insert(MyTree& tree, IntNode& node) {
+    #if !SILENT_TEST
     std::cout << "+++ Insert " << node.value << " into tree +++\n";
+    #endif
     tree.insert(node);
+    #if !NO_TREE_DUMP && !SILENT_TEST
     tree.dumpTree();
+    #endif
     assertTreeLinks(tree);
     assertTreeSize(tree);
     assertTreeBalance(tree);
+    #if !SILENT_TEST
     printMaximas(tree);
+    #endif
 }
 
 static void erase(MyTree& tree, IntNode& node) {
+    #if !SILENT_TEST
     std::cout << "--- Erase " << node.value << " from tree ---\n";
+    #endif
     tree.erase(node);
+    #if !NO_TREE_DUMP && !SILENT_TEST
     tree.dumpTree();
+    #endif
     assertTreeLinks(tree);
     assertTreeSize(tree);
     assertTreeBalance(tree);
+    #if !SILENT_TEST
     printMaximas(tree);
+    #endif
 }
 
 /// Automated test case which aborts this process with exit(-1) in case an error is detected.
 static void testTreeInsertAndEraseWithSelectedNumbers() {
+    #if !SILENT_TEST
     std::cout << "UNIT TEST: InsertAndEraseWithSelectedNumbers\n";
     std::cout << "*** Create empty tree ***\n";
+    #endif
     MyTree tree;
+    #if !NO_TREE_DUMP && !SILENT_TEST
     tree.dumpTree();
+    #endif
 
     const int MAX_NODES = 20;
     IntNode nodes[MAX_NODES];
@@ -232,17 +256,25 @@ static void testTreeInsertAndEraseWithSelectedNumbers() {
     erase(tree, nodes[17]);
     erase(tree, nodes[2]);
 
+    #if !SILENT_TEST
     std::cout << std::endl;
+    #endif
 }
 
 /// Automated test case which aborts this process with exit(-1) in case an error is detected.
 static void testTreeInsertAndEraseWithRandomNumbers() {
+    #if !SILENT_TEST
     std::cout << "UNIT TEST: InsertAndEraseWithRandomNumbers\n";
+    #endif
     srand(time(NULL));
 
+    #if !SILENT_TEST
     std::cout << "*** Create empty tree ***\n";
+    #endif
     MyTree tree;
+    #if !NO_TREE_DUMP && !SILENT_TEST
     tree.dumpTree();
+    #endif
 
     const int MAX_NODES = 30;
     IntNode nodes[MAX_NODES];
@@ -263,8 +295,8 @@ static void testTreeInsertAndEraseWithRandomNumbers() {
         usedNodes.push_back(freeNodes[idx]);
         freeNodes.erase(freeNodes.begin()+idx);
         
-        assert(usedNodes.size() + freeNodes.size() == MAX_NODES);
-        assert(tree.size() == usedNodes.size());
+        TEST_ASSERT(usedNodes.size() + freeNodes.size() == MAX_NODES);
+        TEST_ASSERT(tree.size() == usedNodes.size());
     } while (!freeNodes.empty());
 
     // randomly erase and re-insert elements into the tree for a certain while
@@ -288,8 +320,8 @@ static void testTreeInsertAndEraseWithRandomNumbers() {
             freeNodes.push_back(usedNodes[idx]);
             usedNodes.erase(usedNodes.begin()+idx);
         }
-        assert(usedNodes.size() + freeNodes.size() == MAX_NODES);
-        assert(tree.size() == usedNodes.size());
+        TEST_ASSERT(usedNodes.size() + freeNodes.size() == MAX_NODES);
+        TEST_ASSERT(tree.size() == usedNodes.size());
     }
 
     // randomly erase from tree until tree is completely empty
@@ -302,8 +334,8 @@ static void testTreeInsertAndEraseWithRandomNumbers() {
         freeNodes.push_back(usedNodes[idx]);
         usedNodes.erase(usedNodes.begin()+idx);
         
-        assert(usedNodes.size() + freeNodes.size() == MAX_NODES);
-        assert(tree.size() == usedNodes.size());
+        TEST_ASSERT(usedNodes.size() + freeNodes.size() == MAX_NODES);
+        TEST_ASSERT(tree.size() == usedNodes.size());
     }
 
     // randomly erase and re-insert elements into the tree for a certain while
@@ -327,8 +359,8 @@ static void testTreeInsertAndEraseWithRandomNumbers() {
             freeNodes.push_back(usedNodes[idx]);
             usedNodes.erase(usedNodes.begin()+idx);
         }
-        assert(usedNodes.size() + freeNodes.size() == MAX_NODES);
-        assert(tree.size() == usedNodes.size());
+        TEST_ASSERT(usedNodes.size() + freeNodes.size() == MAX_NODES);
+        TEST_ASSERT(tree.size() == usedNodes.size());
     }
 
     // randomly erase from tree until tree is completely empty
@@ -341,21 +373,29 @@ static void testTreeInsertAndEraseWithRandomNumbers() {
         freeNodes.push_back(usedNodes[idx]);
         usedNodes.erase(usedNodes.begin()+idx);
 
-        assert(usedNodes.size() + freeNodes.size() == MAX_NODES);
-        assert(tree.size() == usedNodes.size());
+        TEST_ASSERT(usedNodes.size() + freeNodes.size() == MAX_NODES);
+        TEST_ASSERT(tree.size() == usedNodes.size());
     }
 
+    #if !SILENT_TEST
     std::cout << std::endl;
+    #endif
 }
 
 /// Automated test case which aborts this process with exit(-1) in case an error is detected.
 static void testTwinsWithRandomNumbers() {
+    #if !SILENT_TEST
     std::cout << "UNIT TEST: TwinsWithRandomNumbers\n";
+    #endif
     srand(time(NULL));
 
+    #if !SILENT_TEST
     std::cout << "*** Create empty tree ***\n";
+    #endif
     MyTree tree;
+    #if !NO_TREE_DUMP && !SILENT_TEST
     tree.dumpTree();
+    #endif
 
     const int MAX_NODES = 30;
     IntNode nodes[MAX_NODES];
@@ -379,8 +419,8 @@ static void testTwinsWithRandomNumbers() {
         usedNodes.push_back(freeNodes[idx]);
         freeNodes.erase(freeNodes.begin()+idx);
         
-        assert(usedNodes.size() + freeNodes.size() == MAX_NODES);
-        assert(tree.size() == usedNodes.size());
+        TEST_ASSERT(usedNodes.size() + freeNodes.size() == MAX_NODES);
+        TEST_ASSERT(tree.size() == usedNodes.size());
     } while (!freeNodes.empty());
     
     // randomly erase and re-insert elements into the tree for a certain while
@@ -404,8 +444,8 @@ static void testTwinsWithRandomNumbers() {
             freeNodes.push_back(usedNodes[idx]);
             usedNodes.erase(usedNodes.begin()+idx);
         }
-        assert(usedNodes.size() + freeNodes.size() == MAX_NODES);
-        assert(tree.size() == usedNodes.size());
+        TEST_ASSERT(usedNodes.size() + freeNodes.size() == MAX_NODES);
+        TEST_ASSERT(tree.size() == usedNodes.size());
     }
 
     // randomly erase from tree until tree is completely empty
@@ -418,8 +458,8 @@ static void testTwinsWithRandomNumbers() {
         freeNodes.push_back(usedNodes[idx]);
         usedNodes.erase(usedNodes.begin()+idx);
         
-        assert(usedNodes.size() + freeNodes.size() == MAX_NODES);
-        assert(tree.size() == usedNodes.size());
+        TEST_ASSERT(usedNodes.size() + freeNodes.size() == MAX_NODES);
+        TEST_ASSERT(tree.size() == usedNodes.size());
     }
 
     // randomly erase and re-insert elements into the tree for a certain while
@@ -443,8 +483,8 @@ static void testTwinsWithRandomNumbers() {
             freeNodes.push_back(usedNodes[idx]);
             usedNodes.erase(usedNodes.begin()+idx);
         }
-        assert(usedNodes.size() + freeNodes.size() == MAX_NODES);
-        assert(tree.size() == usedNodes.size());
+        TEST_ASSERT(usedNodes.size() + freeNodes.size() == MAX_NODES);
+        TEST_ASSERT(tree.size() == usedNodes.size());
     }
 
     // randomly erase from tree until tree is completely empty
@@ -457,12 +497,16 @@ static void testTwinsWithRandomNumbers() {
         freeNodes.push_back(usedNodes[idx]);
         usedNodes.erase(usedNodes.begin()+idx);
         
-        assert(usedNodes.size() + freeNodes.size() == MAX_NODES);
-        assert(tree.size() == usedNodes.size());
+        TEST_ASSERT(usedNodes.size() + freeNodes.size() == MAX_NODES);
+        TEST_ASSERT(tree.size() == usedNodes.size());
     }
 
+    #if !SILENT_TEST
     std::cout << std::endl;
+    #endif
 }
+
+#if !NO_MAIN
 
 int main() {
     testTreeDumpWithManualTreeBuilt();
@@ -472,3 +516,5 @@ int main() {
     std::cout << "\nAll tests passed successfully. :-)\n";
     return 0;
 }
+
+#endif // !NO_MAIN
