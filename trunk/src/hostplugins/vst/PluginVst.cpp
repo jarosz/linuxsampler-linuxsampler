@@ -493,7 +493,7 @@ namespace {
         StateBuf = strdup(state.c_str());
         *data = StateBuf;
         dmsg(2, ("<--getChunk\n"));
-        return state.length() + 1;
+        return (VstInt32) state.length() + 1;
     }
 
 
