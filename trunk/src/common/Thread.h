@@ -3,7 +3,7 @@
  *   LinuxSampler - modular, streaming capable sampler                     *
  *                                                                         *
  *   Copyright (C) 2003, 2004 by Benno Senoner and Christian Schoenebeck   *
- *   Copyright (C) 2005 - 2011 Christian Schoenebeck                       *
+ *   Copyright (C) 2005 - 2017 Christian Schoenebeck                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -47,24 +47,28 @@
 
 namespace LinuxSampler {
 
-/// Abstract base class for classes that need to run in an own thread.
+/**
+ * Abstract base class for classes that need to run in an own thread. The
+ * deriving class needs to implement the abstract method Main() for the actual
+ * task of the thread to be implemented.
+ *
+ * @b IMPORTANT: You @b MUST call StopThread() before destructing a running
+ * Thread object! Destructing the Thread object without stopping it first can
+ * lead to undefined behavior! The destructor will detect if the thread is still
+ * running and will stop it automatically in this case, however once the
+ * destructor is entered, this Thread object's vpointer is already been
+ * modified, so if the thread is still running at this point this would cause a
+ * data race condition since the active thread is calling virtual methods and
+ * thus this can lead to undefined behavior.
+ */
 class Thread {
     public:
         Thread(bool LockMemory, bool RealTime, int PriorityMax, int PriorityDelta);
         virtual ~Thread();
         virtual int  StartThread();
         virtual int  StopThread();
-        virtual int  SignalStartThread();
         virtual int  SignalStopThread();
-
-        void TestCancel();
-
         virtual bool IsRunning();
-        virtual int  SetSchedulingPriority(); //FIXME: should be private
-        virtual int  LockMemory();            //FIXME: should be private
-        virtual void EnableDestructor();      //FIXME: should be private
-        virtual int  Destructor();            //FIXME: should be private
-        virtual int  Main() = 0; ///< This method needs to be implemented by the descendant and is the entry point for the new thread. FIXME: should be protected
 
         /**
          * Allocates an aligned block of memory. Allocated memory blocks
@@ -124,7 +128,45 @@ class Thread {
             #endif
         }
 
+    protected:
+        /**
+         * This method needs to be implemented by the descending class and is
+         * the entry point for the new thread.
+         *
+         * @b NOTE: If your thread runs for a longer time, i.e. if it is running
+         * a loop, then you should explicitly call TestCancel() once in a while
+         * in your Main() implementation, especially if your implementation does
+         * not use any system calls.
+         */
+        virtual int Main() = 0;
+
+        /**
+         * Synchronization point for potentially terminating the thread. Like
+         * already described in Main() you should call TestCancel() in your
+         * Main() implementation once in a while to provide the system a chance
+         * to perform a clean termination of your thread. Depending on the
+         * underlying OS, and also depending on whether your are using any
+         * system call in your Main() implementation, it might otherwise be
+         * possible that the thread cannot be terminated at all! And even if the
+         * underlying OS supports terminating busy threads which do not call
+         * TestCancel(), this might still cause undefined behavior on such OSes!
+         */
+        void TestCancel();
+
+        virtual int  SignalStartThread();
+        virtual int  SetSchedulingPriority();
+        virtual int  LockMemory();
+        virtual void EnableDestructor();
+        virtual int  onThreadEnd();
+
     private:
+        enum state_t {
+            NOT_RUNNING,
+            RUNNING,
+            PENDING_JOIN,
+            DETACHED
+        };
+
     #if defined(WIN32)
         HANDLE hThread;
         DWORD lpThreadId;
@@ -141,6 +183,14 @@ class Thread {
         int             PriorityDelta;
         bool            isRealTime;
         bool            bLockedMemory;
+        state_t         state;
+
+    #if defined(WIN32)
+        static DWORD WINAPI win32threadLauncher(LPVOID lpParameter);
+    #else
+        static void* pthreadLauncher(void* thread);
+        static void  pthreadDestructor(void* thread);
+    #endif
 };
 
 } // namespace LinuxSampler

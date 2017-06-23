@@ -100,6 +100,7 @@ namespace LinuxSampler {
     }
 
     InstrumentsDb::~InstrumentsDb() {
+        InstrumentsDbThread.StopThread();
         if (db != NULL) sqlite3_close(db);
     }
     

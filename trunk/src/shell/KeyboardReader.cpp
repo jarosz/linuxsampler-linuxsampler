@@ -1,7 +1,7 @@
 /*
  * LSCP Shell
  *
- * Copyright (c) 2014 Christian Schoenebeck
+ * Copyright (c) 2014 - 2017 Christian Schoenebeck
  *
  * This program is part of LinuxSampler and released under the same terms.
  */
@@ -21,6 +21,7 @@ KeyboardReader::KeyboardReader() : Thread(false, false, 1, -1),
 }
 
 KeyboardReader::~KeyboardReader() {
+    StopThread();
     TerminalCtrl::restore(m_originalTerminalSetting);
     // ensures that no temporary copy objects delete the global reference
     g_instanceCount--;

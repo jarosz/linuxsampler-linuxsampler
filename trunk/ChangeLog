@@ -44,6 +44,8 @@ Version SVN trunk (?)
       sub threads is 16-byte aligned
     - fixed numerous compiler warnings
     - Fixed invalid (note-on) event ID being assigned to new Note objects.
+    - Revised fundamental C++ classes "Thread", "Mutex" and "Condition" which
+      fixes potential undefined behavior.
 
   * packaging changes:
     - removed unnecessary dependency to libuuid

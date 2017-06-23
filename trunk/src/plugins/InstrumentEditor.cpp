@@ -1,6 +1,6 @@
 /***************************************************************************
  *                                                                         *
- *   Copyright (C) 2007 - 2015 Christian Schoenebeck                       *
+ *   Copyright (C) 2007 - 2017 Christian Schoenebeck                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -64,6 +64,7 @@ namespace LinuxSampler {
             std::bind2nd(std::mem_fun(&InstrumentEditorListener::OnInstrumentEditorQuit), this)
         );
         // done
+        StopThread();
         return iResult;
     }
 

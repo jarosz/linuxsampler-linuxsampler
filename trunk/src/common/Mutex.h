@@ -3,7 +3,7 @@
  *   LinuxSampler - modular, streaming capable sampler                     *
  *                                                                         *
  *   Copyright (C) 2003, 2004 by Benno Senoner and Christian Schoenebeck   *
- *   Copyright (C) 2005 - 2014 Christian Schoenebeck                       *
+ *   Copyright (C) 2005 - 2017 Christian Schoenebeck                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -46,10 +46,42 @@ namespace LinuxSampler {
  */
 class Mutex {
     public:
-        /**
-         * Constructor
+        enum type_t {
+            RECURSIVE,
+            NON_RECURSIVE
+        };
+
+        /** @brief Constructor
+         *
+         * Creates a new Mutex object. The optional @a type argument defines
+         * the fundamental behavior of the Mutex object:
+         *
+         * - If @c RECURSIVE is passed (which is the default type) then the
+         *   mutex will manage an additional lock count such that it allows the
+         *   same thread to call Lock() multiple times; each time that thread
+         *   calls Lock() the lock count will be increased by one, each time it
+         *   calls Unlock() it will be decreased by one, and other threads will
+         *   only be unblocked once the lock count fell to zero again.
+         *
+         * - If @c NON_RECURSIVE is passed then it is considered to be an error
+         *   if the same thread calls Lock() while already owning the lock, and
+         *   likewise it is considered to be an error if Unlock() is called if
+         *   the calling thread hasn't locked the mutex.
+         *
+         * You should invest the required time to review your design in order to
+         * decide which mutex behavior fits to your design. Even though it might
+         * be tempting to stick with the lazy approach by using the @c RECURSIVE
+         * type, using the @c NON_RECURSIVE type does make sense if your design
+         * does not require a recursive mutex, because modern developer tools
+         * assist you spotting potential threading bugs in your code while using
+         * the @c NON_RECURSIVE type which can avoid developers' biggest fear of
+         * undefined behavior, plus also keep in mind that certain OS APIs are
+         * not compatible with recursive mutexes at all!
+         *
+         * @param type - optional: the fundamental behavior type for this mutex
+         *               (default: @c RECURSIVE)
          */    
-        Mutex();
+        Mutex(type_t type = RECURSIVE);
 
         /**
          * Destructor
@@ -96,6 +128,7 @@ class Mutex {
         pthread_mutex_t     __posix_mutex;
         pthread_mutexattr_t __posix_mutexattr;
     #endif
+        type_t type;
 };
 
 // Lock guard for exception safe locking

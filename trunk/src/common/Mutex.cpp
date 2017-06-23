@@ -3,7 +3,7 @@
  *   LinuxSampler - modular, streaming capable sampler                     *
  *                                                                         *
  *   Copyright (C) 2003, 2004 by Benno Senoner and Christian Schoenebeck   *
- *   Copyright (C) 2005 - 2016 Christian Schoenebeck                       *
+ *   Copyright (C) 2005 - 2017 Christian Schoenebeck                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -40,8 +40,8 @@
 #if !defined(WIN32)
 # if !defined(_XOPEN_SOURCE) || _XOPEN_SOURCE < 500
 #  undef _XOPEN_SOURCE
-#  define _XOPEN_SOURCE 500 /* to define PTHREAD_MUTEX_ERRORCHECK */
-#  if (!defined(POSIX_C_SOURCE) || POSIX_C_SOURCE < 199801L) && !defined(__DARWIN_UNIX03)
+#  define _XOPEN_SOURCE 500 /* to define PTHREAD_MUTEX_RECURSIVE */
+#  if (!defined(POSIX_C_SOURCE) || POSIX_C_SOURCE < 199801L) && !__DARWIN_UNIX03
 #   warning "Seems you don't have a UNIX98 compatible system."
 #   warning "Please run LinuxSampler's selftest to make sure this won't be a problem!"
 #   warning "(compile tests with 'make tests', run them with 'src/testcases/linuxsamplertest')"
@@ -57,7 +57,7 @@
 
 namespace LinuxSampler {
 
-Mutex::Mutex() {
+Mutex::Mutex(type_t type) {
 #if defined(WIN32)
     hMutex = CreateMutex( NULL, FALSE, NULL);
     if (hMutex == NULL) {
@@ -66,19 +66,25 @@ Mutex::Mutex() {
     }
 #else
     pthread_mutexattr_init(&__posix_mutexattr);
-
-    // the following function call only works on UNIX98 compatible systems
-    #if (_XOPEN_SOURCE > 500) || defined(__APPLE__)
-	// Mac OS X Note: 10.4 (and later) does support PTHREAD_MUTEX_ERRORCHECK, and
-	// actually LinuxSampler does not work if this call is omitted. However,
-	// defining _XOPEN_SOURCE macro seems to cause other problems. As a workaround,
-	// the symbol __APPLE__ is checked here. There should be a better solution
-	// to this problem. (Toshi Nagata, 27 Mar 2007)
-    if (pthread_mutexattr_settype(&__posix_mutexattr, PTHREAD_MUTEX_ERRORCHECK)) {
-        std::cerr << "Mutex Constructor: Fatal error - unable to pthread_mutexattr_settype(PTHREAD_MUTEX_ERRORCHECK)\n" << std::flush;
+    // pthread_mutexattr_settype() only works on UNIX98 compatible systems
+    switch (type) {
+    case RECURSIVE:
+        if (pthread_mutexattr_settype(&__posix_mutexattr, PTHREAD_MUTEX_RECURSIVE)) {
+            std::cerr << "Mutex Constructor: Fatal error - unable to pthread_mutexattr_settype(PTHREAD_MUTEX_RECURSIVE)\n" << std::flush;
+            exit(-1);
+        }
+        break;
+    case NON_RECURSIVE:
+        if (pthread_mutexattr_settype(&__posix_mutexattr, PTHREAD_MUTEX_ERRORCHECK)) {
+            std::cerr << "Mutex Constructor: Fatal error - unable to pthread_mutexattr_settype(PTHREAD_MUTEX_ERRORCHECK)\n" << std::flush;
+            exit(-1);
+        }
+        break;
+    default:
+        std::cerr << "Mutex Constructor: Fatal error - Unknown mutex type requested\n" << std::flush;
         exit(-1);
+        break;
     }
-    #endif
     pthread_mutex_init(&__posix_mutex, &__posix_mutexattr);
 #endif
 }

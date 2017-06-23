@@ -4,7 +4,7 @@
  *                                                                         *
  *   Copyright (C) 2009 Grigor Iliev                                       *
  *   Copyright (C) 2011-2013 Andreas Persson                               *
- *   Copyright (C) 2014-2016 Christian Schoenebeck                         *
+ *   Copyright (C) 2014-2017 Christian Schoenebeck                         *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -144,6 +144,8 @@ namespace LinuxSampler {
     }
 
     AudioOutputDeviceCoreAudio::~AudioOutputDeviceCoreAudio() {
+        StopThread();
+
         atomic_set(&(aqPlayerState.mIsRunning), 0);
         {
             LockGuard lock(destroyMutex);

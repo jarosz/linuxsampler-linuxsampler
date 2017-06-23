@@ -3,7 +3,7 @@
  *   LinuxSampler - modular, streaming capable sampler                     *
  *                                                                         *
  *   Copyright (C) 2003, 2004 by Benno Senoner and Christian Schoenebeck   *
- *   Copyright (C) 2005 - 2012 Christian Schoenebeck                       *
+ *   Copyright (C) 2005 - 2017 Christian Schoenebeck                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -43,13 +43,23 @@ class ConditionInternal;
  */
 class Condition : public Mutex {
     public:
-        /**
-         * Constructor
+        /** @brief Constructor
+         *
+         * Creates a new thread safe condition variable.
+         *
+         * Note that the default bahavior of the underlying mutex is
+         * @c NON_RECURSIVE by default, because in general if your design
+         * requires the Condition object's lock state to be recursive instead,
+         * then most probably this may result in dead locks or even undefined
+         * behavior, because the underlying OS API for conditions may not be
+         * compatible with recursive mutexes!
          *
          * @param bInitialCondition - optional: starting condition
          *                            (default = false)
+         * @param mutexType - optional: fundamental behavior of underlying mutex
+         *                    (default: @c NON_RECURSIVE)
          */
-        Condition(bool bInitialCondition = false);
+        Condition(bool bInitialCondition = false, Mutex::type_t mutexType = Mutex::NON_RECURSIVE);
 
         /**
          * Destructor
@@ -97,6 +107,23 @@ class Condition : public Mutex {
         int WaitAndUnlockIf(bool bCondition, long TimeoutSeconds = 0L, long TimeoutNanoSeconds = 0L);
 
         /**
+         * You should use this method instead of WaitIf() in case the calling
+         * thread already owns the Condition object's underlying mutex lock by
+         * previously calling Lock() before. Essentially the only difference to
+         * WaitIf() is that PreLockedWaitIf() does not call Lock() by itself.
+         */
+        int PreLockedWaitIf(bool bCondition, long TimeoutSeconds = 0L, long TimeoutNanoSeconds = 0L);
+
+        /**
+         * You should use this method instead of WaitAndUnlockIf() in case the
+         * calling thread already owns the Condition object's underlying mutex
+         * lock by previously calling Lock() before. Essentially the only
+         * difference to WaitAndUnlockIf() is that PreLockedWaitAndUnlockIf()
+         * does not call Lock() by itself.
+         */
+        int PreLockedWaitAndUnlockIf(bool bCondition, long TimeoutSeconds = 0L, long TimeoutNanoSeconds = 0L);
+
+        /**
          * Set Condition object to \a bCondition. Upon change of the
          * condition, other threads waiting for \a bCondition will be
          * awakened. (Note the condition will not be locked for the calling
@@ -105,6 +132,14 @@ class Condition : public Mutex {
          * @param bCondition - new condition
          */
         void Set(bool bCondition);
+
+        /**
+         * You should use this method instead of Set() in case the calling
+         * thread already owns the Condition object's underlying mutex lock by
+         * previously calling Lock() before. Essentially the only difference to
+         * Set() is that PreLockedSet() does not call Lock() by itself.
+         */
+        void PreLockedSet(bool bCondition);
 
         /**
          * Returns the current boolean state of this condition object. This
@@ -127,6 +162,9 @@ class Condition : public Mutex {
 #endif
 
     protected:
+        int WaitIfInternal(bool bLock, bool bCondition, long TimeoutSeconds, long TimeoutNanoSeconds);
+        void SetInternal(bool bLock, bool bCondition);
+
     #if defined(WIN32)
         friend class ConditionInternal;
         struct win32thread_cond_t {

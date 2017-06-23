@@ -3,7 +3,7 @@
  *   LinuxSampler - modular, streaming capable sampler                     *
  *                                                                         *
  *   Copyright (C) 2003, 2004 by Benno Senoner and Christian Schoenebeck   *
- *   Copyright (C) 2005 - 2015 Christian Schoenebeck                       *
+ *   Copyright (C) 2005 - 2017 Christian Schoenebeck                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -246,7 +246,9 @@ int win32thread_cond_wait (Condition::win32thread_cond_t *cv, win32thread_mutex_
 // *************** Condition ***************
 // *
 
-Condition::Condition(bool bInitialCondition) {
+Condition::Condition(bool bInitialCondition, Mutex::type_t mutexType)
+    : Mutex(mutexType)
+{
 dmsg(7,("Condition:: constructor, bInitialCondition=%d\n", bInitialCondition));
 #if defined(WIN32)
     ConditionInternal::win32thread_cond_init(&__win32_true_condition, NULL);
@@ -279,11 +281,13 @@ namespace {
 }
 #endif
 
-int Condition::WaitIf(bool bCondition, long TimeoutSeconds, long TimeoutNanoSeconds) {
-    dmsg(7,("Condition::WaitIf: bCondition=%d  TimeoutSeconds=%ld  TimeoutNanoSeconds=%ld\n",bCondition, TimeoutSeconds, TimeoutNanoSeconds));
-    dmsg(7,("Condition::Waitif() -> LOCK()\n"));
-    Lock();
-    dmsg(7,("Condition::Waitif() -> LOCK() passed\n"));
+int Condition::WaitIfInternal(bool bLock, bool bCondition, long TimeoutSeconds, long TimeoutNanoSeconds) {
+    dmsg(7,("Condition::WaitIfInternal: bCondition=%d  TimeoutSeconds=%ld  TimeoutNanoSeconds=%ld\n",bCondition, TimeoutSeconds, TimeoutNanoSeconds));
+    if (bLock) {
+        dmsg(7,("Condition::WaitIfInternal() -> LOCK()\n"));
+        Lock();
+        dmsg(7,("Condition::WaitIfInternal() -> LOCK() passed\n"));
+    }
     int res = 0;
     #ifndef WIN32
     pthread_cleanup_push(condition_cleanup, this);
@@ -294,9 +298,9 @@ int Condition::WaitIf(bool bCondition, long TimeoutSeconds, long TimeoutNanoSeco
             win32_timespec timeout;
             timeout.tv_sec  = TimeoutSeconds;
             timeout.tv_nsec = TimeoutNanoSeconds;
-            dmsg(7,("Condition::Waitif() -> waiting for 'false' condition with timeout\n"));
+            dmsg(7,("Condition::WaitIfInternal() -> waiting for 'false' condition with timeout\n"));
             res = ConditionInternal::win32thread_cond_timedwait(&__win32_false_condition, &hMutex, &timeout);
-            dmsg(7,("Condition::Waitif() -> awakened from 'false' condition waiting\n"));
+            dmsg(7,("Condition::WaitIfInternal() -> awakened from 'false' condition waiting\n"));
             #else
             if (TimeoutSeconds || TimeoutNanoSeconds) { // wait with timeout
                 struct timeval now;
@@ -304,14 +308,14 @@ int Condition::WaitIf(bool bCondition, long TimeoutSeconds, long TimeoutNanoSeco
                 timespec timeout;
                 timeout.tv_sec  = now.tv_sec + TimeoutSeconds;
                 timeout.tv_nsec = now.tv_usec * 1000 + TimeoutNanoSeconds;
-                dmsg(7,("Condition::Waitif() -> waiting for 'false' condition with timeout\n"));
+                dmsg(7,("Condition::WaitIfInternal() -> waiting for 'false' condition with timeout\n"));
                 res = pthread_cond_timedwait(&__posix_false_condition, &__posix_mutex, &timeout);
-                dmsg(7,("Condition::Waitif() -> awakened from 'false' condition waiting\n"));
+                dmsg(7,("Condition::WaitIfInternal() -> awakened from 'false' condition waiting\n"));
             }
             else { // wait without timeout
-                dmsg(7,("Condition::Waitif() -> waiting for 'false' condition\n"));
+                dmsg(7,("Condition::WaitIfInternal() -> waiting for 'false' condition\n"));
                 pthread_cond_wait(&__posix_false_condition, &__posix_mutex);
-                dmsg(7,("Condition::Waitif() -> awakened from 'false' condition waiting\n"));
+                dmsg(7,("Condition::WaitIfInternal() -> awakened from 'false' condition waiting\n"));
             }
             #endif
         }
@@ -320,9 +324,9 @@ int Condition::WaitIf(bool bCondition, long TimeoutSeconds, long TimeoutNanoSeco
             win32_timespec timeout;
             timeout.tv_sec  = TimeoutSeconds;
             timeout.tv_nsec = TimeoutNanoSeconds;
-            dmsg(7,("Condition::Waitif() -> waiting for 'true' condition with timeout\n"));
+            dmsg(7,("Condition::WaitIfInternal() -> waiting for 'true' condition with timeout\n"));
             res = ConditionInternal::win32thread_cond_timedwait(&__win32_true_condition, &hMutex, &timeout);
-            dmsg(7,("Condition::Waitif() -> awakened from 'true' condition waiting\n"));
+            dmsg(7,("Condition::WaitIfInternal() -> awakened from 'true' condition waiting\n"));
             #else
             if (TimeoutSeconds || TimeoutNanoSeconds) { // wait with timeout
                 struct timeval now;
@@ -330,14 +334,14 @@ int Condition::WaitIf(bool bCondition, long TimeoutSeconds, long TimeoutNanoSeco
                 timespec timeout;
                 timeout.tv_sec  = now.tv_sec + TimeoutSeconds;
                 timeout.tv_nsec = now.tv_usec * 1000 + TimeoutNanoSeconds;
-                dmsg(7,("Condition::Waitif() -> waiting for 'true' condition with timeout\n"));
+                dmsg(7,("Condition::WaitIfInternal() -> waiting for 'true' condition with timeout\n"));
                 res = pthread_cond_timedwait(&__posix_true_condition, &__posix_mutex, &timeout);
-                dmsg(7,("Condition::Waitif() -> awakened from 'true' condition waiting\n"));
+                dmsg(7,("Condition::WaitIfInternal() -> awakened from 'true' condition waiting\n"));
             }
             else { // wait without timeout
-                dmsg(7,("Condition::Waitif() -> waiting for 'true' condition\n"));
+                dmsg(7,("Condition::WaitIfInternal() -> waiting for 'true' condition\n"));
                 pthread_cond_wait(&__posix_true_condition, &__posix_mutex);
-                dmsg(7,("Condition::Waitif() -> awakened from 'true' condition waiting\n"));
+                dmsg(7,("Condition::WaitIfInternal() -> awakened from 'true' condition waiting\n"));
             }
             #endif
         }
@@ -348,17 +352,33 @@ int Condition::WaitIf(bool bCondition, long TimeoutSeconds, long TimeoutNanoSeco
     return res;
 }
 
+int Condition::WaitIf(bool bCondition, long TimeoutSeconds, long TimeoutNanoSeconds) {
+    return WaitIfInternal(true/*do lock*/, bCondition, TimeoutSeconds, TimeoutNanoSeconds);
+}
+
+int Condition::PreLockedWaitIf(bool bCondition, long TimeoutSeconds, long TimeoutNanoSeconds) {
+    return WaitIfInternal(false/*don't lock*/, bCondition, TimeoutSeconds, TimeoutNanoSeconds);
+}
+
 int Condition::WaitAndUnlockIf(bool bCondition, long TimeoutSeconds, long TimeoutNanoSeconds) {
-    int res = WaitIf(bCondition, TimeoutSeconds, TimeoutNanoSeconds);
+    int res = WaitIfInternal(true/*do lock*/, bCondition, TimeoutSeconds, TimeoutNanoSeconds);
     dmsg(7,("Condition::WaitAndUnlockIf() -> UNLOCK()\n"));
     Unlock();
     dmsg(7,("Condition::WaitAndUnlockIf() -> UNLOCK() passed\n"));
     return res;
 }
 
-void Condition::Set(bool bCondition) {
+int Condition::PreLockedWaitAndUnlockIf(bool bCondition, long TimeoutSeconds, long TimeoutNanoSeconds) {
+    int res = WaitIfInternal(false/*don't lock*/, bCondition, TimeoutSeconds, TimeoutNanoSeconds);
+    dmsg(7,("Condition::PreLockedWaitAndUnlockIf() -> UNLOCK()\n"));
+    Unlock();
+    dmsg(7,("Condition::PreLockedWaitAndUnlockIf() -> UNLOCK() passed\n"));
+    return res;
+}
+
+void Condition::SetInternal(bool bLock, bool bCondition) {
     dmsg(7,("Condition::Set() -> LOCK()\n"));
-    LockGuard lock(*this);
+    LockGuard lock = (bLock) ? LockGuard(*this) : LockGuard();
     dmsg(7,("Condition::Set() -> LOCK() passed\n"));
     if (this->bCondition != bCondition) {
         this->bCondition = bCondition;
@@ -379,6 +399,14 @@ void Condition::Set(bool bCondition) {
             #endif
         }
     }
+}
+
+void Condition::Set(bool bCondition) {
+    SetInternal(true/*do lock*/, bCondition);
+}
+
+void Condition::PreLockedSet(bool bCondition) {
+    SetInternal(false/*don't lock*/, bCondition);
 }
 
 bool Condition::GetUnsafe() {
