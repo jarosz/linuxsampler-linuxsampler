@@ -1216,6 +1216,13 @@ namespace sfz
             while (linestream >> token)
             {
                 linestream >> std::noskipws;
+                if (token[0] == '<') {
+                    std::string::size_type p = token.find('>', 1);
+                    if (p != std::string::npos && p < (token.size() - 1)) {
+                        linestream.seekg(p + 1 - token.size(), std::stringstream::cur);
+                        token.erase(p + 1);
+                    }
+                }
                 if (token[0] == '<' && token[token.size()-1] == '>')
                 {
                     // HEAD
