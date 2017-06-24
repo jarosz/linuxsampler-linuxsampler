@@ -9,7 +9,8 @@
 
 // This header defines data types shared between the VM core implementation
 // (inside the current source directory) and other parts of the sampler
-// (located at other source directories).
+// (located at other source directories). It also acts as public API of the
+// Real-Time script engine for other applications.
 
 #ifndef LS_INSTR_SCRIPT_PARSER_COMMON_H
 #define LS_INSTR_SCRIPT_PARSER_COMMON_H
@@ -912,9 +913,13 @@ namespace LinuxSampler {
     /**
      * Reflects the precise position and span of a specific code block within
      * a script. This is currently only used for the locations of commented
-     * code blocks due to preprocessor statements.
+     * code blocks due to preprocessor statements, and for parser errors and
+     * parser warnings.
      *
-     * @see VMParserContext::preprocessorComments()
+     * @see ParserIssue for code locations of parser errors and parser warnings
+     *
+     * @see VMParserContext::preprocessorComments() for locations of code which
+     *      have been filtered out by preprocessor statements
      */
     struct CodeBlock {
         int firstLine; ///< The first line number of this code block within the script (indexed with 1 being the very first line).
@@ -931,12 +936,8 @@ namespace LinuxSampler {
      *
      * @see VMSourceToken for processing syntax highlighting instead.
      */
-    struct ParserIssue {
+    struct ParserIssue : CodeBlock {
         String txt; ///< Human readable explanation text of the parser issue.
-        int firstLine; ///< The first line number within the script where this issue was encountered (indexed with 1 being the very first line).
-        int lastLine; ///< The last line number within the script where this issue was encountered.
-        int firstColumn; ///< The first column within the script where this issue was encountered (indexed with 1 being the very first column).
-        int lastColumn; ///< The last column within the script where this issue was encountered.
         ParserIssueType_t type; ///< Whether this issue is either a parser error or just a parser warning.
 
         /**
