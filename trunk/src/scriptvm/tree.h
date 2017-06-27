@@ -65,12 +65,12 @@ public:
 };
 typedef Ref<IntExpr,Node> IntExprRef;
 
-/*class IntArrayExpr : virtual public VMIntArrayExpr, virtual public Expression {
+class IntArrayExpr : virtual public VMIntArrayExpr, virtual public Expression {
 public:
     ExprType_t exprType() const { return INT_ARR_EXPR; }
     String evalCastToStr();
 };
-typedef Ref<IntArrayExpr,Node> IntArrayExprRef;*/
+typedef Ref<IntArrayExpr,Node> IntArrayExprRef;
 
 class StringExpr : virtual public VMStringExpr, virtual public Expression {
 public:
@@ -173,7 +173,7 @@ public:
 };
 typedef Ref<PolyphonicIntVariable,Node> PolyphonicIntVariableRef;
 
-class IntArrayVariable : public Variable, virtual public VMIntArrayExpr {
+class IntArrayVariable : public Variable, virtual public IntArrayExpr {
     ArrayList<int> values;
 public:
     IntArrayVariable(ParserContext* ctx, int size);
@@ -205,10 +205,10 @@ public:
 typedef Ref<BuiltInIntArrayVariable,Node> BuiltInIntArrayVariableRef;
 
 class IntArrayElement : public IntVariable {
-    IntArrayVariableRef array;
+    IntArrayExprRef array;
     IntExprRef index;
 public:
-    IntArrayElement(IntArrayVariableRef array, IntExprRef arrayIndex);
+    IntArrayElement(IntArrayExprRef array, IntExprRef arrayIndex);
     void assign(Expression* expr);
     int evalInt();
     void dump(int level = 0);
@@ -333,7 +333,7 @@ public:
     virtual Statements* branch(uint i) const = 0;
 };
 
-class DynamicVariableCall : public Variable, virtual public IntExpr, virtual public StringExpr {
+class DynamicVariableCall : public Variable, virtual public IntExpr, virtual public StringExpr, virtual public IntArrayExpr {
     VMDynVar* dynVar;
     String varName;
 public:
@@ -347,6 +347,9 @@ public:
     int evalInt() OVERRIDE;
     String evalStr() OVERRIDE;
     String evalCastToStr() OVERRIDE;
+    int arraySize() const OVERRIDE { return dynVar->asIntArray()->arraySize(); }
+    int evalIntElement(uint i) OVERRIDE { return dynVar->asIntArray()->evalIntElement(i); }
+    void assignIntElement(uint i, int value) { return dynVar->asIntArray()->assignIntElement(i, value); }
     void dump(int level = 0) OVERRIDE;
 };
 typedef Ref<DynamicVariableCall,Node> DynamicVariableCallRef;
@@ -743,6 +746,8 @@ public:
     void signalAbort() OVERRIDE {
         flags = StmtFlags_t(flags | STMT_ABORT_SIGNALLED);
     }
+
+    void forkTo(VMExecContext* ectx) const OVERRIDE;
 };
 
 } // namespace LinuxSampler

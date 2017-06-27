@@ -43,6 +43,21 @@ namespace LinuxSampler {
     };
 
     /**
+     * Implements the built-in array %NKSP_CALLBACK_CHILD_ID[] script variable.
+     */
+    class InstrumentScriptVMDynVar_NKSP_CALLBACK_CHILD_ID : public VMDynIntArrayVar {
+    public:
+        InstrumentScriptVMDynVar_NKSP_CALLBACK_CHILD_ID(InstrumentScriptVM* parent);
+        VMIntArrayExpr* asIntArray() const OVERRIDE;
+        int arraySize() const OVERRIDE;
+        bool isAssignable() const OVERRIDE { return false; }
+        int evalIntElement(uint i) OVERRIDE;
+        void assignIntElement(uint i, int value) OVERRIDE {}
+    protected:
+        InstrumentScriptVM* m_vm;
+    };
+
+    /**
      * Implements the built-in %ALL_EVENTS script array variable.
      */
     class InstrumentScriptVMDynVar_ALL_EVENTS : public VMDynIntArrayVar {

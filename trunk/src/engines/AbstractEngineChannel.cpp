@@ -5,7 +5,7 @@
  *   Copyright (C) 2003,2004 by Benno Senoner and Christian Schoenebeck    *
  *   Copyright (C) 2005-2008 Christian Schoenebeck                         *
  *   Copyright (C) 2009-2012 Christian Schoenebeck and Grigor Iliev        *
- *   Copyright (C) 2012-2016 Christian Schoenebeck and Andreas Persson     *
+ *   Copyright (C) 2012-2017 Christian Schoenebeck and Andreas Persson     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -982,6 +982,49 @@ namespace LinuxSampler {
         pScript->suspendedEvents.erase(*pCallback);
         pCallback->scheduleTime = now + 1;
         pScript->suspendedEvents.insert(*pCallback);
+    }
+
+    /** @brief Fork the given script execution instance.
+     *
+     * Called by real-time instrument script function fork() to create a new
+     * script execution instance (child) of the script execution instance
+     * (parent) that was calling fork(). This is essentially like creating a
+     * new thread for a script handler being executing. The entire execution
+     * state of parent is copied to the "forked" child.
+     *
+     * @param parent - original active script callback instance from which the
+     *                 new child shall be forked from
+     * @param bAutoAbort - whether the forked child shall automatically be
+     *                     terminated as soon as parent terminates
+     * @returns forked new child execution instance
+     */
+    RTList<ScriptEvent>::Iterator AbstractEngineChannel::forkScriptCallback(ScriptEvent* parent, bool bAutoAbort) {
+        // check if the max. amount of child forks for this parent event handler
+        // instance have not been exceeded yet
+        if (parent->countChildHandlers() >= MAX_FORK_PER_SCRIPT_HANDLER)
+            return RTList<ScriptEvent>::Iterator();
+
+        // allocate a new script callback instance for child to be forked
+        RTList<ScriptEvent>::Iterator itChild = pScript->pEvents->allocAppend();
+        if (!itChild) return itChild;
+
+        // copy entire script handler state from parent to forked child
+        parent->forkTo(&*itChild, bAutoAbort);
+
+        // stick the parent ID and child ID respectively to each other
+        itChild->parentHandlerID = GetScriptCallbackID(parent);
+        parent->addChildHandlerID( GetScriptCallbackID(&*itChild) );
+
+        // insert newly created (forked) child event handler instance to the
+        // scheduler queue for being executed soon
+        pEngine->pEventGenerator->scheduleAheadMicroSec(
+            pScript->suspendedEvents, // scheduler queue
+            *itChild, // script event
+            parent->cause.FragmentPos(), // current time of script event (basis for its next execution)
+            0 // "resume" new child script callback instance ASAP
+        );
+
+        return itChild;
     }
 
     FxSend* AbstractEngineChannel::AddFxSend(uint8_t MidiCtrl, String Name) throw (Exception) {

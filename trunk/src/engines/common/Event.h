@@ -309,6 +309,12 @@ namespace LinuxSampler {
     class VMEventHandler;
     class VMExecContext;
 
+    /**
+     * Maximum amount of child script handler instances one script handler is
+     * allowed to create by calling built-in script function fork().
+     */
+    #define MAX_FORK_PER_SCRIPT_HANDLER 8
+
     /** @brief Real-time instrument script event.
      *
      * Encapsulates one execution instance of a real-time instrument script for
@@ -332,6 +338,14 @@ namespace LinuxSampler {
         int executionSlices; ///< Amount of times this script event has been executed by the ScriptVM runner class.
         bool ignoreAllWaitCalls; ///< If true: calling any built-in wait*() script function should be ignored (this variable may be set with the 2nd argument of built-in script function stop_wait()).
         VMEventHandlerType_t handlerType; ///< Native representation of built-in script variable $NI_CALLBACK_TYPE, reflecting the script event type of this script event.
+        script_callback_id_t parentHandlerID; ///< Only in case this script handler instance was created by calling built-in script function fork(): callback ID of the parent event handler instance which created this child. For regular event handler instances which were not created by fork(), this variable reflects 0 (which is always considered an invalid handler ID).
+        script_callback_id_t childHandlerID[MAX_FORK_PER_SCRIPT_HANDLER+1]; ///< In case built-in script function fork() was called by this script handler instance: A zero terminated ID list of all child event handler instances (note: children will not vanish from this list after they terminated).
+        bool autoAbortByParent; ///< Only if this is a child event handler created by calling fork(): if this is true then this child will automatically aborted if the parent event handler terminates.
+        int forkIndex; ///< Only for fork() calls: distinguishment feature which is 0 for parent, 1 for 1st child, 2 for 2nd child, etc.
+
+        void forkTo(ScriptEvent* e, bool bAutoAbort) const;
+        int countChildHandlers() const;
+        void addChildHandlerID(script_callback_id_t childID);
     };
 
     /**
@@ -343,7 +357,7 @@ namespace LinuxSampler {
      * interpreted by this method to be "now".
      *
      * The meaning of @a fragmentPosBase becomes more important the larger
-     * the audio fragment size, and vice versa it bcomes less important the
+     * the audio fragment size, and vice versa it becomes less important the
      * smaller the audio fragment size.
      *
      * @param queue - destination scheduler queue

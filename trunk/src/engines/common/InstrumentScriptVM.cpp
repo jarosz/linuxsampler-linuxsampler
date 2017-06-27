@@ -237,12 +237,13 @@ namespace LinuxSampler {
         m_fnChangeDecay(this), m_fnChangeRelease(this),
         m_fnChangeAmpLFODepth(this), m_fnChangeAmpLFOFreq(this),
         m_fnChangePitchLFODepth(this), m_fnChangePitchLFOFreq(this),
-        m_fnChangeNote(this), m_fnChangeVelo(this),
+        m_fnChangeNote(this), m_fnChangeVelo(this), m_fnFork(this),
         m_fnEventStatus(this), m_fnWait2(this), m_fnStopWait(this),
         m_fnAbort(this), m_fnFadeIn(this), m_fnFadeOut(this),
         m_fnChangeVolCurve(this), m_fnChangeTuneCurve(this),
         m_fnGetEventPar(this), m_fnSetEventPar(this), m_fnChangePlayPos(this),
-        m_varEngineUptime(this), m_varCallbackID(this), m_varAllEvents(this)
+        m_varEngineUptime(this), m_varCallbackID(this), m_varAllEvents(this),
+        m_varCallbackChildID(this)
     {
         m_CC.size = _MEMBER_SIZEOF(AbstractEngineChannel, ControllerTable);
         m_CC_NUM = DECLARE_VMINT(m_event, class ScriptEvent, cause.Param.CC.Controller);
@@ -253,6 +254,7 @@ namespace LinuxSampler {
         m_KEY_DOWN.readonly = true;
         m_NI_CALLBACK_TYPE = DECLARE_VMINT_READONLY(m_event, class ScriptEvent, handlerType);
         m_NKSP_IGNORE_WAIT = DECLARE_VMINT(m_event, class ScriptEvent, ignoreAllWaitCalls);
+        m_NKSP_CALLBACK_PARENT_ID = DECLARE_VMINT_READONLY(m_event, class ScriptEvent, parentHandlerID);
     }
 
     VMExecStatus_t InstrumentScriptVM::exec(VMParserContext* parserCtx, ScriptEvent* event) {
@@ -294,6 +296,18 @@ namespace LinuxSampler {
                 parserCtx, event->execCtx, event->handlers[event->currentHandler]
             );
             event->executionSlices++;
+            if (!(res & VM_EXEC_SUSPENDED)) { // if script terminated ...
+                // check if this script handler instance has any forked children
+                // to be auto aborted
+                for (int iChild = 0; iChild < MAX_FORK_PER_SCRIPT_HANDLER &&
+                     event->childHandlerID[iChild]; ++iChild)
+                {
+                    RTList<ScriptEvent>::Iterator itChild =
+                        pEngineChannel->ScriptCallbackByID(event->childHandlerID[iChild]);
+                    if (itChild && itChild->autoAbortByParent)
+                        itChild->execCtx->signalAbort();
+                }
+            }
             if (res & VM_EXEC_SUSPENDED || res & VM_EXEC_ERROR) return res;
         }
 
@@ -312,6 +326,7 @@ namespace LinuxSampler {
 //         m["$POLY_AT_NUM"] = &m_POLY_AT_NUM;
         m["$NI_CALLBACK_TYPE"] = &m_NI_CALLBACK_TYPE;
         m["$NKSP_IGNORE_WAIT"] = &m_NKSP_IGNORE_WAIT;
+        m["$NKSP_CALLBACK_PARENT_ID"] = &m_NKSP_CALLBACK_PARENT_ID;
 
         return m;
     }
@@ -360,6 +375,7 @@ namespace LinuxSampler {
         m["%ALL_EVENTS"] = &m_varAllEvents;
         m["$ENGINE_UPTIME"] = &m_varEngineUptime;
         m["$NI_CALLBACK_ID"] = &m_varCallbackID;
+        m["%NKSP_CALLBACK_CHILD_ID"] = &m_varCallbackChildID;
 
         return m;
     }
@@ -401,6 +417,7 @@ namespace LinuxSampler {
         else if (name == "wait") return &m_fnWait2; // override wait() core implementation
         else if (name == "stop_wait") return &m_fnStopWait;
         else if (name == "abort") return &m_fnAbort;
+        else if (name == "fork") return &m_fnFork;
 
         // built-in script functions of derived VM class
         return ScriptVM::functionByName(name);

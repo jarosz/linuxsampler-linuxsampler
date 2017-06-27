@@ -213,6 +213,10 @@ Version SVN trunk (?)
     - Print a time stamp along to each call of built-in function "message()".
     - ScriptVM API: Added VMParserContext::preprocessorComments() which allows
       to retrieve all code blocks filtered out by the preprocessor.
+    - Added built-in script function "fork()".
+    - Added built-in array variable %NKSP_CALLBACK_CHILD_ID[].
+    - Added built-in variable $NKSP_CALLBACK_PARENT_ID.
+    - Fixed potential crash when accessing dynamic built-in array variables.
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

@@ -693,8 +693,27 @@ class Pool : public RTList<T> {
             if (data)  delete[] data;
         }
 
+        /**
+         * Returns true if there is at least one free element that could be
+         * allocated from the pool with i.e. allocAppend() or allocPreprend().
+         *
+         * @see poolHasFreeElements()
+         */
         inline bool poolIsEmpty() const {
             return freelist.isEmpty();
+        }
+
+        /**
+         * Returns true if at least the requested amount of free @a elements is
+         * currently available for being allocated from the pool with i.e.
+         * allocAppend() or allocPreprend().
+         *
+         * @see poolIsEmpty()
+         */
+        bool poolHasFreeElements(int elements) {
+            for (Iterator it = freelist.first(); it != freelist.end() && elements >= 0; ++it)
+                --elements;
+            return elements <= 0;
         }
 
         /**

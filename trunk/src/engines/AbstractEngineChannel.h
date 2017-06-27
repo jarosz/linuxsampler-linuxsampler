@@ -112,6 +112,12 @@ namespace LinuxSampler {
 
             void ScheduleResumeOfScriptCallback(RTList<ScriptEvent>::Iterator& itCallback, sched_time_t now, bool forever);
 
+            bool hasFreeScriptCallbacks(int n) const {
+                return pScript->pEvents->poolHasFreeElements(n);
+            }
+
+            RTList<ScriptEvent>::Iterator forkScriptCallback(ScriptEvent* parent, bool bAutoAbort);
+
             friend class AbstractVoice;
             friend class AbstractEngine;
             template<class TV, class TRR, class TR, class TD, class TIM, class TI> friend class EngineBase;

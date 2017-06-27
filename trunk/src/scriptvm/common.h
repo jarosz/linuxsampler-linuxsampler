@@ -880,6 +880,13 @@ namespace LinuxSampler {
          * instance.
          */
         virtual void signalAbort() = 0;
+
+        /**
+         * Copies the current entire execution state from this object to the
+         * given object. So this can be used to "fork" a new script thread which
+         * then may run independently with its own polyphonic data for instance.
+         */
+        virtual void forkTo(VMExecContext* ectx) const = 0;
     };
 
     /** @brief Script callback for a certain event.

@@ -269,6 +269,7 @@ namespace LinuxSampler {
         //int m_POLY_AT_NUM; //TODO: ...
         VMIntRelPtr  m_NI_CALLBACK_TYPE;
         VMIntRelPtr  m_NKSP_IGNORE_WAIT;
+        VMIntRelPtr  m_NKSP_CALLBACK_PARENT_ID;
 
         // built-in script functions
         InstrumentScriptVMFunction_play_note m_fnPlayNote;
@@ -295,6 +296,7 @@ namespace LinuxSampler {
         InstrumentScriptVMFunction_change_pitch_lfo_freq m_fnChangePitchLFOFreq;
         InstrumentScriptVMFunction_change_note m_fnChangeNote;
         InstrumentScriptVMFunction_change_velo m_fnChangeVelo;
+        InstrumentScriptVMFunction_fork m_fnFork;
         InstrumentScriptVMFunction_event_status m_fnEventStatus;
         InstrumentScriptVMFunction_wait m_fnWait2;
         InstrumentScriptVMFunction_stop_wait m_fnStopWait;
@@ -309,6 +311,7 @@ namespace LinuxSampler {
         InstrumentScriptVMDynVar_ENGINE_UPTIME m_varEngineUptime;
         InstrumentScriptVMDynVar_NI_CALLBACK_ID m_varCallbackID;
         InstrumentScriptVMDynVar_ALL_EVENTS m_varAllEvents;
+        InstrumentScriptVMDynVar_NKSP_CALLBACK_CHILD_ID m_varCallbackChildID;
 
         friend class InstrumentScriptVMFunction_play_note;
         friend class InstrumentScriptVMFunction_set_controller;
@@ -345,9 +348,11 @@ namespace LinuxSampler {
         friend class InstrumentScriptVMFunction_wait;
         friend class InstrumentScriptVMFunction_stop_wait;
         friend class InstrumentScriptVMFunction_abort;
+        friend class InstrumentScriptVMFunction_fork;
         friend class InstrumentScriptVMDynVar_ENGINE_UPTIME;
         friend class InstrumentScriptVMDynVar_NI_CALLBACK_ID;
         friend class InstrumentScriptVMDynVar_ALL_EVENTS;
+        friend class InstrumentScriptVMDynVar_NKSP_CALLBACK_CHILD_ID;
     };
 
 } // namespace LinuxSampler

@@ -35,7 +35,7 @@ String IntExpr::evalCastToStr() {
     return ToString(evalInt());
 }
 
-/*String IntArrayExpr::evalCastToStr() {
+String IntArrayExpr::evalCastToStr() {
     String s = "{";
     for (int i = 0; i < arraySize(); ++i) {
         int val = evalIntElement(i);
@@ -44,7 +44,7 @@ String IntExpr::evalCastToStr() {
     }
     s += "}";
     return s;
-}*/
+}
 
 int IntLiteral::evalInt() {
     return value;
@@ -521,7 +521,7 @@ void BuiltInIntArrayVariable::dump(int level) {
     printf("Built-In Int Array Variable '%s'\n", name.c_str());
 }
 
-IntArrayElement::IntArrayElement(IntArrayVariableRef array, IntExprRef arrayIndex)
+IntArrayElement::IntArrayElement(IntArrayExprRef array, IntExprRef arrayIndex)
     : IntVariable(NULL, false, false, 0), array(array), index(arrayIndex)
 {    
 }
@@ -1065,6 +1065,18 @@ void ParserContext::registerBuiltInDynVariables(const std::map<String,VMDynVar*>
         DynamicVariableCallRef ref = new DynamicVariableCall(it->first, this, it->second);
         vartable[it->first] = ref;
     }
+}
+
+void ExecContext::forkTo(VMExecContext* ectx) const {
+    ExecContext* child = dynamic_cast<ExecContext*>(ectx);
+
+    child->polyphonicIntMemory.copyFlatFrom(polyphonicIntMemory);
+    child->status = VM_EXEC_SUSPENDED;
+    child->flags = STMT_SUCCESS;
+    child->stack.copyFlatFrom(stack);
+    child->stackFrame = stackFrame;
+    child->suspendMicroseconds = 0;
+    child->instructionsCount = 0;
 }
 
 } // namespace LinuxSampler

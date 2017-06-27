@@ -1,6 +1,6 @@
 /***************************************************************************
  *                                                                         *
- *   Copyright (C) 2005 - 2014 Christian Schoenebeck                       *
+ *   Copyright (C) 2005 - 2017 Christian Schoenebeck                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,6 +22,7 @@
 #define __LS_ARRAYLIST_H__
 
 #include "Exception.h"
+#include <string.h> // for memcpy()
 
 namespace LinuxSampler {
 
@@ -162,7 +163,11 @@ namespace LinuxSampler {
             }
 
             /**
-             * Assignment.
+             * Generalized assignment with size adjustment and deep copy of
+             * elements. Note that this method/operator re-allocates, so it is
+             * not appropriate for being used in a real-time context!
+             *
+             * @see copyFlatFrom() for real-time safe copying
              */
             ArrayList& operator=(const ArrayList& list) {
                 if (this != &list) {
@@ -170,6 +175,15 @@ namespace LinuxSampler {
                     copy(list);
                 }
                 return *this;
+            }
+
+            /**
+             * Real-time safe copying elements (flat, no deep copy) from
+             * given @a list to this list.
+             */
+            void copyFlatFrom(const ArrayList& list) {
+                const int n = (size() < list.size()) ? size() : list.size();
+                memcpy(pData, list.pData, n * sizeof(T));
             }
 
         private:

@@ -1914,7 +1914,7 @@ namespace LinuxSampler {
     // abort() function
 
     InstrumentScriptVMFunction_abort::InstrumentScriptVMFunction_abort(InstrumentScriptVM* parent)
-    : m_vm(parent)
+        : m_vm(parent)
     {
     }
 
@@ -1934,6 +1934,60 @@ namespace LinuxSampler {
         itCallback->execCtx->signalAbort();
 
         return successResult();
+    }
+
+    // fork() function
+
+    InstrumentScriptVMFunction_fork::InstrumentScriptVMFunction_fork(InstrumentScriptVM* parent)
+        : m_vm(parent)
+    {
+    }
+
+    VMFnResult* InstrumentScriptVMFunction_fork::exec(VMFnArgs* args) {
+        // check if this is actually the parent going to fork, or rather one of
+        // the children which is already forked
+        if (m_vm->m_event->forkIndex != 0) { // this is the entry point for a child ...
+            int forkResult = m_vm->m_event->forkIndex;
+            // reset so that this child may i.e. also call fork() later on
+            m_vm->m_event->forkIndex = 0;
+            return successResult(forkResult);
+        }
+
+        // if we are here, then this is the parent, so we must fork this parent
+
+        const int n =
+            (args->argsCount() >= 1) ? args->arg(0)->asInt()->evalInt() : 1;
+        const bool bAutoAbort =
+            (args->argsCount() >= 2) ? args->arg(1)->asInt()->evalInt() : true;
+
+        if (m_vm->m_event->countChildHandlers() + n > MAX_FORK_PER_SCRIPT_HANDLER) {
+            wrnMsg("fork(): requested amount would exceed allowed limit per event handler");
+            return successResult(-1);
+        }
+
+        AbstractEngineChannel* pEngineChannel =
+            static_cast<AbstractEngineChannel*>(m_vm->m_event->cause.pEngineChannel);
+
+        if (!pEngineChannel->hasFreeScriptCallbacks(n)) {
+            wrnMsg("fork(): global limit of event handlers exceeded");
+            return successResult(-1);
+        }
+
+        for (int iChild = 0; iChild < n; ++iChild) {
+            RTList<ScriptEvent>::Iterator itChild =
+                pEngineChannel->forkScriptCallback(m_vm->m_event, bAutoAbort);
+            if (!itChild) { // should never happen, otherwise its a bug ...
+                errMsg("fork(): internal error while allocating child");
+                return errorResult(-1); // terminate script
+            }
+            // since both parent, as well all child script execution instances
+            // all land in this exect() method, the following is (more or less)
+            // the only feature that lets us distinguish the parent and
+            // respective children from each other in this exect() method
+            itChild->forkIndex = iChild + 1;
+        }
+
+        return successResult(0);
     }
 
 } // namespace LinuxSampler

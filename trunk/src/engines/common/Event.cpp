@@ -3,7 +3,7 @@
  *   LinuxSampler - modular, streaming capable sampler                     *
  *                                                                         *
  *   Copyright (C) 2003, 2004 by Benno Senoner and Christian Schoenebeck   *
- *   Copyright (C) 2005 - 2016 Christian Schoenebeck                       *
+ *   Copyright (C) 2005 - 2017 Christian Schoenebeck                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -186,6 +186,67 @@ namespace LinuxSampler {
         Init();
         pEventGenerator = pGenerator;
         iFragmentPos    = FragmentPos;
+    }
+
+    /**
+     * Implements fork() behavior, that is it copies the current state of this
+     * script event handler to the new event handler @a e with entire execution
+     * state and polyphonic data.
+     *
+     * After calling this method, addChildHandler() should be called as well.
+     */
+    void ScriptEvent::forkTo(ScriptEvent* e, bool bAutoAbort) const {
+        e->scheduleTime = scheduleTime;
+        e->cause = cause;
+        e->id = id;
+        // forked script shall only run the current event handler of parent,
+        // no other potentially chained handlers
+        e->handlers[0] = handlers[currentHandler];
+        e->handlers[1] = NULL; // NULL termination of list
+        e->currentHandler = 0;
+        e->executionSlices = 0;
+        e->ignoreAllWaitCalls = ignoreAllWaitCalls;
+        e->handlerType = handlerType;
+        e->parentHandlerID = 0; // just an arbitrary init value, must still be set later!
+        e->childHandlerID[0] = 0;
+        e->autoAbortByParent = bAutoAbort;
+        e->forkIndex = 1; // just an arbitrary init value, must still be set later!
+
+        execCtx->forkTo(e->execCtx);
+    }
+
+    /**
+     * Returns amount of child event handlers that have been created so far
+     * during the entire life time of this event handler instance by calls of
+     * this event handler instace to the built-in script function fork().
+     *
+     * To make this clear: this number does never decrease during the entire
+     * life time of an event handler instance! It may only increase, i.e. by
+     * additional calls to fork(). Consequently even if child event handler
+     * instances already terminated, this will not decrease this count.
+     */
+    int ScriptEvent::countChildHandlers() const {
+        int n = 0;
+        for (int i = 0; i < MAX_FORK_PER_SCRIPT_HANDLER && childHandlerID[i]; ++i)
+            ++n;
+        return n;
+    }
+
+    /**
+     * This must be called after calling forkTo() to stick the script callback
+     * ID of the newly forked child execution instance to the parent execution
+     * instance.
+     *
+     * @param childID - script callback ID of the newly forked child handler
+     */
+    void ScriptEvent::addChildHandlerID(script_callback_id_t childID) {
+        const int n = countChildHandlers();
+        if (n >= MAX_FORK_PER_SCRIPT_HANDLER) {
+            dmsg(1,("ScriptEvent::addChildHandlerID(): MAX_FORK_PER_SCRIPT_HANDLER exceeded, this is a bug!\n"));
+            return;
+        }
+        childHandlerID[n]   = childID;
+        childHandlerID[n+1] = 0; // zero termination of list
     }
 
 } // namespace LinuxSampler

@@ -432,6 +432,18 @@ namespace LinuxSampler {
         InstrumentScriptVM* m_vm;
     };
 
+    class InstrumentScriptVMFunction_fork : public VMIntResultFunction {
+    public:
+        InstrumentScriptVMFunction_fork(InstrumentScriptVM* parent);
+        int minRequiredArgs() const { return 0; }
+        int maxAllowedArgs() const { return 2; }
+        bool acceptsArgType(int iArg, ExprType_t type) const { return type == INT_EXPR;}
+        ExprType_t argType(int iArg) const { return INT_EXPR; }
+        VMFnResult* exec(VMFnArgs* args);
+    protected:
+        InstrumentScriptVM* m_vm;
+    };
+
 } // namespace LinuxSampler
 
 #endif // LS_INSTRSCRIPTVMFUNCTIONS_H

@@ -40,6 +40,26 @@ namespace LinuxSampler {
         return pEngineChannel->GetScriptCallbackID(m_vm->m_event);
     }
 
+    // built-in array variable %NKSP_CALLBACK_CHILD_ID[]
+
+    InstrumentScriptVMDynVar_NKSP_CALLBACK_CHILD_ID::InstrumentScriptVMDynVar_NKSP_CALLBACK_CHILD_ID(InstrumentScriptVM* parent)
+        : m_vm(parent)
+    {
+    }
+
+    VMIntArrayExpr* InstrumentScriptVMDynVar_NKSP_CALLBACK_CHILD_ID::asIntArray() const {
+        return const_cast<VMIntArrayExpr*>( dynamic_cast<const VMIntArrayExpr*>(this) );
+    }
+
+    int InstrumentScriptVMDynVar_NKSP_CALLBACK_CHILD_ID::arraySize() const {
+        return m_vm->m_event->countChildHandlers();
+    }
+
+    int InstrumentScriptVMDynVar_NKSP_CALLBACK_CHILD_ID::evalIntElement(uint i) {
+        if (i >= arraySize()) return 0;
+        return m_vm->m_event->childHandlerID[i];
+    }
+
     // built-in variable %ALL_EVENTS
 
     InstrumentScriptVMDynVar_ALL_EVENTS::InstrumentScriptVMDynVar_ALL_EVENTS(InstrumentScriptVM* parent)
