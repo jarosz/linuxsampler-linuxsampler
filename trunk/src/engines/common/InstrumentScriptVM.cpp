@@ -242,6 +242,7 @@ namespace LinuxSampler {
         m_fnAbort(this), m_fnFadeIn(this), m_fnFadeOut(this),
         m_fnChangeVolCurve(this), m_fnChangeTuneCurve(this),
         m_fnGetEventPar(this), m_fnSetEventPar(this), m_fnChangePlayPos(this),
+        m_fnCallbackStatus(this),
         m_varEngineUptime(this), m_varCallbackID(this), m_varAllEvents(this),
         m_varCallbackChildID(this)
     {
@@ -364,6 +365,9 @@ namespace LinuxSampler {
         m["$EVENT_PAR_3"] = EVENT_PAR_3;
         m["$NKSP_LINEAR"] = FADE_CURVE_LINEAR;
         m["$NKSP_EASE_IN_EASE_OUT"] = FADE_CURVE_EASE_IN_EASE_OUT;
+        m["$CALLBACK_STATUS_TERMINATED"] = CALLBACK_STATUS_TERMINATED;
+        m["$CALLBACK_STATUS_QUEUE"]      = CALLBACK_STATUS_QUEUE;
+        m["$CALLBACK_STATUS_RUNNING"]    = CALLBACK_STATUS_RUNNING;
 
         return m;
     }
@@ -418,6 +422,7 @@ namespace LinuxSampler {
         else if (name == "stop_wait") return &m_fnStopWait;
         else if (name == "abort") return &m_fnAbort;
         else if (name == "fork") return &m_fnFork;
+        else if (name == "callback_status") return &m_fnCallbackStatus;
 
         // built-in script functions of derived VM class
         return ScriptVM::functionByName(name);

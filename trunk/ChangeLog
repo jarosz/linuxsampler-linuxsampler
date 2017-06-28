@@ -217,6 +217,10 @@ Version SVN trunk (?)
     - Added built-in array variable %NKSP_CALLBACK_CHILD_ID[].
     - Added built-in variable $NKSP_CALLBACK_PARENT_ID.
     - Fixed potential crash when accessing dynamic built-in array variables.
+    - Added built-in script function "callback_status()".
+    - Added built-in constant $CALLBACK_STATUS_TERMINATED.
+    - Added built-in constant $CALLBACK_STATUS_QUEUE.
+    - Added built-in constant $CALLBACK_STATUS_RUNNING.
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

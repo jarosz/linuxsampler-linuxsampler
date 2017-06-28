@@ -1865,6 +1865,33 @@ namespace LinuxSampler {
         return successResult(pNote ? EVENT_STATUS_NOTE_QUEUE : EVENT_STATUS_INACTIVE);
     }
 
+    // callback_status() function
+
+    InstrumentScriptVMFunction_callback_status::InstrumentScriptVMFunction_callback_status(InstrumentScriptVM* parent)
+        : m_vm(parent)
+    {
+    }
+
+    VMFnResult* InstrumentScriptVMFunction_callback_status::exec(VMFnArgs* args) {
+        const script_callback_id_t id = args->arg(0)->asInt()->evalInt();
+        if (!id) {
+            wrnMsg("callback_status(): callback ID for argument 1 may not be zero");
+            return successResult();
+        }
+
+        AbstractEngineChannel* pEngineChannel =
+            static_cast<AbstractEngineChannel*>(m_vm->m_event->cause.pEngineChannel);
+
+        RTList<ScriptEvent>::Iterator itCallback = pEngineChannel->ScriptCallbackByID(id);
+        if (!itCallback)
+            return successResult(CALLBACK_STATUS_TERMINATED);
+
+        return successResult(
+            (m_vm->m_event->execCtx == itCallback->execCtx) ?
+                CALLBACK_STATUS_RUNNING : CALLBACK_STATUS_QUEUE
+        );
+    }
+
     // wait() function (overrides core wait() implementation)
 
     InstrumentScriptVMFunction_wait::InstrumentScriptVMFunction_wait(InstrumentScriptVM* parent)

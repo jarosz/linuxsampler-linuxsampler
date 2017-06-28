@@ -401,6 +401,18 @@ namespace LinuxSampler {
         InstrumentScriptVM* m_vm;
     };
 
+    class InstrumentScriptVMFunction_callback_status : public VMIntResultFunction {
+    public:
+        InstrumentScriptVMFunction_callback_status(InstrumentScriptVM* parent);
+        int minRequiredArgs() const { return 1; }
+        int maxAllowedArgs() const { return 1; }
+        bool acceptsArgType(int iArg, ExprType_t type) const { return type == INT_EXPR;}
+        ExprType_t argType(int iArg) const { return INT_EXPR; }
+        VMFnResult* exec(VMFnArgs* args);
+    protected:
+        InstrumentScriptVM* m_vm;
+    };
+
     // overrides core wait() implementation
     class InstrumentScriptVMFunction_wait : public CoreVMFunction_wait {
     public:

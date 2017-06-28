@@ -75,6 +75,12 @@ enum {
     EVENT_PAR_3,
 };
 
+enum {
+    CALLBACK_STATUS_TERMINATED = 0,
+    CALLBACK_STATUS_QUEUE = 1,
+    CALLBACK_STATUS_RUNNING = (1 << 1)
+};
+
 namespace LinuxSampler {
 
     class AbstractEngineChannel;
@@ -308,6 +314,7 @@ namespace LinuxSampler {
         InstrumentScriptVMFunction_get_event_par m_fnGetEventPar;
         InstrumentScriptVMFunction_set_event_par m_fnSetEventPar;
         InstrumentScriptVMFunction_change_play_pos m_fnChangePlayPos;
+        InstrumentScriptVMFunction_callback_status m_fnCallbackStatus;
         InstrumentScriptVMDynVar_ENGINE_UPTIME m_varEngineUptime;
         InstrumentScriptVMDynVar_NI_CALLBACK_ID m_varCallbackID;
         InstrumentScriptVMDynVar_ALL_EVENTS m_varAllEvents;
@@ -349,6 +356,7 @@ namespace LinuxSampler {
         friend class InstrumentScriptVMFunction_stop_wait;
         friend class InstrumentScriptVMFunction_abort;
         friend class InstrumentScriptVMFunction_fork;
+        friend class InstrumentScriptVMFunction_callback_status;
         friend class InstrumentScriptVMDynVar_ENGINE_UPTIME;
         friend class InstrumentScriptVMDynVar_NI_CALLBACK_ID;
         friend class InstrumentScriptVMDynVar_ALL_EVENTS;
