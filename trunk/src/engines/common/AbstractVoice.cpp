@@ -860,7 +860,12 @@ namespace LinuxSampler {
         // GSt behaviour: maximum transpose up is 40 semitones. If
         // MIDI key is more than 40 semitones above unity note,
         // the transpose is not done.
-        if (!SmplInfo.Unpitched && (MIDIKey() - (int) RgnInfo.UnityNote) < 40) pitchbasecents += (MIDIKey() - (int) RgnInfo.UnityNote) * 100;
+        //
+        // Update: Removed this GSt misbehavior. I don't think that any stock
+        // gig sound requires it to resemble its original sound.
+        // -- Christian, 2017-07-09
+        if (!SmplInfo.Unpitched /* && (MIDIKey() - (int) RgnInfo.UnityNote) < 40*/)
+            pitchbasecents += (MIDIKey() - (int) RgnInfo.UnityNote) * 100;
 
         pitch.PitchBase = RTMath::CentsToFreqRatioUnlimited(pitchbasecents) * (double(SmplInfo.SampleRate) / double(GetEngine()->SampleRate));
         pitch.PitchBendRange = 1.0 / 8192.0 * 100.0 * InstrInfo.PitchbendRange;
@@ -876,7 +881,12 @@ namespace LinuxSampler {
         // GSt behaviour: maximum transpose up is 40 semitones. If
         // MIDI key is more than 40 semitones above unity note,
         // the transpose is not done.
-        if (!SmplInfo.Unpitched && (MIDIKey() - (int) RgnInfo.UnityNote) < 40) pitchbasecents += (MIDIKey() - (int) RgnInfo.UnityNote) * 100;
+        //
+        // Update: Removed this GSt misbehavior. I don't think that any stock
+        // gig sound requires it to resemble its original sound.
+        // -- Christian, 2017-07-09
+        if (!SmplInfo.Unpitched /* && (MIDIKey() - (int) RgnInfo.UnityNote) < 40*/)
+            pitchbasecents += (MIDIKey() - (int) RgnInfo.UnityNote) * 100;
         
         pitch.PitchBase = RTMath::CentsToFreqRatioUnlimited(pitchbasecents) * (double(SmplInfo.SampleRate) / double(GetEngine()->SampleRate));
         this->Pitch = pitch;

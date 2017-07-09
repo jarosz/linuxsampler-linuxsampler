@@ -12,6 +12,10 @@ Version SVN trunk (?)
   * Gigasampler/GigaStudio format engine:
     - Fixed clicks and pumping noise with Lowpass Turbo filter on very low
       cutoff settings.
+    - Got rid of resembling an ancient GSt misbehavior which did not pitch at
+      all if an up-pitch of more than 40 semi tones was requested (I don't
+      think there is any stock gig sound that requires this behavior to
+      resemble its original sound).
 
   * general changes:
     - fixed printf type errors (mostly in debug messages)
