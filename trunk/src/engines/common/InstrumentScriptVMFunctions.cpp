@@ -838,10 +838,9 @@ namespace LinuxSampler {
 
     VMFnResult* InstrumentScriptVMFunction_change_attack::exec(VMFnArgs* args) {
         int attack = args->arg(1)->asInt()->evalInt();
-        if (attack > VM_EG_PAR_MAX_VALUE) {
-            wrnMsg("change_attack(): argument 2 may not be larger than 1000000");
-            attack = VM_EG_PAR_MAX_VALUE;
-        } else if (attack < 0) {
+        // note: intentionally not checking against a max. value here!
+        // (to allow i.e. passing 2000000 for doubling the attack time)
+        if (attack < 0) {
             wrnMsg("change_attack(): argument 2 may not be negative");
             attack = 0;
         }
@@ -925,10 +924,9 @@ namespace LinuxSampler {
 
     VMFnResult* InstrumentScriptVMFunction_change_decay::exec(VMFnArgs* args) {
         int decay = args->arg(1)->asInt()->evalInt();
-        if (decay > VM_EG_PAR_MAX_VALUE) {
-            wrnMsg("change_decay(): argument 2 may not be larger than 1000000");
-            decay = VM_EG_PAR_MAX_VALUE;
-        } else if (decay < 0) {
+        // note: intentionally not checking against a max. value here!
+        // (to allow i.e. passing 2000000 for doubling the decay time)
+        if (decay < 0) {
             wrnMsg("change_decay(): argument 2 may not be negative");
             decay = 0;
         }
@@ -1012,10 +1010,9 @@ namespace LinuxSampler {
 
     VMFnResult* InstrumentScriptVMFunction_change_release::exec(VMFnArgs* args) {
         int release = args->arg(1)->asInt()->evalInt();
-        if (release > VM_EG_PAR_MAX_VALUE) {
-            wrnMsg("change_release(): argument 2 may not be larger than 1000000");
-            release = VM_EG_PAR_MAX_VALUE;
-        } else if (release < 0) {
+        // note: intentionally not checking against a max. value here!
+        // (to allow i.e. passing 2000000 for doubling the release time)
+        if (release < 0) {
             wrnMsg("change_release(): argument 2 may not be negative");
             release = 0;
         }

@@ -225,6 +225,9 @@ Version SVN trunk (?)
     - Added built-in constant $CALLBACK_STATUS_TERMINATED.
     - Added built-in constant $CALLBACK_STATUS_QUEUE.
     - Added built-in constant $CALLBACK_STATUS_RUNNING.
+    - Removed max. value limitation of built-in functions "change_attack()",
+      "change_decay()" and "change_release()" to i.e. allow passing 2000000
+      for doubling the respective time.
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to
