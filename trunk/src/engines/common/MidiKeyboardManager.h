@@ -317,6 +317,21 @@ namespace LinuxSampler {
             }*/
 
             /**
+             * Make sure the passed MIDI key is part of the list of active keys,
+             * if it is not already, then add it to that list. Accordingly it is
+             * safe to call this method even if the requested key is already
+             * marked as active.
+             */
+            void markKeyAsActive(MidiKey* pKey) {
+                if (!pKey->Active) { // mark as active key
+                    pKey->Active = true;
+                    pKey->itSelf = pActiveKeys->allocAppend();
+                    const int iKey = pKey - &pMIDIKeyInfo[0];
+                    *pKey->itSelf = iKey;
+                }
+            }
+
+            /**
              *  Removes the given voice from the MIDI key's list of active voices.
              *  This method will be called when a voice went inactive, e.g. because
              *  it finished to playback its sample, finished its release stage or
@@ -367,7 +382,7 @@ namespace LinuxSampler {
             /**
              * Free all keys which have no active voices left
              */
-            void FreeAllInactiveKyes() {
+            void FreeAllInactiveKeys() {
                 RTList<uint>::Iterator iuiKey = pActiveKeys->first();
                 RTList<uint>::Iterator end    = pActiveKeys->end();
                 while (iuiKey != end) { // iterate through all active keys

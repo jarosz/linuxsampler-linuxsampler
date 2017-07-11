@@ -138,7 +138,11 @@ namespace LinuxSampler {
 
             template<class TV, class TRR, class TR, class TD, class TIM, class TI> friend class EngineBase;
 
+        #if CONFIG_DEVMODE
+        public:
+        #else
         protected:
+        #endif
             SampleInfo      SmplInfo;
             RegionInfo      RgnInfo;
             InstrumentInfo  InstrInfo;

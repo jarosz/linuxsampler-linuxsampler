@@ -42,6 +42,7 @@
 
 #if CONFIG_DEVMODE
 # include <string>
+# include <stdexcept>
 const std::string __err_msg_iterator_invalidated = "Pool/RTList iterator invalidated";
 #endif // CONFIG_DEVMODE
 
@@ -540,7 +541,7 @@ class RTListBase {
             src->prev  = prev;
             src->next  = dst;
             #if CONFIG_DEVMODE
-            src->list = this;
+            src->list = dst->list;
             #endif // CONFIG_DEVMODE
         }
 
@@ -553,7 +554,7 @@ class RTListBase {
             src->prev  = dst;
             src->next  = next;
             #if CONFIG_DEVMODE
-            src->list = this;
+            src->list = dst->list;
             #endif // CONFIG_DEVMODE
         }
 
@@ -714,6 +715,10 @@ class Pool : public RTList<T> {
             for (Iterator it = freelist.first(); it != freelist.end() && elements >= 0; ++it)
                 --elements;
             return elements <= 0;
+        }
+
+        int countFreeElements() {
+            return freelist.count();
         }
 
         /**

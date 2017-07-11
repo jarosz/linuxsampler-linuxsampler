@@ -202,6 +202,23 @@ namespace LinuxSampler {
                     PostProcess(engineChannels[i]);
                 }
 
+                // Just for debugging: dump the amount of free Note objects to
+                // the terminal (note due to the static variables being used,
+                // this is currently just intended for debugging with only one
+                // engine channel).
+                #if (CONFIG_DEBUG_LEVEL >= 3)
+                {
+                    static int slice = 0;
+                    static int noteCount = -1;
+                    if (slice++ % 10 == 0) {
+                        int n = pNotePool->countFreeElements();
+                        if (n != noteCount) {
+                            noteCount = n;
+                            dmsg(1,("[%d] free Note objects count = %d\n", slice / 10, n));
+                        }
+                    }
+                }
+                #endif
 
                 // empty the engine's event list for the next audio fragment
                 ClearEventLists();
@@ -739,6 +756,7 @@ namespace LinuxSampler {
                 // move new note to its host key
                 MidiKey* pKey = &pChannel->pMIDIKeyInfo[itNewNote->hostKey];
                 itNewNote.moveToEndOf(pKey->pActiveNotes);
+                pChannel->markKeyAsActive(pKey);
 
                 // assign unique note ID of this new note to the original note on event
                 itNoteOnEvent->Param.Note.ID = newNoteID;
@@ -1140,6 +1158,7 @@ namespace LinuxSampler {
              *  @returns 0 on success, a value < 0 if no active voice could be picked for voice stealing
              */
             int StealVoice(EngineChannel* pEngineChannel, Pool<Event>::Iterator& itNoteOnEvent) {
+                dmsg(3,("StealVoice()\n"));
                 if (VoiceSpawnsLeft <= 0) {
                     dmsg(1,("Max. voice thefts per audio fragment reached (you may raise CONFIG_MAX_VOICES).\n"));
                     return -1;
@@ -1163,6 +1182,10 @@ namespace LinuxSampler {
                 EngineChannelBase<V, R, I>*  pSelectedChannel;
                 int                          iChannelIndex;
                 VoiceIterator                itSelectedVoice;
+
+                #if CONFIG_DEVMODE
+                EngineChannel* pBegin = NULL; // to detect endless loop
+                #endif
 
                 // select engine channel
                 if (pLastStolenChannel) {
@@ -1206,7 +1229,7 @@ namespace LinuxSampler {
                 }
 
                 #if CONFIG_DEVMODE
-                EngineChannel* pBegin = pSelectedChannel; // to detect endless loop
+                pBegin = pSelectedChannel; // to detect endless loop
                 #endif // CONFIG_DEVMODE
 
                 while (true) { // iterate through engine channels                        
@@ -1389,6 +1412,7 @@ namespace LinuxSampler {
                         // usually there should already be a new Note object
                         NoteIterator itNote = GetNotePool()->fromID(itVoiceStealEvent->Param.Note.ID);
                         if (!itNote) { // should not happen, but just to be sure ...
+                            dmsg(2,("Engine: No Note object for stolen voice!\n"));
                             const note_id_t noteID = LaunchNewNote(pEngineChannel, itVoiceStealEvent);
                             if (!noteID) {
                                 dmsg(1,("Engine: Voice stealing failed; No Note object and Note pool empty!\n"));
@@ -1433,7 +1457,7 @@ namespace LinuxSampler {
             void PostProcess(EngineChannel* pEngineChannel) {
                 EngineChannelBase<V, R, I>* pChannel =
                     static_cast<EngineChannelBase<V, R, I>*>(pEngineChannel);
-                 pChannel->FreeAllInactiveKyes();
+                 pChannel->FreeAllInactiveKeys();
 
                 // empty the engine channel's own event lists
                 // (only events of the current audio fragment cycle)
@@ -2198,11 +2222,11 @@ namespace LinuxSampler {
                     }
                     else { // on success
                         --VoiceSpawnsLeft;
-                        if (!pKey->Active) { // mark as active key
-                            pKey->Active = true;
-                            pKey->itSelf = pChannel->pActiveKeys->allocAppend();
-                            *pKey->itSelf = itNoteOnEvent->Param.Note.Key;
-                        }
+
+                        // should actually be superfluous now, since this is
+                        // already done in LaunchNewNote()
+                        pChannel->markKeyAsActive(pKey);
+
                         if (itNewVoice->Type & Voice::type_release_trigger_required) pKey->ReleaseTrigger = true; // mark key for the need of release triggered voice(s)
                         return 0; // success
                     }
