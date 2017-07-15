@@ -13,6 +13,7 @@
 #include "engines/common/InstrumentScriptVM.h"
 #include "engines/gig/InstrumentScriptVM.h"
 #include <iostream>
+#include <fstream>
 
 /*
   This command line tool is currently merely for development and testing
@@ -42,6 +43,9 @@ static void printUsage() {
     cout << "        Either \"core\", \"gig\", \"sf2\" or \"sfz\"." << endl;
     cout << endl;
     cout << "    OPTIONS" << endl;
+    cout << "        --file FILE | -f FILE" << endl;
+    cout << "            Read from this file instead from stdin." << endl;
+    cout << endl;
     cout << "        --syntax | -s" << endl;
     cout << "            Prints the script to stdout with colored syntax highlighting" << endl;
     cout << "            and exits immediately." << endl;
@@ -69,6 +73,7 @@ static void printUsage() {
 
 static void printCodeWithSyntaxHighlighting(ScriptVM* vm);
 static void dumpSyntaxHighlighting(ScriptVM* vm);
+static String readTxtFromFile(String path);
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -76,6 +81,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
     String engine = argv[1];
+    String path;
     bool runScript = false;
 
     ScriptVM* vm;
@@ -110,6 +116,9 @@ int main(int argc, char *argv[]) {
             return 0;
         } else if (opt == "--auto-suspend") {
             vm->setAutoSuspendEnabled(true);
+        } else if (opt == "-f" || opt == "--file") {
+            if (++iArg < argc)
+                path = argv[iArg];
         } else {
             cerr << "Unknown option '" << opt << "'" << endl;
             cerr << endl;
@@ -118,7 +127,13 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    VMParserContext* parserContext = vm->loadScript(&std::cin);
+    VMParserContext* parserContext;
+    if (path.empty())
+        parserContext = vm->loadScript(&std::cin);
+    else {
+        String txt = readTxtFromFile(path);
+        parserContext = vm->loadScript(txt);
+    }
 
     std::vector<ParserIssue> errors = parserContext->errors();
     std::vector<ParserIssue> warnings = parserContext->warnings();
@@ -257,4 +272,17 @@ static void dumpSyntaxHighlighting(ScriptVM* vm) {
         }
         printf("L%d,C%d: %s \"%s\"\n", token.firstLine(), token.firstColumn(), type, token.text().c_str());
     }
+}
+
+static String readTxtFromFile(String path) {
+    std::ifstream f(path.c_str(), std::ifstream::in);
+    String s;
+    s += (char) f.get();
+    while (f.good()) {
+        char c = f.get();
+        if (c == EOF) break;
+        s += c;
+    }
+    f.close();
+    return s;
 }

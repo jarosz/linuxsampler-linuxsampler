@@ -76,6 +76,13 @@ static int countCharsPastLastNewLine(const char* txt) {
     if (nl) yycolumn = countCharsPastLastNewLine(yytext); \
 }
 
+// if compiled for debugging, throw an exception instead of exiting on fatal
+// lexer errors (so the debugger may pause with the appropriate back trace)
+#if DEBUG
+# include <stdexcept>
+# define YY_FATAL_ERROR(msg) throw std::runtime_error(msg)
+#endif
+
 %}
 
 /* use Flex's built-in support for line numbers
@@ -176,12 +183,20 @@ ID       [a-zA-Z0-9_]+
  */
 
 <*>"USE_CODE_IF"[ \t]*"(" {
-    //printf("USE_CODE_IF\n");
+    //printf("{%s}\n", yytext);
     yy_push_state(PREPROC_IF, yyscanner);
+}
+<PREPROC_BODY_EAT>"USE_CODE_IF"[ \t]*"("{ID}")" {
+    //printf("[EAT{%s}\n", yytext);
+    yy_push_state(PREPROC_BODY_EAT, yyscanner);
 }
 <*>"USE_CODE_IF_NOT"[ \t]*"(" {
     //printf("USE_CODE_IF_NOT\n");
     yy_push_state(PREPROC_IF_NOT, yyscanner);
+}
+<PREPROC_BODY_EAT>"USE_CODE_IF_NOT"[ \t]*"("{ID}")" {
+    //printf("[EAT{%s}\n", yytext);
+    yy_push_state(PREPROC_BODY_EAT, yyscanner);
 }
 <PREPROC_IF>{ID} {
     //printf("preproc use code if '%s'\n", yytext);
@@ -204,18 +219,20 @@ ID       [a-zA-Z0-9_]+
     yy_push_state(PREPROC_BODY_USE, yyscanner);
 }
 <PREPROC_PRE_BODY_EAT>[ \t]*")" {
-    //printf("PREPROCESSOR EAT : \n");
+    //printf("PREPROCESSOR EAT : {%s}\n", yytext);
     yy_pop_state(yyscanner);
     yy_push_state(PREPROC_BODY_EAT, yyscanner);
 }
-<*>.*"END_USE_CODE" {
+<PREPROC_BODY_EAT,PREPROC_BODY_USE>"END_USE_CODE" {
     //printf("-->END_USE_CODE\n");
     yy_pop_state(yyscanner);
 }
 <PREPROC_BODY_EAT>[ \t\r\n]* { /* eat up code block filtered out by preprocessor */
+    //printf("PREPROCESSOR EAT2 : {%s}\n", yytext);
     processLocation();
 }
 <PREPROC_BODY_EAT>.* { /* eat up code block filtered out by preprocessor */
+    //printf("PREPROCESSOR EAT3 : {%s}\n", yytext);
     yyextra->addPreprocessorComment(yylloc->first_line, yylloc->last_line,
                                     yylloc->first_column+1, yylloc->last_column+1);
 }

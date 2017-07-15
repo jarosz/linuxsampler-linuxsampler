@@ -47,6 +47,13 @@ static int countNewLineChars(const char* txt) {
 # define register
 #endif
 
+// if compiled for debugging, throw an exception instead of exiting on fatal
+// lexer errors (so the debugger may pause with the appropriate back trace)
+#if DEBUG
+# include <stdexcept>
+# define YY_FATAL_ERROR(msg) throw std::runtime_error(msg)
+#endif
+
 %}
 
 /* generate a reentrant safe scanner */
@@ -65,6 +72,7 @@ static int countNewLineChars(const char* txt) {
 
 DIGIT    [0-9]
 ID       [a-zA-Z0-9_]+
+END_ID   on|while|if|select|function|synchronized
 
 %%
 
@@ -219,7 +227,7 @@ end {
     return yyextra->token.baseType;
 }
 
-<PREPROC_END_NAME>[ \t]*{ID} {
+<PREPROC_END_NAME>[ \t]*{END_ID}? {
     yy_pop_state(yyscanner);
     yyextra->token = KeywordToken(yytext);
     return yyextra->token.baseType;

@@ -231,6 +231,10 @@ Version SVN trunk (?)
     - Removed max. value limitation of built-in functions "change_attack()",
       "change_decay()" and "change_release()" to i.e. allow passing 2000000
       for doubling the respective time.
+    - NKSP script editor syntax highlighting API: Fixed app termination due
+      to a lexer start condition stack underrun.
+    - NKSP preprocessor: Fixed wrong behavior on nested USE_CODE_IF() and
+      USE_CODE_IF_NOT() preprocessor statements.
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to
