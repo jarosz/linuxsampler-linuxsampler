@@ -37,6 +37,7 @@ enum StmtType_t {
     STMT_BRANCH,
     STMT_LOOP,
     STMT_SYNC,
+    STMT_NOOP,
 };
 
 class Node {
@@ -300,7 +301,7 @@ typedef Ref<Statement,Node> StatementRef;
 class NoOperation : public Statement {
 public:
     NoOperation() : Statement() {}
-    StmtType_t statementType() const { return STMT_LEAF; }
+    StmtType_t statementType() const { return STMT_NOOP; }
     void dump(int level = 0) {}
     bool isPolyphonic() const { return false; }
 };
@@ -374,6 +375,13 @@ protected:
     VMFnResult* execVMFn();
 };
 typedef Ref<FunctionCall,Node> FunctionCallRef;
+
+class NoFunctionCall : public FunctionCall {
+public:
+    NoFunctionCall() : FunctionCall("nothing", new Args, NULL) {}
+    StmtType_t statementType() const { return STMT_NOOP; }
+};
+typedef Ref<NoFunctionCall,Node> NoFunctionCallRef;
 
 class EventHandler : virtual public Statements, virtual public VMEventHandler {
     StatementsRef statements;

@@ -173,6 +173,17 @@ namespace LinuxSampler {
         VMFunction* functionByName(const String& name) OVERRIDE;
 
         /**
+         * Whether the passed built-in function is disabled and should thus be
+         * ignored by the parser at the passed parser context (parser state
+         * where the built-in function call occurs).
+         *
+         * @param fn - built-in function to be checked
+         * @param ctx - parser context at the position where the built-in
+         *              function call is located within the script
+         */
+        bool isFunctionDisabled(VMFunction* fn, VMParserContext* ctx) OVERRIDE;
+
+        /**
          * Returns all built-in integer script variables. This method returns a
          * STL map, where the map's key is the variable name and the map's value
          * is the native pointer to the actual built-in variable.

@@ -235,6 +235,9 @@ Version SVN trunk (?)
       to a lexer start condition stack underrun.
     - NKSP preprocessor: Fixed wrong behavior on nested USE_CODE_IF() and
       USE_CODE_IF_NOT() preprocessor statements.
+    - NKSP: Added built-in preprocessor condition NKSP_NO_MESSAGE, which
+      can be set to disable all subsequent built-in "message()" function calls
+      on preprocessor level.
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

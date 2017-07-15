@@ -16,8 +16,7 @@
 namespace LinuxSampler {
     
 bool isNoOperation(StatementRef statement) {
-    NoOperation* noOp = dynamic_cast<NoOperation*>(&*statement);
-    return noOp;
+    return statement->statementType() == STMT_NOOP;
 }
     
 Node::Node() {

@@ -293,6 +293,16 @@ namespace LinuxSampler {
         return NULL;
     }
 
+    bool ScriptVM::isFunctionDisabled(VMFunction* fn, VMParserContext* ctx) {
+        ParserContext* parserCtx = dynamic_cast<ParserContext*>(ctx);
+        if (!parserCtx) return false;
+
+        if (fn == m_fnMessage && parserCtx->userPreprocessorConditions.count("NKSP_NO_MESSAGE"))
+            return true;
+
+        return false;
+    }
+
     std::map<String,VMIntRelPtr*> ScriptVM::builtInIntVariables() {
         return std::map<String,VMIntRelPtr*>();
     }

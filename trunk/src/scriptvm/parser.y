@@ -23,6 +23,7 @@
     #define scanner context->scanner
     #define PARSE_ERR(loc,txt)  yyerror(&loc, context, txt)
     #define PARSE_WRN(loc,txt)  InstrScript_warning(&loc, context, txt)
+    #define PARSE_DROP(loc)     context->addPreprocessorComment(loc.first_line, loc.last_line, loc.first_column+1, loc.last_column+1);
     #define yytnamerr(res,str)  InstrScript_tnamerr(res, str)
 %}
 
@@ -474,6 +475,9 @@ functioncall:
         } else if (!fn) {
             PARSE_ERR(@1, (String("No built-in function with name '") + name + "'.").c_str());
             $$ = new FunctionCall(name, args, NULL);
+        } else if (context->functionProvider->isFunctionDisabled(fn,context)) {
+            PARSE_DROP(@$);
+            $$ = new NoFunctionCall;
         } else if (args->argsCount() < fn->minRequiredArgs()) {
             PARSE_ERR(@3, (String("Built-in function '") + name + "' requires at least " + ToString(fn->minRequiredArgs()) + " arguments.").c_str());
             $$ = new FunctionCall(name, args, NULL);
@@ -507,6 +511,9 @@ functioncall:
         } else if (!fn) {
             PARSE_ERR(@1, (String("No built-in function with name '") + name + "'.").c_str());
             $$ = new FunctionCall(name, args, NULL);
+        } else if (context->functionProvider->isFunctionDisabled(fn,context)) {
+            PARSE_DROP(@$);
+            $$ = new NoFunctionCall;
         } else if (fn->minRequiredArgs() > 0) {
             PARSE_ERR(@3, (String("Built-in function '") + name + "' requires at least " + ToString(fn->minRequiredArgs()) + " arguments.").c_str());
             $$ = new FunctionCall(name, args, NULL);
@@ -525,6 +532,9 @@ functioncall:
         } else if (!fn) {
             PARSE_ERR(@1, (String("No built-in function with name '") + name + "'.").c_str());
             $$ = new FunctionCall(name, args, NULL);
+        } else if (context->functionProvider->isFunctionDisabled(fn,context)) {
+            PARSE_DROP(@$);
+            $$ = new NoFunctionCall;
         } else if (fn->minRequiredArgs() > 0) {
             PARSE_ERR(@1, (String("Built-in function '") + name + "' requires at least " + ToString(fn->minRequiredArgs()) + " arguments.").c_str());
             $$ = new FunctionCall(name, args, NULL);

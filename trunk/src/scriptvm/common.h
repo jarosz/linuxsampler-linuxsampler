@@ -94,6 +94,7 @@ namespace LinuxSampler {
     class VMStringExpr;
     class VMIntArrayExpr;
     class VMStringArrayExpr;
+    class VMParserContext;
 
     /** @brief Virtual machine expression
      *
@@ -785,6 +786,24 @@ namespace LinuxSampler {
          * @param name - function name (i.e. "wait" or "message" or "exit", etc.)
          */
         virtual VMFunction* functionByName(const String& name) = 0;
+
+        /**
+         * Returns @c true if the passed built-in function is disabled and
+         * should be ignored by the parser. This method is called by the
+         * parser on preprocessor level for each built-in function call within
+         * a script. Accordingly if this method returns @c true, then the
+         * respective function call is completely filtered out on preprocessor
+         * level, so that built-in function won't make into the result virtual
+         * machine representation, nor would expressions of arguments passed to
+         * that built-in function call be evaluated, nor would any check
+         * regarding correct usage of the built-in function be performed.
+         * In other words: a disabled function call ends up as a comment block.
+         *
+         * @param fn - built-in function to be checked
+         * @param ctx - parser context at the position where the built-in
+         *              function call is located within the script
+         */
+        virtual bool isFunctionDisabled(VMFunction* fn, VMParserContext* ctx) = 0;
 
         /**
          * Returns a variable name indexed map of all built-in script variables
