@@ -1180,7 +1180,7 @@ namespace LinuxSampler {
         return VMChangeSynthParamFunction::execTemplate<
         &NoteBase::_Override::Sustain,
         Event::synth_param_sustain,
-        true, 1000000, 0>( args, "change_sustain" );
+        true, NO_LIMIT, 0>( args, "change_sustain" );
     }
 
     // change_amp_lfo_depth() function
