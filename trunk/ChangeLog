@@ -238,6 +238,7 @@ Version SVN trunk (?)
     - NKSP: Added built-in preprocessor condition NKSP_NO_MESSAGE, which
       can be set to disable all subsequent built-in "message()" function calls
       on preprocessor level.
+    - Implemented built-in script function "change_sustain()".
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

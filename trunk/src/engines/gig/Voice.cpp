@@ -472,7 +472,7 @@ namespace LinuxSampler { namespace gig {
                     pRegion->EG1Decay1 * egInfo.Decay * velrelease,
                     pRegion->EG1Decay2 * egInfo.Decay * velrelease,
                     pRegion->EG1InfiniteSustain,
-                    pRegion->EG1Sustain,
+                    pRegion->EG1Sustain * (pNote ? pNote->Override.Sustain : 1.f),
                     RTMath::Max(pRegion->EG1Release * velrelease, 0.014) * egInfo.Release,
                     velocityAttenuation,
                     sampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE);

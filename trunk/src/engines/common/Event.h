@@ -182,6 +182,7 @@ namespace LinuxSampler {
                 synth_param_resonance,
                 synth_param_attack,
                 synth_param_decay,
+                synth_param_sustain,
                 synth_param_release,
                 synth_param_amp_lfo_depth,
                 synth_param_amp_lfo_freq,

@@ -2079,6 +2079,9 @@ namespace LinuxSampler {
                     case Event::synth_param_decay:
                         pNote->Override.Decay = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
                         break;
+                    case Event::synth_param_sustain:
+                        pNote->Override.Sustain = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
+                        break;
                     case Event::synth_param_release:
                         pNote->Override.Release = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
                         break;

@@ -243,6 +243,12 @@ namespace LinuxSampler {
         InstrumentScriptVM* m_vm;
     };
 
+    class InstrumentScriptVMFunction_change_sustain : public VMChangeSynthParamFunction {
+    public:
+        InstrumentScriptVMFunction_change_sustain(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}
+        VMFnResult* exec(VMFnArgs* args);
+    };
+
     class InstrumentScriptVMFunction_change_amp_lfo_depth : public VMChangeSynthParamFunction {
     public:
         InstrumentScriptVMFunction_change_amp_lfo_depth(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}

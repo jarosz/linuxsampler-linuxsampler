@@ -242,7 +242,9 @@ namespace LinuxSampler { namespace sfz {
         
         float sustain = pRegion->ampeg_sustain + pRegion->ampeg_vel2sustain * velrelease;
         sustain = 10 * (sustain + GetInfluence(pRegion->ampeg_sustaincc));
-        
+        if (pVoice->pNote)
+            sustain *= pVoice->pNote->Override.Sustain;
+
         float release = pRegion->ampeg_release + pRegion->ampeg_vel2release * velrelease;
         release = std::max(0.0f, release + GetInfluence(pRegion->ampeg_releasecc));
         

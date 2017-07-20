@@ -46,7 +46,9 @@ namespace LinuxSampler { namespace sf2 {
 
         // GetEG1Sustain gets the decrease in level in centibels
         uint sustain = ::sf2::ToRatio(-1 * pVoice->pRegion->GetEG1Sustain(pVoice->pPresetRegion)) * 1000; // in permille
-        
+        if (pVoice->pNote)
+            sustain *= pVoice->pNote->Override.Sustain;
+
         trigger (
             0, // should be in permille
             pVoice->pRegion->GetEG1Attack(pVoice->pPresetRegion),

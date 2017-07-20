@@ -1174,6 +1174,15 @@ namespace LinuxSampler {
         return successResult();
     }
 
+    // change_sustain() function
+
+    VMFnResult* InstrumentScriptVMFunction_change_sustain::exec(VMFnArgs* args) {
+        return VMChangeSynthParamFunction::execTemplate<
+        &NoteBase::_Override::Sustain,
+        Event::synth_param_sustain,
+        true, 1000000, 0>( args, "change_sustain" );
+    }
+
     // change_amp_lfo_depth() function
 
     VMFnResult* InstrumentScriptVMFunction_change_amp_lfo_depth::exec(VMFnArgs* args) {

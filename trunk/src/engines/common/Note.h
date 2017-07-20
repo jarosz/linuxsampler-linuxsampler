@@ -45,6 +45,7 @@ namespace LinuxSampler {
             float Resonance;    ///< between 0.0 and 1.0
             float Attack;       ///< between 0.0 and 1.0
             float Decay;        ///< between 0.0 and 1.0
+            float Sustain;      ///< between 0.0 and 1.0
             float Release;      ///< between 0.0 and 1.0
             float AmpLFODepth;  ///< between 0.0 and 1.0
             float AmpLFOFreq;   ///< between 0.0 and 1.0
@@ -75,6 +76,7 @@ namespace LinuxSampler {
             Override.Resonance  = 1.f;
             Override.Attack     = 1.f;
             Override.Decay      = 1.f;
+            Override.Sustain    = 1.f;
             Override.Release    = 1.f;
             Override.AmpLFODepth   = 1.f;
             Override.AmpLFOFreq    = 1.f;
@@ -153,6 +155,7 @@ namespace LinuxSampler {
             Override.Resonance  = 1.f;
             Override.Attack     = 1.f;
             Override.Decay      = 1.f;
+            Override.Sustain    = 1.f;
             Override.Release    = 1.f;
             Override.AmpLFODepth   = 1.f;
             Override.AmpLFOFreq    = 1.f;

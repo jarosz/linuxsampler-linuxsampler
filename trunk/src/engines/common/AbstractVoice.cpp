@@ -798,6 +798,7 @@ namespace LinuxSampler {
 
                     case Event::synth_param_attack:
                     case Event::synth_param_decay:
+                    case Event::synth_param_sustain:
                     case Event::synth_param_release:
                         break; // noop
                 }

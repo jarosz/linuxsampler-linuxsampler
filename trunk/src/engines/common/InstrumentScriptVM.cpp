@@ -234,7 +234,7 @@ namespace LinuxSampler {
         m_fnChangeVol(this), m_fnChangeVolTime(this),
         m_fnChangeTune(this), m_fnChangeTuneTime(this), m_fnChangePan(this),
         m_fnChangeCutoff(this), m_fnChangeReso(this),  m_fnChangeAttack(this),
-        m_fnChangeDecay(this), m_fnChangeRelease(this),
+        m_fnChangeDecay(this), m_fnChangeSustain(this), m_fnChangeRelease(this),
         m_fnChangeAmpLFODepth(this), m_fnChangeAmpLFOFreq(this),
         m_fnChangePitchLFODepth(this), m_fnChangePitchLFOFreq(this),
         m_fnChangeNote(this), m_fnChangeVelo(this), m_fnFork(this),
@@ -405,6 +405,7 @@ namespace LinuxSampler {
         else if (name == "change_reso") return &m_fnChangeReso;
         else if (name == "change_attack") return &m_fnChangeAttack;
         else if (name == "change_decay") return &m_fnChangeDecay;
+        else if (name == "change_sustain") return &m_fnChangeSustain;
         else if (name == "change_release") return &m_fnChangeRelease;
         else if (name == "change_amp_lfo_depth") return &m_fnChangeAmpLFODepth;
         else if (name == "change_amp_lfo_freq") return &m_fnChangeAmpLFOFreq;

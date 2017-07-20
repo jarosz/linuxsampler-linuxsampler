@@ -295,6 +295,7 @@ namespace LinuxSampler {
         InstrumentScriptVMFunction_change_reso m_fnChangeReso;
         InstrumentScriptVMFunction_change_attack m_fnChangeAttack;
         InstrumentScriptVMFunction_change_decay m_fnChangeDecay;
+        InstrumentScriptVMFunction_change_sustain m_fnChangeSustain;
         InstrumentScriptVMFunction_change_release m_fnChangeRelease;
         InstrumentScriptVMFunction_change_amp_lfo_depth m_fnChangeAmpLFODepth;
         InstrumentScriptVMFunction_change_amp_lfo_freq m_fnChangeAmpLFOFreq;
@@ -338,6 +339,7 @@ namespace LinuxSampler {
         friend class InstrumentScriptVMFunction_change_attack;
         friend class InstrumentScriptVMFunction_change_decay;
         friend class InstrumentScriptVMFunction_change_release;
+        friend class InstrumentScriptVMFunction_change_sustain;
         friend class VMChangeSynthParamFunction;
         friend class InstrumentScriptVMFunction_change_amp_lfo_depth;
         friend class InstrumentScriptVMFunction_change_amp_lfo_freq;
