@@ -16,6 +16,9 @@ Version SVN trunk (?)
       all if an up-pitch of more than 40 semi tones was requested (I don't
       think there is any stock gig sound that requires this behavior to
       resemble its original sound).
+    - Added support for controlling whether the individual EGADSR stages may
+      be aborted (as LinuxSampler extension to the original GigaStudio 4
+      format).
 
   * general changes:
     - fixed printf type errors (mostly in debug messages)

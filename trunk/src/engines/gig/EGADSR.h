@@ -3,7 +3,7 @@
  *   LinuxSampler - modular, streaming capable sampler                     *
  *                                                                         *
  *   Copyright (C) 2003, 2004 by Benno Senoner and Christian Schoenebeck   *
- *   Copyright (C) 2005 - 2010 Christian Schoenebeck                       *
+ *   Copyright (C) 2005 - 2017 Christian Schoenebeck                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -37,6 +37,7 @@ namespace LinuxSampler { namespace gig {
  */
 class EGADSR : public EG {
     public:
+        EGADSR();
 
         /**
          * Will be called by the voice when the key / voice was triggered.
@@ -66,6 +67,8 @@ class EGADSR : public EG {
          */
         void trigger(uint PreAttack, float AttackTime, bool HoldAttack, float Decay1Time, double Decay2Time, bool InfiniteSustain, uint SustainLevel, float ReleaseTime, float Volume, uint SampleRate); //FIXME: we should better use 'float' for SampleRate
 
+        void setStateOptions(bool AttackCancel, bool AttackHoldCancel, bool Decay1Cancel, bool Decay2Cancel, bool ReleaseCancel);
+
         /**
          * Should be called to inform the EG about an external event and
          * also whenever an envelope stage is completed. This will handle
@@ -91,8 +94,14 @@ class EGADSR : public EG {
         };
 
         stage_t   Stage;
+        event_t   PostponedEvent;   ///< Only if *Cancel variable below is set to to false in the respective EG stage: holds the transition event type for processing after that current stage completed its full duration.
         bool      HoldAttack;
         bool      InfiniteSustain;
+        bool      AttackCancel;     ///< Whether the "attack" stage is cancelled when receiving a note-off.
+        bool      AttackHoldCancel; ///< Whether the "attack hold" stage is cancelled when receiving a note-off.
+        bool      Decay1Cancel;     ///< Whether the "decay 1" stage is cancelled when receiving a note-off.
+        bool      Decay2Cancel;     ///< Whether the "decay 2" stage is cancelled when receiving a note-off.
+        bool      ReleaseCancel;    ///< Whether the "release" stage is cancelled when receiving a note-on.
         float     Decay1Time;
         float     Decay1Level2;
         float     Decay1Slope;
@@ -106,6 +115,7 @@ class EGADSR : public EG {
         float     invVolume;
         float     ExpOffset;
 
+        void enterNextStageForReleaseEvent(uint SampleRate);
         void enterAttackStage(const uint PreAttack, const float AttackTime, const uint SampleRate);
         void enterAttackHoldStage();
         void enterDecay1Part1Stage(const uint SampleRate);

@@ -3,7 +3,7 @@
  *   LinuxSampler - modular, streaming capable sampler                     *
  *                                                                         *
  *   Copyright (C) 2003, 2004 by Benno Senoner and Christian Schoenebeck   *
- *   Copyright (C) 2005 - 2016 Christian Schoenebeck                       *
+ *   Copyright (C) 2005 - 2017 Christian Schoenebeck                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -27,6 +27,17 @@
 
 namespace LinuxSampler { namespace gig {
 
+    EGADSR::EGADSR() : EG() {
+        AttackCancel     = true;
+        AttackHoldCancel = true;
+        Decay1Cancel     = true;
+        Decay2Cancel     = true;
+        ReleaseCancel    = true;
+    }
+
+    #define isTransitionEvent(type) \
+        ( type == event_release || type == event_cancel_release )
+
     void EGADSR::update(event_t Event, uint SampleRate) {
         if (atEnd(Event)) return;
 
@@ -36,10 +47,15 @@ namespace LinuxSampler { namespace gig {
             case stage_attack:
                 switch (Event) {
                     case event_release:
-                        enterReleasePart1Stage();
+                        if (AttackCancel)
+                            enterNextStageForReleaseEvent(SampleRate);
+                        else
+                            PostponedEvent = Event;
                         break;
                     case event_stage_end:
-                        if (HoldAttack)
+                        if (PostponedEvent == event_release)
+                            enterNextStageForReleaseEvent(SampleRate);
+                        else if (HoldAttack)
                             enterAttackHoldStage();
                         else
                             enterDecay1Part1Stage(SampleRate);
@@ -55,10 +71,16 @@ namespace LinuxSampler { namespace gig {
                         break;
                     }
                     case event_hold_end:
-                        enterDecay1Part1Stage(SampleRate);
+                        if (PostponedEvent == event_release)
+                            enterNextStageForReleaseEvent(SampleRate);
+                        else
+                            enterDecay1Part1Stage(SampleRate);
                         break;
                     case event_release:
-                        enterReleasePart1Stage();
+                        if (AttackHoldCancel)
+                            enterNextStageForReleaseEvent(SampleRate);
+                        else
+                            PostponedEvent = Event;
                         break;
                     default: ; // noop
                 }
@@ -69,7 +91,10 @@ namespace LinuxSampler { namespace gig {
                         enterDecay1Part2Stage(SampleRate);
                         break;
                     case event_release:
-                        enterReleasePart1Stage();
+                        if (Decay1Cancel)
+                            enterNextStageForReleaseEvent(SampleRate);
+                        else
+                            PostponedEvent = Event;
                         break;
                     default: ; // noop
                 }
@@ -77,11 +102,16 @@ namespace LinuxSampler { namespace gig {
             case stage_decay1_part2:
                 switch (Event) {
                     case event_release:
-                        enterReleasePart1Stage();
+                        if (Decay1Cancel)
+                            enterNextStageForReleaseEvent(SampleRate);
+                        else
+                            PostponedEvent = Event;
                         break;
                     case event_stage_end:
                         if (Level < CONFIG_EG_BOTTOM)
                             enterEndStage();
+                        else if (PostponedEvent == event_release)
+                            enterNextStageForReleaseEvent(SampleRate);
                         else if (InfiniteSustain)
                             enterSustainStage();
                         else
@@ -96,10 +126,16 @@ namespace LinuxSampler { namespace gig {
                         enterFadeOutStage();
                         break;
                     case event_release:
-                        enterReleasePart1Stage();
+                        if (Decay2Cancel)
+                            enterReleasePart1Stage();
+                        else
+                            PostponedEvent = Event;
                         break;
                     case event_hold_end:
-                        enterDecay1Part1Stage(SampleRate);
+                        if (PostponedEvent == event_release && Decay1Cancel)
+                            enterReleasePart1Stage();
+                        else
+                            enterDecay1Part1Stage(SampleRate);
                         break;
                     default: ; // noop
                 }
@@ -126,6 +162,8 @@ namespace LinuxSampler { namespace gig {
                         enterReleasePart2Stage();
                         break;
                     case event_cancel_release:
+                        if (!ReleaseCancel)
+                            break;
                         if (InfiniteSustain)
                             enterSustainStage();
                         else
@@ -140,6 +178,8 @@ namespace LinuxSampler { namespace gig {
                         enterFadeOutStage();
                         break;
                     case event_cancel_release:
+                        if (!ReleaseCancel)
+                            break;
                         if (InfiniteSustain)
                             enterSustainStage();
                         else
@@ -175,8 +215,44 @@ namespace LinuxSampler { namespace gig {
         ReleaseCoeff3 = ExpOffset * (1 - ReleaseCoeff2);
         ReleaseLevel2 = 0.25 * invVolume;
 
+        PostponedEvent = (event_t) -1; // init with anything except release or cancel_release
+
         enterFirstStage();
         enterAttackStage(PreAttack, AttackTime, SampleRate);
+    }
+
+    void EGADSR::setStateOptions(bool AttackCancel, bool AttackHoldCancel, bool Decay1Cancel, bool Decay2Cancel, bool ReleaseCancel) {
+        this->AttackCancel     = AttackCancel;
+        this->AttackHoldCancel = AttackHoldCancel;
+        this->Decay1Cancel     = Decay1Cancel;
+        this->Decay2Cancel     = Decay2Cancel;
+        this->ReleaseCancel    = ReleaseCancel;
+    }
+
+    void EGADSR::enterNextStageForReleaseEvent(uint SampleRate) {
+        switch (Stage) {
+            case stage_attack:
+                if (HoldAttack && !AttackHoldCancel) {
+                    enterAttackHoldStage();
+                    return;
+                }
+            case stage_attack_hold:
+                if (!Decay1Cancel) {
+                    enterDecay1Part1Stage(SampleRate);
+                    return;
+                }
+            case stage_decay1_part1:
+            case stage_decay1_part2:
+                if (InfiniteSustain) {
+                    enterReleasePart1Stage();
+                    return;
+                } else if (!Decay2Cancel) {
+                    enterDecay2Stage(SampleRate);
+                    return;
+                }
+            default:
+                enterReleasePart1Stage();
+        }
     }
 
     void EGADSR::enterAttackStage(const uint PreAttack, const float AttackTime, const uint SampleRate) {
@@ -225,8 +301,14 @@ namespace LinuxSampler { namespace gig {
             StepsLeft = int((RTMath::Max(Decay1Level2, SustainLevel) - Level) / Coeff);
             if (StepsLeft <= 0) enterDecay1Part2Stage(SampleRate);
         } else {
-            if (InfiniteSustain) enterSustainStage();
-            else                 enterDecay2Stage(SampleRate);
+            if (PostponedEvent == event_release) {
+                Stage = stage_decay1_part2; // pretend decay 1 part 2 was completed
+                enterNextStageForReleaseEvent(SampleRate);
+            } else if (InfiniteSustain) {
+                enterSustainStage();
+            } else {
+                enterDecay2Stage(SampleRate);
+            }
         }
     }
 
@@ -240,8 +322,14 @@ namespace LinuxSampler { namespace gig {
             StepsLeft = int(log((SustainLevel - ExpOffset) / (Level - ExpOffset)) / Decay1Slope);
             if (StepsLeft > 0) return;
         }
-        if (InfiniteSustain) enterSustainStage();
-        else                 enterDecay2Stage(SampleRate);
+        if (PostponedEvent == event_release) {
+            Stage = stage_decay1_part2;
+            enterNextStageForReleaseEvent(SampleRate);
+        } else if (InfiniteSustain) {
+            enterSustainStage();
+        } else {
+            enterDecay2Stage(SampleRate);
+        }
     }
 
     void EGADSR::enterDecay2Stage(const uint SampleRate) {
@@ -261,6 +349,7 @@ namespace LinuxSampler { namespace gig {
         Coeff   = 0.0f; // don't change the envelope level in this stage
         const int intMax = (unsigned int) -1 >> 1;
         StepsLeft = intMax; // we use the highest value possible (we refresh StepsLeft in update() in case)
+        PostponedEvent = (event_t) -1; // reset with anything except release or cancel_release
     }
 
     void EGADSR::enterReleasePart1Stage() {
@@ -268,6 +357,7 @@ namespace LinuxSampler { namespace gig {
         Segment   = segment_lin;
         StepsLeft = int((ReleaseLevel2 - Level) / ReleaseCoeff);
         Coeff     = ReleaseCoeff;
+        PostponedEvent = (event_t) -1; // reset with anything except release or cancel_release
         if (StepsLeft <= 0) enterReleasePart2Stage();
     }
 

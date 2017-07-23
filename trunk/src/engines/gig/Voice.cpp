@@ -5,7 +5,7 @@
  *   Copyright (C) 2003, 2004 by Benno Senoner and Christian Schoenebeck   *
  *   Copyright (C) 2005 - 2008 Christian Schoenebeck                       *
  *   Copyright (C) 2009 Christian Schoenebeck and Grigor Iliev             *
- *   Copyright (C) 2010 - 2016 Christian Schoenebeck and Andreas Persson   *
+ *   Copyright (C) 2010 - 2017 Christian Schoenebeck and Andreas Persson   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -466,6 +466,13 @@ namespace LinuxSampler { namespace gig {
     }
 
     void Voice::TriggerEG1(const EGInfo& egInfo, double velrelease, double velocityAttenuation, uint sampleRate, uint8_t velocity) {
+        EG1.setStateOptions(
+            pRegion->EG1Options.AttackCancel,
+            pRegion->EG1Options.AttackHoldCancel,
+            pRegion->EG1Options.Decay1Cancel,
+            pRegion->EG1Options.Decay2Cancel,
+            pRegion->EG1Options.ReleaseCancel
+        );
         EG1.trigger(pRegion->EG1PreAttack,
                     RTMath::Max(pRegion->EG1Attack, 0.0316) * egInfo.Attack,
                     pRegion->EG1Hold,
@@ -479,6 +486,13 @@ namespace LinuxSampler { namespace gig {
     }
 
     void Voice::TriggerEG2(const EGInfo& egInfo, double velrelease, double velocityAttenuation, uint sampleRate, uint8_t velocity) {
+        EG2.setStateOptions(
+            pRegion->EG2Options.AttackCancel,
+            pRegion->EG2Options.AttackHoldCancel,
+            pRegion->EG2Options.Decay1Cancel,
+            pRegion->EG2Options.Decay2Cancel,
+            pRegion->EG2Options.ReleaseCancel
+        );
         EG2.trigger(uint(RgnInfo.EG2PreAttack),
                     RgnInfo.EG2Attack * egInfo.Attack,
                     false,
