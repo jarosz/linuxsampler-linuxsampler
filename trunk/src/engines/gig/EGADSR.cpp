@@ -304,9 +304,9 @@ namespace LinuxSampler { namespace gig {
             if (PostponedEvent == event_release) {
                 Stage = stage_decay1_part2; // pretend decay 1 part 2 was completed
                 enterNextStageForReleaseEvent(SampleRate);
-            } else if (InfiniteSustain) {
+            } else if (InfiniteSustain) {
                 enterSustainStage();
-            } else {
+            } else {
                 enterDecay2Stage(SampleRate);
             }
         }
@@ -325,9 +325,9 @@ namespace LinuxSampler { namespace gig {
         if (PostponedEvent == event_release) {
             Stage = stage_decay1_part2;
             enterNextStageForReleaseEvent(SampleRate);
-        } else if (InfiniteSustain) {
+        } else if (InfiniteSustain) {
             enterSustainStage();
-        } else {
+        } else {
             enterDecay2Stage(SampleRate);
         }
     }
