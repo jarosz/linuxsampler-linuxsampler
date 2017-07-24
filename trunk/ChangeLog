@@ -242,6 +242,8 @@ Version SVN trunk (?)
       can be set to disable all subsequent built-in "message()" function calls
       on preprocessor level.
     - Implemented built-in script function "change_sustain()".
+    - NKSP script editor syntax highlighting API: catch all fatal lexer errors,
+      to avoid the editor app to crash on ill-formed text input.
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

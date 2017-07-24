@@ -261,16 +261,20 @@ namespace LinuxSampler {
     }
 
     std::vector<VMSourceToken> ScriptVM::syntaxHighlighting(std::istream* is) {
-        NkspScanner scanner(is);
-        std::vector<SourceToken> tokens = scanner.tokens();
-        std::vector<VMSourceToken> result;
-        result.resize(tokens.size());
-        for (int i = 0; i < tokens.size(); ++i) {
-            SourceToken* st = new SourceToken;
-            *st = tokens[i];
-            result[i] = VMSourceToken(st);
+        try {
+            NkspScanner scanner(is);
+            std::vector<SourceToken> tokens = scanner.tokens();
+            std::vector<VMSourceToken> result;
+            result.resize(tokens.size());
+            for (int i = 0; i < tokens.size(); ++i) {
+                SourceToken* st = new SourceToken;
+                *st = tokens[i];
+                result[i] = VMSourceToken(st);
+            }
+            return result;
+        } catch (...) {
+            return std::vector<VMSourceToken>();
         }
-        return result;
     }
 
     VMFunction* ScriptVM::functionByName(const String& name) {

@@ -47,12 +47,11 @@ static int countNewLineChars(const char* txt) {
 # define register
 #endif
 
-// if compiled for debugging, throw an exception instead of exiting on fatal
+// Since this parser is solely used by script code editors, thus not used in a
+// real-time context, always throw an exception instead of exiting on fatal
 // lexer errors (so the debugger may pause with the appropriate back trace)
-#if DEBUG
-# include <stdexcept>
-# define YY_FATAL_ERROR(msg) throw std::runtime_error(msg)
-#endif
+#include <stdexcept>
+#define YY_FATAL_ERROR(msg) throw std::runtime_error(msg)
 
 %}
 
