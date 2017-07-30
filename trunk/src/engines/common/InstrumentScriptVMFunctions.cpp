@@ -1237,6 +1237,15 @@ namespace LinuxSampler {
                     false, NO_LIMIT, 0>( args, "change_tune_time" );
     }
 
+    // change_pan_time() function
+
+    VMFnResult* InstrumentScriptVMFunction_change_pan_time::exec(VMFnArgs* args) {
+        return VMChangeSynthParamFunction::execTemplate<
+        &NoteBase::_Override::PanTime,
+        Event::synth_param_pan_time,
+        false, NO_LIMIT, 0>( args, "change_pan_time" );
+    }
+
     // template for change_*_curve() functions
 
     bool VMChangeFadeCurveFunction::acceptsArgType(int iArg, ExprType_t type) const {
@@ -1336,6 +1345,14 @@ namespace LinuxSampler {
         return VMChangeFadeCurveFunction::execTemplate<
                     &NoteBase::_Override::PitchCurve,
                     Event::synth_param_pitch_curve>( args, "change_tune_curve" );
+    }
+
+    // change_pan_curve() function
+
+    VMFnResult* InstrumentScriptVMFunction_change_pan_curve::exec(VMFnArgs* args) {
+        return VMChangeFadeCurveFunction::execTemplate<
+        &NoteBase::_Override::PanCurve,
+        Event::synth_param_pan_curve>( args, "change_pan_curve" );
     }
 
     // fade_in() function

@@ -38,6 +38,10 @@ public:
         steps = 0;
     }
 
+    inline float currentValue() const {
+        return value;
+    }
+
     /**
      * Sets a new default duration for fadeTo(), which will be used if no
      * duration was passed to fadeTo() calls.

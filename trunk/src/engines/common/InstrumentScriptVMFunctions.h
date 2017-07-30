@@ -285,6 +285,12 @@ namespace LinuxSampler {
         VMFnResult* exec(VMFnArgs* args);
     };
 
+    class InstrumentScriptVMFunction_change_pan_time : public VMChangeSynthParamFunction {
+    public:
+        InstrumentScriptVMFunction_change_pan_time(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}
+        VMFnResult* exec(VMFnArgs* args);
+    };
+
     class VMChangeFadeCurveFunction : public VMEmptyResultFunction {
     public:
         VMChangeFadeCurveFunction(InstrumentScriptVM* parent) : m_vm(parent) {}
@@ -308,6 +314,12 @@ namespace LinuxSampler {
     class InstrumentScriptVMFunction_change_tune_curve : public VMChangeFadeCurveFunction {
     public:
         InstrumentScriptVMFunction_change_tune_curve(InstrumentScriptVM* parent) : VMChangeFadeCurveFunction(parent) {}
+        VMFnResult* exec(VMFnArgs* args);
+    };
+
+    class InstrumentScriptVMFunction_change_pan_curve : public VMChangeFadeCurveFunction {
+    public:
+        InstrumentScriptVMFunction_change_pan_curve(InstrumentScriptVM* parent) : VMChangeFadeCurveFunction(parent) {}
         VMFnResult* exec(VMFnArgs* args);
     };
 

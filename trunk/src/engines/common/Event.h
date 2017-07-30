@@ -178,6 +178,8 @@ namespace LinuxSampler {
                 synth_param_pitch_time,
                 synth_param_pitch_curve,
                 synth_param_pan,
+                synth_param_pan_time,
+                synth_param_pan_curve,
                 synth_param_cutoff,
                 synth_param_resonance,
                 synth_param_attack,

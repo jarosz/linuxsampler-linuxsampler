@@ -244,6 +244,8 @@ Version SVN trunk (?)
     - Implemented built-in script function "change_sustain()".
     - NKSP script editor syntax highlighting API: catch all fatal lexer errors,
       to avoid the editor app to crash on ill-formed text input.
+    - Added built-in script function "change_pan_time()".
+    - Added built-in script function "change_pan_curve()".
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

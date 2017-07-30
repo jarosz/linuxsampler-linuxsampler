@@ -233,6 +233,7 @@ namespace LinuxSampler {
         m_fnSetEventMark(this), m_fnDeleteEventMark(this), m_fnByMarks(this),
         m_fnChangeVol(this), m_fnChangeVolTime(this),
         m_fnChangeTune(this), m_fnChangeTuneTime(this), m_fnChangePan(this),
+        m_fnChangePanTime(this), m_fnChangePanCurve(this),
         m_fnChangeCutoff(this), m_fnChangeReso(this),  m_fnChangeAttack(this),
         m_fnChangeDecay(this), m_fnChangeSustain(this), m_fnChangeRelease(this),
         m_fnChangeAmpLFODepth(this), m_fnChangeAmpLFOFreq(this),
@@ -401,6 +402,8 @@ namespace LinuxSampler {
         else if (name == "change_note") return &m_fnChangeNote;
         else if (name == "change_velo") return &m_fnChangeVelo;
         else if (name == "change_pan") return &m_fnChangePan;
+        else if (name == "change_pan_time") return &m_fnChangePanTime;
+        else if (name == "change_pan_curve") return &m_fnChangePanCurve;
         else if (name == "change_cutoff") return &m_fnChangeCutoff;
         else if (name == "change_reso") return &m_fnChangeReso;
         else if (name == "change_attack") return &m_fnChangeAttack;

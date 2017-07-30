@@ -154,8 +154,7 @@ namespace LinuxSampler {
             float                       CutoffBase;         ///< Cutoff frequency before control change, EG and LFO are applied
             float                       VolumeLeft;         ///< Left channel volume. This factor is calculated when the voice is triggered and doesn't change after that.
             float                       VolumeRight;        ///< Right channel volume. This factor is calculated when the voice is triggered and doesn't change after that.
-            float                       NotePanLeft;        ///< Updated by calls to built-in instrument script function change_pan() (defaults to 1.0, that is neutral).
-            float                       NotePanRight;       ///< Updated by calls to built-in instrument script function change_pan() (defaults to 1.0, that is neutral).
+            Fade                        NotePan[2];         ///< Updated by calls to built-in instrument script function change_pan() (defaults to 1.0, that is neutral, index 0 for left pan, index 1 for right).
             float                       NoteCutoff;         ///< Updated by calls to built-in instrument script function change_cutoff() (defaults to 1.0, that is neutral).
             float                       NoteResonance;      ///< Updated by calls to built-in instrument script function change_reso() (defaults to 1.0, that is neutral).
             gig::SmoothVolume           CrossfadeSmoother;  ///< Crossfade volume, updated by crossfade CC events

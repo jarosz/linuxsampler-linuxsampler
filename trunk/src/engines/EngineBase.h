@@ -2067,6 +2067,13 @@ namespace LinuxSampler {
                         }
                         itEvent->Param.NoteSynthParam.AbsValue = pNote->Override.Pan;
                         break;
+                    case Event::synth_param_pan_time:
+                        pNote->Override.PanTime = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
+                        break;
+                    case Event::synth_param_pan_curve:
+                        itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
+                        pNote->Override.PanCurve = (fade_curve_t) itEvent->Param.NoteSynthParam.AbsValue;
+                        break;
                     case Event::synth_param_cutoff:
                         pNote->Override.Cutoff = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
                         break;

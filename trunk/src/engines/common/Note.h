@@ -16,6 +16,7 @@
 
 #define DEFAULT_NOTE_VOLUME_TIME_S  0.013f /* 13ms */
 #define DEFAULT_NOTE_PITCH_TIME_S   0.013f /* 13ms */
+#define DEFAULT_NOTE_PAN_TIME_S     0.013f /* 13ms */
 
 namespace LinuxSampler {
 
@@ -40,6 +41,7 @@ namespace LinuxSampler {
             float Pitch;        ///< as linear frequency ratio (1.0 being neutral)
             float PitchTime;    ///< Transition duration (in seconds) for changes to @c Pitch.
             float Pan;          ///< between -1.0 (most left) and +1.0 (most right) and 0.0 being neutral.
+            float PanTime;      ///< Transition duration (in seconds) for changes to @c Pan.
             int64_t PanSources; ///< Might be used for calculating an average pan value in differential way: amount of times the Pan value had been changed and shall be calculated relatively upon.
             float Cutoff;       ///< between 0.0 and 1.0
             float Resonance;    ///< between 0.0 and 1.0
@@ -53,6 +55,7 @@ namespace LinuxSampler {
             float PitchLFOFreq; ///< between 0.0 and 1.0
             fade_curve_t VolumeCurve;
             fade_curve_t PitchCurve;
+            fade_curve_t PanCurve;
             int SampleOffset; ///< Where the sample shall start playback in microseconds (otherwise this is -1 for being ignored).
         } Override;
         /// Sampler format specific informations and variables.
@@ -71,6 +74,7 @@ namespace LinuxSampler {
             Override.Pitch      = 1.f;
             Override.PitchTime  = DEFAULT_NOTE_PITCH_TIME_S;
             Override.Pan        = 0.f;
+            Override.PanTime    = DEFAULT_NOTE_PAN_TIME_S;
             Override.PanSources = 0;
             Override.Cutoff     = 1.f;
             Override.Resonance  = 1.f;
@@ -84,6 +88,7 @@ namespace LinuxSampler {
             Override.PitchLFOFreq  = 1.f;
             Override.VolumeCurve = DEFAULT_FADE_CURVE;
             Override.PitchCurve  = DEFAULT_FADE_CURVE;
+            Override.PanCurve    = DEFAULT_FADE_CURVE;
             Override.SampleOffset = -1;
 
             Format = _Format();
@@ -150,6 +155,7 @@ namespace LinuxSampler {
             Override.Pitch      = 1.f;
             Override.PitchTime  = DEFAULT_NOTE_PITCH_TIME_S;
             Override.Pan        = 0.f;
+            Override.PanTime    = DEFAULT_NOTE_PAN_TIME_S;
             Override.PanSources = 0;
             Override.Cutoff     = 1.f;
             Override.Resonance  = 1.f;
@@ -163,6 +169,7 @@ namespace LinuxSampler {
             Override.PitchLFOFreq  = 1.f;
             Override.VolumeCurve = DEFAULT_FADE_CURVE;
             Override.PitchCurve  = DEFAULT_FADE_CURVE;
+            Override.PanCurve    = DEFAULT_FADE_CURVE;
             Override.SampleOffset = -1;
             Format = _Format();
             userPar[0] = 0;

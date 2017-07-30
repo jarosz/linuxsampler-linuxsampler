@@ -291,6 +291,8 @@ namespace LinuxSampler {
         InstrumentScriptVMFunction_change_tune m_fnChangeTune;
         InstrumentScriptVMFunction_change_tune_time m_fnChangeTuneTime;
         InstrumentScriptVMFunction_change_pan m_fnChangePan;
+        InstrumentScriptVMFunction_change_pan_time m_fnChangePanTime;
+        InstrumentScriptVMFunction_change_pan_curve m_fnChangePanCurve;
         InstrumentScriptVMFunction_change_cutoff m_fnChangeCutoff;
         InstrumentScriptVMFunction_change_reso m_fnChangeReso;
         InstrumentScriptVMFunction_change_attack m_fnChangeAttack;
@@ -334,6 +336,8 @@ namespace LinuxSampler {
         friend class InstrumentScriptVMFunction_change_tune;
         friend class InstrumentScriptVMFunction_change_tune_time;
         friend class InstrumentScriptVMFunction_change_pan;
+        friend class InstrumentScriptVMFunction_change_pan_time;
+        friend class InstrumentScriptVMFunction_change_pan_curve;
         friend class InstrumentScriptVMFunction_change_cutoff;
         friend class InstrumentScriptVMFunction_change_reso;
         friend class InstrumentScriptVMFunction_change_attack;
