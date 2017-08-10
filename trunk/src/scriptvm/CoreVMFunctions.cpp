@@ -429,6 +429,14 @@ public:
         --m_index;
         return it;
     }
+    inline ArrExprIter& operator+=(difference_type d) {
+        m_index += d;
+        return *this;
+    }
+    inline ArrExprIter& operator-=(difference_type d) {
+        m_index -= d;
+        return *this;
+    }
     inline bool operator==(const ArrExprIter& other) const {
         return m_index == other.m_index;
     }
