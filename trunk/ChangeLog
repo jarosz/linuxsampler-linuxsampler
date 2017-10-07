@@ -63,6 +63,9 @@ Version SVN trunk (?)
       (originated by libgig's usage of it)
     - Automake: set environment variable GCC_COLORS=auto to allow GCC to
       auto detect whether it (sh/c)ould output its messages in color.
+    - Debian: Fixed packaging error about invalid "Source-Version"
+      substitution variable.
+    - Debian: Raised Debian compatibility level to Debian 9 "Stretch".
 
   * Real-time instrument scripts:
     - Implemented scheduler for delayed MIDI events and for suspended scripts.

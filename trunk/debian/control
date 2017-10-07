@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: LinuxSampler Developers <linuxsampler-devel@lists.sourceforge.net>
 Build-Depends: debhelper (>= 4.0.0), libgig-dev (>= 4.0.0),
                libasound2-dev | libjack-dev, dssi-dev, lv2-dev
-Standards-Version: 3.6.1
+Standards-Version: 4.0.0
 
 Package: linuxsampler
 Section: sound
@@ -33,7 +33,7 @@ Description: realtime audio sampler
 Package: liblinuxsampler-dev
 Section: libdevel
 Architecture: any
-Depends: liblinuxsampler (= ${Source-Version})
+Depends: liblinuxsampler (= ${source:Version})
 Description: realtime audio sampler (development files)
  LinuxSampler is a free software audio sampler with professional grade features.
  It offers disk streaming capability, real-time instrument scripts, and
