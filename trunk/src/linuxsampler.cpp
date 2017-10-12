@@ -432,8 +432,10 @@ void parse_options(int argc, char **argv) {
 #if HAVE_SQLITE3
                     try {
                         std::cout << "Creating instruments database..." << std::endl;
-                        if (optarg)
+                        if (optarg) // with glibc this only fires with form --create-instruments-db=bla (see below)
                             InstrumentsDb::GetInstrumentsDb()->CreateInstrumentsDb(String(optarg));
+                        else if (argv[optind] && argv[optind][0] != '-') // workaround: glibc actually expects form --foo=value for all optional arguments ...
+                            InstrumentsDb::GetInstrumentsDb()->CreateInstrumentsDb(String(argv[optind++]));
                         else
                             InstrumentsDb::GetInstrumentsDb()->CreateInstrumentsDb(); // use default instruments db location
                         std::cout << "Done" << std::endl;
