@@ -2,8 +2,10 @@ linuxsampler (2.0.0-1+svn76) unreleased; urgency=low
 
   * Added build dependency to libsqlite3-dev for building linuxsampler
     with instruments DB support.
+  * Added config file /etc/ld.so.conf.d/linuxsampler.conf instead of fiddling
+    with /etc/ld.so.conf directly with postinst and postrm scripts before.
 
- -- Christian Schoenebeck <cuse@users.sourceforge.net>  Thu, 12 Oct 2017 16:28:46 +0200
+ -- Christian Schoenebeck <cuse@users.sourceforge.net>  Fri, 13 Oct 2017 18:08:56 +0200
 
 linuxsampler (2.0.0-1+svn75) unreleased; urgency=low
 
