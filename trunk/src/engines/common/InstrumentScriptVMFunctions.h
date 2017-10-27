@@ -249,6 +249,30 @@ namespace LinuxSampler {
         VMFnResult* exec(VMFnArgs* args);
     };
 
+    class InstrumentScriptVMFunction_change_cutoff_attack : public VMChangeSynthParamFunction {
+    public:
+        InstrumentScriptVMFunction_change_cutoff_attack(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}
+        VMFnResult* exec(VMFnArgs* args);
+    };
+
+    class InstrumentScriptVMFunction_change_cutoff_decay : public VMChangeSynthParamFunction {
+    public:
+        InstrumentScriptVMFunction_change_cutoff_decay(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}
+        VMFnResult* exec(VMFnArgs* args);
+    };
+
+    class InstrumentScriptVMFunction_change_cutoff_sustain : public VMChangeSynthParamFunction {
+    public:
+        InstrumentScriptVMFunction_change_cutoff_sustain(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}
+        VMFnResult* exec(VMFnArgs* args);
+    };
+
+    class InstrumentScriptVMFunction_change_cutoff_release : public VMChangeSynthParamFunction {
+    public:
+        InstrumentScriptVMFunction_change_cutoff_release(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}
+        VMFnResult* exec(VMFnArgs* args);
+    };
+
     class InstrumentScriptVMFunction_change_amp_lfo_depth : public VMChangeSynthParamFunction {
     public:
         InstrumentScriptVMFunction_change_amp_lfo_depth(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}
@@ -258,6 +282,18 @@ namespace LinuxSampler {
     class InstrumentScriptVMFunction_change_amp_lfo_freq : public VMChangeSynthParamFunction {
     public:
         InstrumentScriptVMFunction_change_amp_lfo_freq(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}
+        VMFnResult* exec(VMFnArgs* args);
+    };
+
+    class InstrumentScriptVMFunction_change_cutoff_lfo_depth : public VMChangeSynthParamFunction {
+    public:
+        InstrumentScriptVMFunction_change_cutoff_lfo_depth(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}
+        VMFnResult* exec(VMFnArgs* args);
+    };
+
+    class InstrumentScriptVMFunction_change_cutoff_lfo_freq : public VMChangeSynthParamFunction {
+    public:
+        InstrumentScriptVMFunction_change_cutoff_lfo_freq(InstrumentScriptVM* parent) : VMChangeSynthParamFunction(parent) {}
         VMFnResult* exec(VMFnArgs* args);
     };
 

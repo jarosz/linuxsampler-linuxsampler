@@ -2092,11 +2092,31 @@ namespace LinuxSampler {
                     case Event::synth_param_release:
                         pNote->Override.Release = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
                         break;
+
+                    case Event::synth_param_cutoff_attack:
+                        pNote->Override.CutoffAttack = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
+                        break;
+                    case Event::synth_param_cutoff_decay:
+                        pNote->Override.CutoffDecay = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
+                        break;
+                    case Event::synth_param_cutoff_sustain:
+                        pNote->Override.CutoffSustain = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
+                        break;
+                    case Event::synth_param_cutoff_release:
+                        pNote->Override.CutoffRelease = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
+                        break;
+
                     case Event::synth_param_amp_lfo_depth:
                         pNote->Override.AmpLFODepth = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
                         break;
                     case Event::synth_param_amp_lfo_freq:
                         pNote->Override.AmpLFOFreq = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
+                        break;
+                    case Event::synth_param_cutoff_lfo_depth:
+                        pNote->Override.CutoffLFODepth = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
+                        break;
+                    case Event::synth_param_cutoff_lfo_freq:
+                        pNote->Override.CutoffLFOFreq = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;
                         break;
                     case Event::synth_param_pitch_lfo_depth:
                         pNote->Override.PitchLFODepth = itEvent->Param.NoteSynthParam.AbsValue = itEvent->Param.NoteSynthParam.Delta;

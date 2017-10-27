@@ -236,7 +236,10 @@ namespace LinuxSampler {
         m_fnChangePanTime(this), m_fnChangePanCurve(this),
         m_fnChangeCutoff(this), m_fnChangeReso(this),  m_fnChangeAttack(this),
         m_fnChangeDecay(this), m_fnChangeSustain(this), m_fnChangeRelease(this),
+        m_fnChangeCutoffAttack(this), m_fnChangeCutoffDecay(this),
+        m_fnChangeCutoffSustain(this), m_fnChangeCutoffRelease(this),
         m_fnChangeAmpLFODepth(this), m_fnChangeAmpLFOFreq(this),
+        m_fnChangeCutoffLFODepth(this), m_fnChangeCutoffLFOFreq(this),
         m_fnChangePitchLFODepth(this), m_fnChangePitchLFOFreq(this),
         m_fnChangeNote(this), m_fnChangeVelo(this), m_fnFork(this),
         m_fnEventStatus(this), m_fnWait2(this), m_fnStopWait(this),
@@ -410,8 +413,14 @@ namespace LinuxSampler {
         else if (name == "change_decay") return &m_fnChangeDecay;
         else if (name == "change_sustain") return &m_fnChangeSustain;
         else if (name == "change_release") return &m_fnChangeRelease;
+        else if (name == "change_cutoff_attack") return &m_fnChangeCutoffAttack;
+        else if (name == "change_cutoff_decay") return &m_fnChangeCutoffDecay;
+        else if (name == "change_cutoff_sustain") return &m_fnChangeCutoffSustain;
+        else if (name == "change_cutoff_release") return &m_fnChangeCutoffRelease;
         else if (name == "change_amp_lfo_depth") return &m_fnChangeAmpLFODepth;
         else if (name == "change_amp_lfo_freq") return &m_fnChangeAmpLFOFreq;
+        else if (name == "change_cutoff_lfo_depth") return &m_fnChangeCutoffLFODepth;
+        else if (name == "change_cutoff_lfo_freq") return &m_fnChangeCutoffLFOFreq;
         else if (name == "change_pitch_lfo_depth") return &m_fnChangePitchLFODepth;
         else if (name == "change_pitch_lfo_freq") return &m_fnChangePitchLFOFreq;
         else if (name == "fade_in") return &m_fnFadeIn;

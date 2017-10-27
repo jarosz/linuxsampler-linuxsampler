@@ -49,8 +49,14 @@ namespace LinuxSampler {
             float Decay;        ///< between 0.0 and 1.0
             float Sustain;      ///< between 0.0 and 1.0
             float Release;      ///< between 0.0 and 1.0
+            float CutoffAttack; ///< between 0.0 and 1.0
+            float CutoffDecay;  ///< between 0.0 and 1.0
+            float CutoffSustain;///< between 0.0 and 1.0
+            float CutoffRelease;///< between 0.0 and 1.0
             float AmpLFODepth;  ///< between 0.0 and 1.0
             float AmpLFOFreq;   ///< between 0.0 and 1.0
+            float CutoffLFODepth;///< between 0.0 and 1.0
+            float CutoffLFOFreq; ///< between 0.0 and 1.0
             float PitchLFODepth; ///< between 0.0 and 1.0
             float PitchLFOFreq; ///< between 0.0 and 1.0
             fade_curve_t VolumeCurve;
@@ -82,8 +88,14 @@ namespace LinuxSampler {
             Override.Decay      = 1.f;
             Override.Sustain    = 1.f;
             Override.Release    = 1.f;
+            Override.CutoffAttack  = 1.f;
+            Override.CutoffDecay   = 1.f;
+            Override.CutoffSustain = 1.f;
+            Override.CutoffRelease = 1.f;
             Override.AmpLFODepth   = 1.f;
             Override.AmpLFOFreq    = 1.f;
+            Override.CutoffLFODepth = 1.f;
+            Override.CutoffLFOFreq  = 1.f;
             Override.PitchLFODepth = 1.f;
             Override.PitchLFOFreq  = 1.f;
             Override.VolumeCurve = DEFAULT_FADE_CURVE;
@@ -163,8 +175,14 @@ namespace LinuxSampler {
             Override.Decay      = 1.f;
             Override.Sustain    = 1.f;
             Override.Release    = 1.f;
+            Override.CutoffAttack  = 1.f;
+            Override.CutoffDecay   = 1.f;
+            Override.CutoffSustain = 1.f;
+            Override.CutoffRelease = 1.f;
             Override.AmpLFODepth   = 1.f;
             Override.AmpLFOFreq    = 1.f;
+            Override.CutoffLFODepth = 1.f;
+            Override.CutoffLFOFreq  = 1.f;
             Override.PitchLFODepth = 1.f;
             Override.PitchLFOFreq  = 1.f;
             Override.VolumeCurve = DEFAULT_FADE_CURVE;

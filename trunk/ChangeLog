@@ -254,6 +254,12 @@ Version SVN trunk (?)
       to avoid the editor app to crash on ill-formed text input.
     - Added built-in script function "change_pan_time()".
     - Added built-in script function "change_pan_curve()".
+    - Added built-in script function "change_cutoff_attack()".
+    - Added built-in script function "change_cutoff_decay()".
+    - Added built-in script function "change_cutoff_sustain()".
+    - Added built-in script function "change_cutoff_release()".
+    - Added built-in script function "change_cutoff_lfo_depth()".
+    - Added built-in script function "change_cutoff_lfo_freq()".
 
   * Instruments DB:
     - Fixed memory access bug of general DB access code which lead to

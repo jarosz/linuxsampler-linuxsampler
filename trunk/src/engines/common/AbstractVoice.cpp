@@ -270,6 +270,12 @@ namespace LinuxSampler {
                 // calculate influence of EG2 controller on EG2's parameters
                 EGInfo egInfo = CalculateEG2ControllerInfluence(eg2controllervalue);
 
+                if (pNote) {
+                    egInfo.Attack  *= pNote->Override.CutoffAttack;
+                    egInfo.Decay   *= pNote->Override.CutoffDecay;
+                    egInfo.Release *= pNote->Override.CutoffRelease;
+                }
+
                 TriggerEG2(egInfo, velrelease, velocityAttenuation, GetEngine()->SampleRate, MIDIVelocity());
             }
 
@@ -808,6 +814,12 @@ namespace LinuxSampler {
                         break;
                     case Event::synth_param_amp_lfo_freq:
                         pLFO1->setScriptFrequencyFactor(itEvent->Param.NoteSynthParam.AbsValue, GetEngine()->SampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE);
+                        break;
+                    case Event::synth_param_cutoff_lfo_depth:
+                        pLFO2->setScriptDepthFactor(itEvent->Param.NoteSynthParam.AbsValue);
+                        break;
+                    case Event::synth_param_cutoff_lfo_freq:
+                        pLFO2->setScriptFrequencyFactor(itEvent->Param.NoteSynthParam.AbsValue, GetEngine()->SampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE);
                         break;
                     case Event::synth_param_pitch_lfo_depth:
                         pLFO3->setScriptDepthFactor(itEvent->Param.NoteSynthParam.AbsValue);

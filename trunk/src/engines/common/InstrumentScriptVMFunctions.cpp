@@ -1178,9 +1178,45 @@ namespace LinuxSampler {
 
     VMFnResult* InstrumentScriptVMFunction_change_sustain::exec(VMFnArgs* args) {
         return VMChangeSynthParamFunction::execTemplate<
-        &NoteBase::_Override::Sustain,
-        Event::synth_param_sustain,
-        true, NO_LIMIT, 0>( args, "change_sustain" );
+                    &NoteBase::_Override::Sustain,
+                    Event::synth_param_sustain,
+                    true, NO_LIMIT, 0>( args, "change_sustain" );
+    }
+
+    // change_cutoff_attack() function
+
+    VMFnResult* InstrumentScriptVMFunction_change_cutoff_attack::exec(VMFnArgs* args) {
+        return VMChangeSynthParamFunction::execTemplate<
+                    &NoteBase::_Override::CutoffAttack,
+                    Event::synth_param_cutoff_attack,
+                    true, NO_LIMIT, 0>( args, "change_cutoff_attack" );
+    }
+
+    // change_cutoff_decay() function
+
+    VMFnResult* InstrumentScriptVMFunction_change_cutoff_decay::exec(VMFnArgs* args) {
+        return VMChangeSynthParamFunction::execTemplate<
+                    &NoteBase::_Override::CutoffDecay,
+                    Event::synth_param_cutoff_decay,
+                    true, NO_LIMIT, 0>( args, "change_cutoff_decay" );
+    }
+
+    // change_cutoff_sustain() function
+
+    VMFnResult* InstrumentScriptVMFunction_change_cutoff_sustain::exec(VMFnArgs* args) {
+        return VMChangeSynthParamFunction::execTemplate<
+                    &NoteBase::_Override::CutoffSustain,
+                    Event::synth_param_cutoff_sustain,
+                    true, NO_LIMIT, 0>( args, "change_cutoff_sustain" );
+    }
+
+    // change_cutoff_release() function
+
+    VMFnResult* InstrumentScriptVMFunction_change_cutoff_release::exec(VMFnArgs* args) {
+        return VMChangeSynthParamFunction::execTemplate<
+                    &NoteBase::_Override::CutoffRelease,
+                    Event::synth_param_cutoff_release,
+                    true, NO_LIMIT, 0>( args, "change_cutoff_release" );
     }
 
     // change_amp_lfo_depth() function
@@ -1199,6 +1235,24 @@ namespace LinuxSampler {
                     &NoteBase::_Override::AmpLFOFreq,
                     Event::synth_param_amp_lfo_freq,
                     true, 1000000, 0>( args, "change_amp_lfo_freq" );
+    }
+
+    // change_cutoff_lfo_depth() function
+
+    VMFnResult* InstrumentScriptVMFunction_change_cutoff_lfo_depth::exec(VMFnArgs* args) {
+        return VMChangeSynthParamFunction::execTemplate<
+                    &NoteBase::_Override::CutoffLFODepth,
+                    Event::synth_param_cutoff_lfo_depth,
+                    true, 1000000, 0>( args, "change_cutoff_lfo_depth" );
+    }
+
+    // change_cutoff_lfo_freq() function
+
+    VMFnResult* InstrumentScriptVMFunction_change_cutoff_lfo_freq::exec(VMFnArgs* args) {
+        return VMChangeSynthParamFunction::execTemplate<
+                    &NoteBase::_Override::CutoffLFOFreq,
+                    Event::synth_param_cutoff_lfo_freq,
+                    true, 1000000, 0>( args, "change_cutoff_lfo_freq" );
     }
 
     // change_pitch_lfo_depth() function

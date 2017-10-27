@@ -326,6 +326,8 @@ namespace LinuxSampler { namespace gig {
                            pRegion->LFO2FlipPhase,
                            pEngine->SampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE);
             pLFO2->updateByMIDICtrlValue(pLFO2->ExtController ? GetGigEngineChannel()->ControllerTable[pLFO2->ExtController] : 0);
+            pLFO2->setScriptDepthFactor(pNote->Override.CutoffLFODepth);
+            pLFO2->setScriptFrequencyFactor(pNote->Override.CutoffLFOFreq, pEngine->SampleRate / CONFIG_DEFAULT_SUBFRAGMENT_SIZE);
         }
     }
 
