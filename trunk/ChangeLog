@@ -1,4 +1,4 @@
-Version SVN trunk (?)
+Version 2.1.0 (25 Nov 2017)
 
   * SFZ format engine:
     - added support for <global>, <master> and #define (patch by Alby M)

@@ -2,8 +2,8 @@
 # LinuxSampler's / liblinuxsampler's "official" release version:
 
 m4_define(linuxsampler_release_major, 2)
-m4_define(linuxsampler_release_minor, 0)
-m4_define(linuxsampler_release_build, 0.svn77)
+m4_define(linuxsampler_release_minor, 1)
+m4_define(linuxsampler_release_build, 0)
 
 
 AC_INIT([linuxsampler],[linuxsampler_release_major.linuxsampler_release_minor.linuxsampler_release_build])
@@ -26,7 +26,7 @@ AC_CONFIG_SRCDIR([configure.ac])
 #  6. If any interfaces have been removed since the last public release, then set age
 #     to 0.
 
-LIBLINUXSAMPLER_LT_CURRENT=4
+LIBLINUXSAMPLER_LT_CURRENT=5
 LIBLINUXSAMPLER_LT_REVISION=0
 LIBLINUXSAMPLER_LT_AGE=0
 SHARED_VERSION_INFO="$LIBLINUXSAMPLER_LT_CURRENT:$LIBLINUXSAMPLER_LT_REVISION:$LIBLINUXSAMPLER_LT_AGE"
@@ -604,7 +604,7 @@ fi
 # Checks for various DLL libraries
 
 # Check presence of libgig
-libgig_version="4.0.0"
+libgig_version="4.1.0"
 PKG_CHECK_MODULES(GIG, gig >= $libgig_version, HAVE_GIG=true, HAVE_GIG=false)
 if test "$HAVE_GIG" = "false"; then
     echo "Required libgig version not found!"

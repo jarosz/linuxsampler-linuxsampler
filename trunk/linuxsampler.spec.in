@@ -1,7 +1,7 @@
 
 %define name    @PACKAGE@
 %define version @VERSION@
-%define release 14
+%define release 15
 %define prefix  @prefix@
 
 Summary:	LinuxSampler - modular, streaming capable, realtime audio sampler
@@ -14,7 +14,7 @@ Group:		Sound
 Source0:	%{name}-%{version}.tar.bz2
 URL:		http://www.linuxsampler.org/
 BuildRoot:	/var/tmp/%{name}-%{version}-buildroot
-Requires:	libgig >= 4.0.0
+Requires:	libgig >= 4.1.0
 
 %description
 LinuxSampler is a free software audio sampler with professional grade
@@ -88,6 +88,8 @@ if [ -d $RPM_BUILD_ROOT ]; then rm -rf $RPM_BUILD_ROOT; fi
 %{prefix}/include/*
 
 %changelog
+* Wed Nov 25 2017 Christian Schoenebeck <cuse@users.sourceforge.net>
+- Going for linuxsampler 2.1.0 release.
 * Wed Jul 15 2015 Christian Schoenebeck <cuse@users.sourceforge.net>
 - Going for linuxsampler 2.0.0 release.
 - Added "lscp" shell binary (and its man page) to package.

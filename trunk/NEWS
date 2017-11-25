@@ -1,3 +1,35 @@
+Version 2.1.0 (25 November 2017)
+
+  This release adds a large amount of extensions and improvements for the
+  real-time instrument scripting support of LinuxSampler (NKSP).
+  For example 48 new built-in NKSP functions and 21 new built-in NKSP
+  variables have been added. Also the NKSP language itself was extended.
+  Most notably the script engine now has an execution scheduler which is
+  the basis for many of the timing relevant new NKSP features in this
+  release, like programmatically suspending and resuming scripts for an
+  exact amount of time or triggering or killing notes at very precise
+  times. Bitwise operators have been added to NKSP, as well as support for
+  read only built-in variables, "synchronized" code blocks
+  ("synchronized .. end synchronized"), user declared functions and user
+  declared const array variables have been added to the NKSP language,
+  and automatic suspension of RT threatening scripts by the RT script engine
+  has been implemented. Also syntax error messages with NKSP scripts have
+  been improved to output more clear and user friendly error messages, as
+  well as NKSP editor API has been improved which brings handy new features
+  to gigedit's NKSP script editor like automatically graying out code blocks
+  which are disabled by NKSP preprocessor statements.
+
+  The SFZ engine now supports <global>, <master>, #define and set_ccN
+  statements. And finally the SFZ engine now supports NKSP real-time
+  instrument scripts as well by adding a new "script" opcode.
+
+  Also the Instruments Database feature has received important maintenance
+  fixes. Before this release the instrument DB feature was barely usable
+  for quite some time. Fundamental instruments DB issues have been fixed in
+  this release to finally consider this feature stable again.
+
+  And finally this release provides a huge amount of general bug fixes.
+
 Version 2.0.0 (15 July 2015)
 
   The sampler's code base has seen substantial changes in the last six years,

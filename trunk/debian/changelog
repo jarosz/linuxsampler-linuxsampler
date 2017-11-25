@@ -1,3 +1,11 @@
+linuxsampler (2.1.0-1) unstable; urgency=low
+
+  * New release.
+  * liblinuxsampler shared library (liblinuxsampler.so) is now at
+    version 5.0.0.
+
+ -- Christian Schoenebeck <cuse@users.sourceforge.net>  Sat, 25 Nov 2017 18:06:36 +0100
+
 linuxsampler (2.0.0-1+svn76) unreleased; urgency=low
 
   * Added build dependency to libsqlite3-dev for building linuxsampler
