@@ -1,3 +1,10 @@
+Version SVN trunk (?)
+
+  * Real-time instrument scripts:
+    - Fixed behavior of built-in NKSP functions change_sustain(),
+      change_cutoff_attack(), change_cutoff_decay(), change_cutoff_sustain()
+      and change_cutoff_release().
+
 Version 2.1.0 (25 Nov 2017)
 
   * SFZ format engine:

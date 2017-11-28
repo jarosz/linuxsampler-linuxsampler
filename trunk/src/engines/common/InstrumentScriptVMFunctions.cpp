@@ -1180,7 +1180,7 @@ namespace LinuxSampler {
         return VMChangeSynthParamFunction::execTemplate<
                     &NoteBase::_Override::Sustain,
                     Event::synth_param_sustain,
-                    true, NO_LIMIT, 0>( args, "change_sustain" );
+                    false, NO_LIMIT, 0>( args, "change_sustain" );
     }
 
     // change_cutoff_attack() function
@@ -1189,7 +1189,7 @@ namespace LinuxSampler {
         return VMChangeSynthParamFunction::execTemplate<
                     &NoteBase::_Override::CutoffAttack,
                     Event::synth_param_cutoff_attack,
-                    true, NO_LIMIT, 0>( args, "change_cutoff_attack" );
+                    false, NO_LIMIT, 0>( args, "change_cutoff_attack" );
     }
 
     // change_cutoff_decay() function
@@ -1198,7 +1198,7 @@ namespace LinuxSampler {
         return VMChangeSynthParamFunction::execTemplate<
                     &NoteBase::_Override::CutoffDecay,
                     Event::synth_param_cutoff_decay,
-                    true, NO_LIMIT, 0>( args, "change_cutoff_decay" );
+                    false, NO_LIMIT, 0>( args, "change_cutoff_decay" );
     }
 
     // change_cutoff_sustain() function
@@ -1207,7 +1207,7 @@ namespace LinuxSampler {
         return VMChangeSynthParamFunction::execTemplate<
                     &NoteBase::_Override::CutoffSustain,
                     Event::synth_param_cutoff_sustain,
-                    true, NO_LIMIT, 0>( args, "change_cutoff_sustain" );
+                    false, NO_LIMIT, 0>( args, "change_cutoff_sustain" );
     }
 
     // change_cutoff_release() function
@@ -1216,7 +1216,7 @@ namespace LinuxSampler {
         return VMChangeSynthParamFunction::execTemplate<
                     &NoteBase::_Override::CutoffRelease,
                     Event::synth_param_cutoff_release,
-                    true, NO_LIMIT, 0>( args, "change_cutoff_release" );
+                    false, NO_LIMIT, 0>( args, "change_cutoff_release" );
     }
 
     // change_amp_lfo_depth() function
