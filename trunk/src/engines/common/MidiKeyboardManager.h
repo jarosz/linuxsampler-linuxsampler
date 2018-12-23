@@ -694,30 +694,30 @@ namespace LinuxSampler {
                 RTList<uint>::Iterator iuiKey = pActiveKeys->first();
                 for (; iuiKey; ++iuiKey) {
                     MidiKey* pKey = &pMIDIKeyInfo[*iuiKey];
-                    if (!pKey->KeyPressed &&
-                        (pKey->ReleaseTrigger & release_trigger_sustain) &&
-                        ShouldReleaseVoice(*iuiKey))
-                    {
+                    if (!pKey->KeyPressed && ShouldReleaseVoice(*iuiKey)) {
                         RTList<Event>::Iterator itNewEvent = pKey->pEvents->allocAppend();
                         if (itNewEvent) {
                             *itNewEvent = *itEvent; // copy event to the key's own event list
                             itNewEvent->Type = Event::type_release_key; // transform event type
                             itNewEvent->Param.Note.Key = *iuiKey;
-                            if (pKey->ReleaseTrigger & release_trigger_sustain_maxvelocity)
-                                itNewEvent->Param.Note.Velocity = 127;
-                            else // release_trigger_sustain_keyvelocity ...
-                                itNewEvent->Param.Note.Velocity = pKey->Velocity;
+                            itNewEvent->Param.Note.Velocity = 127;
 
-                            //HACK: set sustain CC (64) as "pressed down" for a short moment, so that release trigger voices can distinguish between note off and sustain pedal up cases
-                            AbstractEngineChannel* pChannel = (AbstractEngineChannel*) itEvent->pEngineChannel;
-                            const int8_t CC64Value = pChannel->ControllerTable[64];
-                            pChannel->ControllerTable[64] = 127;
+                            // process release trigger (if requested)
+                            if (pKey->ReleaseTrigger & release_trigger_sustain) {
+                                if (pKey->ReleaseTrigger & release_trigger_sustain_keyvelocity)
+                                    itNewEvent->Param.Note.Velocity = pKey->Velocity;
 
-                            // now spawn release trigger voices (if required)
-                            ProcessReleaseTriggerBySustain(itNewEvent);
+                                //HACK: set sustain CC (64) as "pressed down" for a short moment, so that release trigger voices can distinguish between note off and sustain pedal up cases
+                                AbstractEngineChannel* pChannel = (AbstractEngineChannel*) itEvent->pEngineChannel;
+                                const int8_t CC64Value = pChannel->ControllerTable[64];
+                                pChannel->ControllerTable[64] = 127;
 
-                            //HACK: reset sustain pedal CC value to old one (see comment above)
-                            pChannel->ControllerTable[64] = CC64Value;
+                                // now spawn release trigger voices (if required)
+                                ProcessReleaseTriggerBySustain(itNewEvent);
+
+                                //HACK: reset sustain pedal CC value to old one (see comment above)
+                                pChannel->ControllerTable[64] = CC64Value;   
+                            }
                         }
                         else dmsg(1,("Event pool emtpy!\n"));
                     }
