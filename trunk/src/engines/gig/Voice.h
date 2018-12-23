@@ -62,6 +62,7 @@ namespace LinuxSampler { namespace gig {
             void SetOutput(AudioOutputDevice* pAudioOutputDevice);
             void SetEngine(LinuxSampler::Engine* pEngine);
             void CalculateFadeOutCoeff(float FadeOutTime, float SampleRate);
+            virtual release_trigger_t GetReleaseTriggerFlags() OVERRIDE;
 
         protected:
             virtual SampleInfo       GetSampleInfo() OVERRIDE;

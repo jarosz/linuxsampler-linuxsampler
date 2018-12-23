@@ -108,7 +108,9 @@ namespace LinuxSampler {
             virtual void VoiceFreed() { }
 
             virtual void Synthesize(uint Samples, sample_t* pSrc, uint Skip);
-            
+
+            virtual release_trigger_t GetReleaseTriggerFlags() = 0;
+
             uint GetSampleRate() { return GetEngine()->SampleRate; }
             
             uint8_t GetControllerValue(uint8_t Controller) {

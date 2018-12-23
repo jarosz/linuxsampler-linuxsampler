@@ -544,4 +544,19 @@ namespace LinuxSampler { namespace gig {
         return p;
     }
 
+    release_trigger_t Voice::GetReleaseTriggerFlags() {
+        release_trigger_t flags = release_trigger_noteoff; //HACK: currently this method is actually only called by EngineBase if it already knows that this voice requires release trigger, so I took the short way instead of checking (again) the existence of a ::gig::dimension_releasetrigger
+        switch (pRegion->SustainReleaseTrigger) {
+            case ::gig::sust_rel_trg_none:
+                break;
+            case ::gig::sust_rel_trg_maxvelocity:
+                flags |= release_trigger_sustain_maxvelocity;
+                break;
+            case ::gig::sust_rel_trg_keyvelocity:
+                flags |= release_trigger_sustain_keyvelocity;
+                break;
+        }
+        return flags;
+    }
+
 }} // namespace LinuxSampler::gig

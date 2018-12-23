@@ -314,9 +314,9 @@ namespace LinuxSampler {
              * @param pEngineChannel - engine channel on which this event occurred on
              * @param itEvent - release trigger event (contains note number)
              */
-            virtual void ProcessReleaseTrigger(RTList<Event>::Iterator& itEvent) OVERRIDE {
+            virtual void ProcessReleaseTriggerBySustain(RTList<Event>::Iterator& itEvent) OVERRIDE {
                 if (!pEngine) return;
-                pEngine->ProcessReleaseTrigger(this, itEvent);
+                pEngine->ProcessReleaseTriggerBySustain(this, itEvent);
             }
 
             void RenderActiveVoices(uint Samples) {

@@ -153,7 +153,7 @@ namespace LinuxSampler {
             virtual void ProcessControlChange(EngineChannel* pEngineChannel, Pool<Event>::Iterator& itControlChangeEvent) = 0;
             virtual void ProcessChannelPressure(EngineChannel* pEngineChannel, Pool<Event>::Iterator& itChannelPressureEvent) = 0;
             virtual void ProcessPolyphonicKeyPressure(EngineChannel* pEngineChannel, Pool<Event>::Iterator& itNotePressureEvent) = 0;
-            virtual void ProcessReleaseTrigger(EngineChannel* pEngineChannel, RTList<Event>::Iterator& itEvent) = 0;
+            virtual void ProcessReleaseTriggerBySustain(EngineChannel* pEngineChannel, RTList<Event>::Iterator& itEvent) = 0;
             virtual int  GetMinFadeOutSamples() = 0;
             virtual note_id_t LaunchNewNote(LinuxSampler::EngineChannel* pEngineChannel, Pool<Event>::Iterator& itNoteOnEvent) = 0;
             virtual void CreateInstrumentScriptVM();

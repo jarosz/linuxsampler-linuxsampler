@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 - 2017 Christian Schoenebeck
+ * Copyright (c) 2016 - 2018 Christian Schoenebeck
  *
  * http://www.linuxsampler.org
  *
@@ -19,6 +19,27 @@
 #define DEFAULT_NOTE_PAN_TIME_S     0.013f /* 13ms */
 
 namespace LinuxSampler {
+
+    /// Whether release trigger sample(s) should be played and if yes under which circumstance(s). Options are bit flags to be able to combine them bitwise.
+    enum release_trigger_t {
+        release_trigger_none = 0, ///< Don't play release trigger sample.
+        release_trigger_noteoff = 1, ///< Play release trigger sample on MIDI note-off event.
+        release_trigger_sustain_maxvelocity = (1 << 1), ///< Play release trigger sample on sustain pedal up, use 127 as MIDI velocity.
+        release_trigger_sustain_keyvelocity = (1 << 2)  ///< Play release trigger sample on sustain pedal up, use latest MIDI note-on velocity on key.
+    };
+
+    /// convenience macro for checking playing release trigger sample by sustain pedal in general
+    #define release_trigger_sustain \
+        (release_trigger_sustain_maxvelocity | release_trigger_sustain_keyvelocity)
+
+    // remove strictness of C++ regarding raw bitwise operations (on type release_trigger_t)
+    inline release_trigger_t operator|(release_trigger_t a, release_trigger_t b) {
+        return (release_trigger_t) (a | b);
+    }
+    inline release_trigger_t& operator|=(release_trigger_t& a, release_trigger_t b) {
+        a = (release_trigger_t) (a | b);
+        return a;
+    }
 
     /**
      * Abstract base class of its deriving @c Note class, this class (NoteBase)

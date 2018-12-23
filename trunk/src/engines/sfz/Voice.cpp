@@ -280,6 +280,10 @@ namespace LinuxSampler { namespace sfz {
         return expf(RgnInfo.ReleaseTriggerDecay * noteLength);
     }
 
+    release_trigger_t Voice::GetReleaseTriggerFlags() {
+        return release_trigger_noteoff;
+    }
+
     void Voice::ProcessGroupEvent(RTList<Event>::Iterator& itEvent) {
         dmsg(4,("Voice %p processGroupEvents event type=%d", (void*)this, itEvent->Type));
         if (itEvent->Type == Event::type_control_change ||

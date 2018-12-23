@@ -1922,7 +1922,8 @@ namespace LinuxSampler {
                     if (bShouldRelease) {
                         itNoteOffEventOnKeyList->Type = Event::type_release_key; // transform event type
                         // spawn release triggered voice(s) if needed
-                        ProcessReleaseTrigger(pChannel, itNoteOffEventOnKeyList, pKey);
+                        if (pKey->ReleaseTrigger & release_trigger_noteoff)
+                            ProcessReleaseTrigger(pChannel, itNoteOffEventOnKeyList, pKey);
                     }
                 } else if (itNoteOffEventOnKeyList->Type == Event::type_stop_note) {
                     // This programmatically caused event is caused by a call to
@@ -1953,7 +1954,7 @@ namespace LinuxSampler {
              * @param pEngineChannel - engine channel on which this event occurred on
              * @param itEvent - release trigger event (contains note number)
              */
-            virtual void ProcessReleaseTrigger(EngineChannel* pEngineChannel, RTList<Event>::Iterator& itEvent) OVERRIDE {
+            virtual void ProcessReleaseTriggerBySustain(EngineChannel* pEngineChannel, RTList<Event>::Iterator& itEvent) OVERRIDE {
                 EngineChannelBase<V, R, I>* pChannel = static_cast<EngineChannelBase<V, R, I>*>(pEngineChannel);
 
                 const int iKey = itEvent->Param.Note.Key;
@@ -1981,7 +1982,7 @@ namespace LinuxSampler {
                         // allocate and trigger new release voice(s)
                         TriggerReleaseVoices(pChannel, itEvent);
                     }
-                    pKey->ReleaseTrigger = false;
+                    pKey->ReleaseTrigger = release_trigger_none;
                 }
             }
 
@@ -2257,7 +2258,8 @@ namespace LinuxSampler {
                         // already done in LaunchNewNote()
                         pChannel->markKeyAsActive(pKey);
 
-                        if (itNewVoice->Type & Voice::type_release_trigger_required) pKey->ReleaseTrigger = true; // mark key for the need of release triggered voice(s)
+                        if (itNewVoice->Type & Voice::type_release_trigger_required)
+                            pKey->ReleaseTrigger |= itNewVoice->GetReleaseTriggerFlags(); // mark key for the need of release triggered voice(s)
                         return 0; // success
                     }
                 }

@@ -53,7 +53,8 @@ namespace LinuxSampler { namespace sfz {
             void SetOutput(AudioOutputDevice* pAudioOutputDevice);
             void SetEngine(LinuxSampler::Engine* pEngine);
             void CalculateFadeOutCoeff(float FadeOutTime, float SampleRate);
-            
+            virtual release_trigger_t GetReleaseTriggerFlags() OVERRIDE;
+
             virtual void VoiceFreed() OVERRIDE { SignalRack.Reset(); }
 
         protected:

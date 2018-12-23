@@ -361,4 +361,8 @@ namespace LinuxSampler { namespace sf2 {
         return p;
     }
 
+    release_trigger_t Voice::GetReleaseTriggerFlags() {
+        return release_trigger_none;
+    }
+
 }} // namespace LinuxSampler::sf2

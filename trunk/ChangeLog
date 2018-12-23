@@ -5,6 +5,10 @@ Version SVN trunk (?)
       change_cutoff_attack(), change_cutoff_decay(), change_cutoff_sustain()
       and change_cutoff_release().
 
+  * general changes:
+    - Only play release trigger samples on sustain pedal up if this behaviour
+      was explicitly requested by the instrument (otherwise only on note-off).
+
 Version 2.1.0 (25 Nov 2017)
 
   * SFZ format engine:
