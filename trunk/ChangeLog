@@ -9,6 +9,10 @@ Version SVN trunk (?)
     - Only play release trigger samples on sustain pedal up if this behaviour
       was explicitly requested by the instrument (otherwise only on note-off).
 
+  * Gigasampler/GigaStudio format engine:
+    - Format extension: If requested by instrument then don't play release
+      trigger sample on note-off events.
+
 Version 2.1.0 (25 Nov 2017)
 
   * SFZ format engine:
