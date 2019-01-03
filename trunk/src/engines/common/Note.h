@@ -34,10 +34,10 @@ namespace LinuxSampler {
 
     // remove strictness of C++ regarding raw bitwise operations (on type release_trigger_t)
     inline release_trigger_t operator|(release_trigger_t a, release_trigger_t b) {
-        return (release_trigger_t) (a | b);
+        return (release_trigger_t) ((int)a | (int)b);
     }
     inline release_trigger_t& operator|=(release_trigger_t& a, release_trigger_t b) {
-        a = (release_trigger_t) (a | b);
+        a = (release_trigger_t) ((int)a | (int)b);
         return a;
     }
 
