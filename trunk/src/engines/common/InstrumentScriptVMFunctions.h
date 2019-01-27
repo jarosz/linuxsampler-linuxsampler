@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 - 2017 Christian Schoenebeck
+ * Copyright (c) 2014 - 2019 Christian Schoenebeck
  *
  * http://www.linuxsampler.org
  *
@@ -489,10 +489,10 @@ namespace LinuxSampler {
     class InstrumentScriptVMFunction_abort : public VMEmptyResultFunction {
     public:
         InstrumentScriptVMFunction_abort(InstrumentScriptVM* parent);
-        int minRequiredArgs() const { return 1; }
-        int maxAllowedArgs() const { return 1; }
-        bool acceptsArgType(int iArg, ExprType_t type) const { return type == INT_EXPR; }
-        ExprType_t argType(int iArg) const { return INT_EXPR; }
+        int minRequiredArgs() const OVERRIDE { return 1; }
+        int maxAllowedArgs() const OVERRIDE { return 1; }
+        bool acceptsArgType(int iArg, ExprType_t type) const OVERRIDE { return type == INT_EXPR; }
+        ExprType_t argType(int iArg) const OVERRIDE { return INT_EXPR; }
         VMFnResult* exec(VMFnArgs* args) OVERRIDE;
     protected:
         InstrumentScriptVM* m_vm;

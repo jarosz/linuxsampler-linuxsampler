@@ -4,7 +4,7 @@
  *                                                                         *
  *   Copyright (C) 2003,2004 by Benno Senoner and Christian Schoenebeck    *
  *   Copyright (C) 2005-2009 Christian Schoenebeck                         *
- *   Copyright (C) 2009 Grigor Iliev                                       *
+ *   Copyright (C) 2009-2019 Grigor Iliev                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -35,7 +35,11 @@
 # include <gig.h>
 #endif
 
-namespace LinuxSampler { namespace gig {
+namespace LinuxSampler {
+    template <>
+    LinuxSampler::Stream* LinuxSampler::DiskThreadBase< ::gig::DimensionRegion, gig::InstrumentResourceManager>::SLOT_RESERVED;
+
+namespace gig {
 
     class DiskThread: public LinuxSampler::DiskThreadBase< ::gig::DimensionRegion, InstrumentResourceManager> {
         protected:

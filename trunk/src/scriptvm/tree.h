@@ -1,6 +1,6 @@
 /*                                                              -*- c++ -*-
  *
- * Copyright (c) 2014 - 2017 Christian Schoenebeck and Andreas Persson
+ * Copyright (c) 2014 - 2019 Christian Schoenebeck and Andreas Persson
  *
  * http://www.linuxsampler.org
  *
@@ -197,11 +197,11 @@ class BuiltInIntArrayVariable : public IntArrayVariable {
     VMInt8Array* array;
 public:
     BuiltInIntArrayVariable(const String& name, VMInt8Array* array);
-    int arraySize() const { return array->size; }
-    int evalIntElement(uint i);
+    int arraySize() const OVERRIDE { return array->size; }
+    int evalIntElement(uint i) OVERRIDE;
     bool isAssignable() const OVERRIDE { return !array->readonly; }
-    void assignIntElement(uint i, int value);
-    void dump(int level = 0);
+    void assignIntElement(uint i, int value) OVERRIDE;
+    void dump(int level = 0) OVERRIDE;
 };
 typedef Ref<BuiltInIntArrayVariable,Node> BuiltInIntArrayVariableRef;
 
@@ -350,7 +350,7 @@ public:
     String evalCastToStr() OVERRIDE;
     int arraySize() const OVERRIDE { return dynVar->asIntArray()->arraySize(); }
     int evalIntElement(uint i) OVERRIDE { return dynVar->asIntArray()->evalIntElement(i); }
-    void assignIntElement(uint i, int value) { return dynVar->asIntArray()->assignIntElement(i, value); }
+    void assignIntElement(uint i, int value) OVERRIDE { return dynVar->asIntArray()->assignIntElement(i, value); }
     void dump(int level = 0) OVERRIDE;
 };
 typedef Ref<DynamicVariableCall,Node> DynamicVariableCallRef;

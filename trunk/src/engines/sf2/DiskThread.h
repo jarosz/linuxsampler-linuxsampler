@@ -4,7 +4,7 @@
  *                                                                         *
  *   Copyright (C) 2003,2004 by Benno Senoner and Christian Schoenebeck    *
  *   Copyright (C) 2005-2009 Christian Schoenebeck                         *
- *   Copyright (C) 2009 Grigor Iliev                                       *
+ *   Copyright (C) 2009-2019 Grigor Iliev                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -29,7 +29,11 @@
 #include "../common/DiskThreadBase.h"
 #include "InstrumentResourceManager.h"
 
-namespace LinuxSampler { namespace sf2 {
+namespace LinuxSampler {
+    template <>
+    LinuxSampler::Stream* LinuxSampler::DiskThreadBase< ::sf2::Region, sf2::InstrumentResourceManager>::SLOT_RESERVED;
+
+namespace sf2 {
 
     class DiskThread: public LinuxSampler::DiskThreadBase< ::sf2::Region, InstrumentResourceManager> {
         protected:

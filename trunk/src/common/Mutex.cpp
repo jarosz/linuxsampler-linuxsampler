@@ -3,7 +3,7 @@
  *   LinuxSampler - modular, streaming capable sampler                     *
  *                                                                         *
  *   Copyright (C) 2003, 2004 by Benno Senoner and Christian Schoenebeck   *
- *   Copyright (C) 2005 - 2017 Christian Schoenebeck                       *
+ *   Copyright (C) 2005 - 2019 Christian Schoenebeck                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -25,7 +25,7 @@
 # include <config.h>
 #endif
 
-#if AC_APPLE_UNIVERSAL_BUILD // maybe do this include for all Apple ones (defined(__APPLE__))?
+#if defined(__APPLE__)
 # include <sys/cdefs.h> // defines the system macros checked below
 #endif
 

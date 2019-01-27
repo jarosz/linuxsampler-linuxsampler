@@ -8,6 +8,8 @@ Version SVN trunk (?)
   * general changes:
     - Only play release trigger samples on sustain pedal up if this behaviour
       was explicitly requested by the instrument (otherwise only on note-off).
+    - Fixed compiler warnings.
+    - Fixed compilation error when cross-compiling to Mac.
 
   * Gigasampler/GigaStudio format engine:
     - Format extension: If requested by instrument then don't play release
