@@ -156,7 +156,7 @@ namespace sfz
             pSample->Open();
         }
 
-        virtual void OnSampleInNotUse(Sample* pSample) {
+        virtual void OnSampleNotInUse(Sample* pSample) {
             pSample->Close();
         }
     };

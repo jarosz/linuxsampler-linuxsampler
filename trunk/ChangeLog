@@ -15,6 +15,10 @@ Version SVN trunk (?)
     - Format extension: If requested by instrument then don't play release
       trigger sample on note-off events.
 
+  * SFZ format engine:
+    - Fixed memory leak when releasing samples
+      (fixes bug #307, patch by Jacek Roszkowski)
+
 Version 2.1.0 (25 Nov 2017)
 
   * SFZ format engine:
