@@ -152,11 +152,11 @@ namespace sfz
         Sample* FindSample(std::string samplePath, uint offset, int end);
 
     protected:
-        virtual void OnSampleInUse(Sample* pSample) {
+        virtual void OnSampleInUse(Sample* pSample) OVERRIDE {
             pSample->Open();
         }
 
-        virtual void OnSampleNotInUse(Sample* pSample) {
+        virtual void OnSampleNotInUse(Sample* pSample) OVERRIDE {
             pSample->Close();
         }
     };

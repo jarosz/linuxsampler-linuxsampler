@@ -18,6 +18,8 @@ Version SVN trunk (?)
   * SFZ format engine:
     - Fixed memory leak when releasing samples
       (fixes bug #307, patch by Jacek Roszkowski)
+    - Fixed potential crash when a sample is shared by more than one region
+      (fixes bug #308, patch by Jacek Roszkowski).
 
 Version 2.1.0 (25 Nov 2017)
 

@@ -32,7 +32,16 @@
 namespace LinuxSampler {
 
     /**
-     * Used to determine and manage the relations between samples and consumers (e.g. regions)
+     * Used to determine and manage the relations between samples and consumers
+     * (e.g. regions). Even though this class is currently stored at a shared
+     * source file location, this class is actually only used by the sfz engine
+     * ATM. So the gig and sf2 engines are not using this class at all.
+     *
+     * NOTE: This class currently uses a somewhat unclean design by maintaining
+     * a separate set of information of "consumers of a sample" vs. "consumers
+     * actually using a sample" (see bug #308). We might need to revise this
+     * design of this class in case new problems appear (e.g. when encountering
+     * memory leaks after closing an sfz instrument).
      */
     template <class S /* Sample */, class C /* Sample Consumer */>
     class SampleManager {
@@ -139,14 +148,20 @@ namespace LinuxSampler {
                 verifyPair(pSample, pConsumer, "SampleManager::SetSampleNotInUse");
 
                 bool inUse = !samplesInUseMap[pSample].empty();
-                samplesInUseMap[pSample].erase(pConsumer);
+                // Remove only one consumer at a time
+                typename std::multiset<C*>::iterator it = samplesInUseMap[pSample].find(pConsumer);
+                if (it != samplesInUseMap[pSample].end()) {
+                    samplesInUseMap[pSample].erase(it);
+                }
                 bool inUseNew = !samplesInUseMap[pSample].empty();
+                // Wih no consumers, erase sample
+                if (!inUseNew) samplesInUseMap.erase(pSample);
                 if(inUse && !inUseNew) OnSampleNotInUse(pSample);
             }
 
         protected:
             std::map<S*, std::set<C*> > sampleMap;
-            std::map<S*, std::set<C*> > samplesInUseMap;
+            std::map<S*, std::multiset<C*> > samplesInUseMap; // std::multiset as data type fixes bug #308.
 
             void verifyPair(S* pSample, C* pConsumer, String caller) {
                 if(!HasSample(pSample)) {
@@ -162,13 +177,13 @@ namespace LinuxSampler {
              * Override this method to handle the state change (not in use -> in use)
              * of the specified sample.
              */
-            virtual void OnSampleInUse(S* pSample) { }
+            virtual void OnSampleInUse(S* pSample) = 0;
 
             /**
              * Override this method to handle the state change (in use -> not in use)
              * of the specified sample.
              */
-            virtual void OnSampleNotInUse(S* pSample) { }
+            virtual void OnSampleNotInUse(S* pSample) = 0;
     };
 } // namespace LinuxSampler
 
