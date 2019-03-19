@@ -343,7 +343,15 @@ namespace LinuxSampler { namespace sf2 {
     }
 
     void Voice::ProcessGroupEvent(RTList<Event>::Iterator& itEvent) {
-        if (itEvent->Param.Note.Key != HostKey()) {
+        bool ReleaseVoice = (
+            itEvent->Type == Event::type_release_voice &&
+            itEvent->Param.ReleaseVoice.VoiceID == pEngine->GetVoicePool()->getID(this)
+        );
+        bool NewNote = (
+            itEvent->Type == Event::type_note_on &&
+            itEvent->Type == itEvent->Param.Note.Key != HostKey()
+        );
+        if (NewNote || ReleaseVoice) {
             // kill the voice fast
             SignalRack.EnterFadeOutStage();
         }

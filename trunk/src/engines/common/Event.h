@@ -134,6 +134,11 @@ namespace LinuxSampler {
     typedef pool_element_id_t note_id_t;
 
     /**
+     * Unique numeric ID of a voice.
+     */
+    typedef pool_element_id_t voice_id_t;
+
+    /**
      * Unique numeric ID of a script callback ID instance which can be used to
      * retrieve access to the actual @c ScriptEvent object. Once the script
      * callback instance associated with a certain ID stopped its execution
@@ -169,6 +174,7 @@ namespace LinuxSampler {
                 type_stop_note, ///< caused by a call to built-in instrument script function note_off()
                 type_kill_note, ///< caused by a call to built-in instrument script function fade_out()
                 type_note_synth_param, ///< change a note's synthesis parameters (upon real-time instrument script function calls, i.e. change_vol(), change_tune(), change_pan(), etc.)
+                type_release_voice,
             } Type;
             enum synth_param_t {
                 synth_param_volume,
@@ -244,6 +250,9 @@ namespace LinuxSampler {
                     bool          Relative; ///< Whether @c Delta should be applied relatively against the note's current synthesis parameter value (false means the paramter's current value is simply replaced by Delta).
                     float         AbsValue; ///< New current absolute value of synthesis parameter (that is after @c Delta being applied).
                 } NoteSynthParam;
+                struct _ReleaseVoice {
+                    voice_id_t VoiceID;
+                } ReleaseVoice;
             } Param;
             EngineChannel* pEngineChannel; ///< Pointer to the EngineChannel where this event occured on, NULL means Engine global event (e.g. SysEx message).
             MidiInputPort* pMidiInputPort; ///< Pointer to the MIDI input port on which this event occured (NOTE: currently only for global events, that is SysEx messages)

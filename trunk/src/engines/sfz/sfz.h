@@ -143,6 +143,7 @@ namespace sfz
                        LPF_2P, HPF_2P, BPF_2P, BRF_2P, PKF_2P,
                        LPF_4P, HPF_4P,
                        LPF_6P, HPF_6P };
+    enum note_selfmask_t { SELFMASK_OFF, SELFMASK_ON };
 
     typedef unsigned char trigger_t;
     typedef unsigned char uint8_t;
@@ -427,9 +428,12 @@ namespace sfz
 
         trigger_t trigger;
 
-        uint group;
-        uint off_by;
+        int group;
+        int off_by;
         off_mode_t off_mode;
+        int polyphony;
+        int note_polyphony;
+        note_selfmask_t note_selfmask;
 
         Array<int> on_locc; Array<int> on_hicc;
 

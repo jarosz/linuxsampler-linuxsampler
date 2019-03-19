@@ -118,6 +118,7 @@ namespace LinuxSampler {
         itKillEvent     = Pool<Event>::Iterator();
         MidiKeyBase* pKeyInfo = GetMidiKeyInfo(MIDIKey());
 
+        // FIXME: in sfz iKeyGroup (off_by) = 0 is valid
         pGroupEvents = iKeyGroup ? pEngineChannel->ActiveKeyGroups[iKeyGroup] : 0;
 
         SmplInfo   = GetSampleInfo();

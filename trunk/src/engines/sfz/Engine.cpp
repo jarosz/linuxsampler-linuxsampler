@@ -273,7 +273,10 @@ namespace LinuxSampler { namespace sfz {
 
         Pool<Voice>::Iterator itNewVoice;
 
-        if (HandleKeyGroupConflicts) pChannel->HandleKeyGroupConflicts(pRgn->group, itNoteOnEvent);
+        // TODO: check for discrepancy while loading Regions to the Instrument.
+        // Voices in the same group must have identical values for
+        // off_by, polyphony, note_polyphony and note_selfmask opcodes.
+        if (HandleKeyGroupConflicts) pChannel->HandleKeyGroupConflicts(pRgn->group, itNoteOnEvent, (bool)pRgn->note_selfmask, pRgn->note_polyphony, pRgn->polyphony, true, true, true);
 
         // no need to process if sample is silent
         if (!pRgn->GetSample(false) || !pRgn->GetSample()->GetTotalFrameCount()) return Pool<Voice>::Iterator();

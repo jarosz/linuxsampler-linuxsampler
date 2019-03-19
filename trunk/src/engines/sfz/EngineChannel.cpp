@@ -163,7 +163,6 @@ namespace LinuxSampler { namespace sfz {
         // rebuild ActiveKeyGroups map with key groups of current instrument
         for (std::vector< ::sfz::Region*>::iterator itRegion = newInstrument->regions.begin() ;
              itRegion != newInstrument->regions.end() ; ++itRegion) {
-            AddGroup((*itRegion)->group);
             AddGroup((*itRegion)->off_by);
         }
 

@@ -428,6 +428,107 @@ namespace LinuxSampler {
 
             template<class TV, class TRR, class TR, class TD, class TIM, class TI> friend class EngineBase;
 
+            /**
+             * Handle key group (a.k.a. exclusive group) conflicts.
+             * @param SelfMask       - Without self-masking notes turn off notes with the same pitch
+             *                         regardless of velocity. With self-masking higher-velocity notes
+             *                         turn off lower-velocity notes, but lower-velocity notes
+             *                         do not turn off higher-velocity notes.
+             *                         The case of notes with the same velocity is undocumented.
+             * @param NotePolyphony  - Maximum number of voices playing simultaneously triggered by the same key.
+             * @param GroupPolyphony - Maximum number of voices playing simultaneously within the same group.
+             * @param ForceGroup     - Set true only for sfz to force checking GroupPolyphony even
+             *                         on voices played on the same note.
+             * @param ForceOffBy     - Set true only for sfz to force voice relase with off_by opcode.
+             * @param NewAlgorithm   - TODO: remove this argument if it makes into the trunk.
+             */
+            void HandleKeyGroupConflicts(int KeyGroup, Pool<Event>::Iterator& itNoteOnEvent, bool SelfMask = false, int NotePolyphony = 1, int GroupPolyphony = 1, bool ForceGroup = false, bool ForceOffBy = false, bool NewAlgorithm = false) {
+                dmsg(4,("EngineChannelBase::HandleKeyGroupConflicts KeyGroup=%d\n", KeyGroup));
+                if (NewAlgorithm) {
+                // Gather all active voices that might be released
+                // because of a group conflict, ordered by trigger time
+                typedef std::multimap<sched_time_t, typename MidiKeyboardManager<V>::RTListVoiceIterator> VoiceMap;
+                VoiceMap OrderedVoices;
+
+                // iterate through all active keys
+                for (Pool<uint>::Iterator iuiKey = this->pActiveKeys->first();
+                     iuiKey != this->pActiveKeys->end();
+                     ++iuiKey)
+                {
+                    MidiKey* pKey = &this->pMIDIKeyInfo[*iuiKey];
+                    // and active notes for each key
+                    for (typename MidiKeyboardManager<V>::RTListNoteIterator itNote = pKey->pActiveNotes->first();
+                         itNote != pKey->pActiveNotes->end();
+                         ++itNote)
+                    {
+                        // and active voices for each note
+                        for (typename MidiKeyboardManager<V>::RTListVoiceIterator itVoice = itNote->pActiveVoices->first();
+                             itVoice != itNote->pActiveVoices->end();
+                             ++itVoice)
+                        {
+                            // Add voice to the multimap if it's in the same group
+                            // (to check for NotePolyphony and GroupPolyphony)
+                            // or if it should be stopped by off_by opcode (sfz)
+                            if (itVoice->GetKeyGroup() == KeyGroup || itVoice->GetOffBy() == KeyGroup)
+                            {
+                                OrderedVoices.insert(typename VoiceMap::value_type(
+                                    itVoice->pNote->triggerSchedTime,
+                                    itVoice
+                                ));
+                            }
+                        }
+                    }
+                }
+
+                int NoteCount = 0;
+                int GroupCount = 0;
+
+                // Iterate in reverse order to save most recent voices and 
+                // release those triggered earlier
+                for (typename VoiceMap::reverse_iterator itMap = OrderedVoices.rbegin();
+                     itMap != OrderedVoices.rend();
+                     ++itMap)
+                {
+                    typename MidiKeyboardManager<V>::RTListVoiceIterator itVoice = itMap->second;
+                    bool releaseByNote  = false;
+                    bool releaseByGroup = false;
+
+                    if (itVoice->GetKeyGroup() == KeyGroup) {
+                        ++GroupCount;
+
+                        if (itNoteOnEvent->Param.Note.Key == itVoice->MIDIKey()) {
+                            ++NoteCount;
+
+                            releaseByNote = (
+                                (NotePolyphony > 0 && NoteCount >= NotePolyphony) && (
+                                    !SelfMask || (
+                                        SelfMask &&
+                                        itNoteOnEvent->Param.Note.Velocity >= itVoice->MIDIVelocity()
+                                    )
+                                )
+                            );
+                        }
+                        else if (ForceGroup) {
+                            releaseByGroup = (GroupPolyphony > -1 && GroupCount >= GroupPolyphony);
+                        }
+                    }
+
+                    // Forced release
+                    bool releaseByOffBy = ForceOffBy && itVoice->GetOffBy() == KeyGroup;
+
+                    ActiveKeyGroupMap::iterator it = ActiveKeyGroups.find(itVoice->GetOffBy());
+                    if (it != ActiveKeyGroups.end() && (releaseByNote || releaseByGroup || releaseByOffBy))
+                    {
+                        RTList<Event>::Iterator itEvent = it->second->allocAppend(pEngine->pEventPool);
+                        *itEvent = *itNoteOnEvent;
+                        itEvent->Type = Event::type_release_voice;
+                        itEvent->Param.ReleaseVoice.VoiceID = dynamic_cast<NotePool<V>*>(pEngine)->GetVoicePool()->getID(itVoice);
+                    }
+                }
+                // !NewAlgorithm
+                } else AbstractEngineChannel::HandleKeyGroupConflicts(KeyGroup, itNoteOnEvent);
+            }
+
         protected:
             EngineChannelBase() :
                 MidiKeyboardManager<V>(this),

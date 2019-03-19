@@ -54,6 +54,8 @@ namespace LinuxSampler { namespace sfz {
             void SetEngine(LinuxSampler::Engine* pEngine);
             void CalculateFadeOutCoeff(float FadeOutTime, float SampleRate);
             virtual release_trigger_t GetReleaseTriggerFlags() OVERRIDE;
+            virtual int               GetKeyGroup() OVERRIDE { return pRegion->group; }
+            virtual int               GetOffBy() OVERRIDE { return pRegion->off_by; }
 
             virtual void VoiceFreed() OVERRIDE { SignalRack.Reset(); }
 

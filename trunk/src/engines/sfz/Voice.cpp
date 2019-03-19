@@ -286,9 +286,15 @@ namespace LinuxSampler { namespace sfz {
 
     void Voice::ProcessGroupEvent(RTList<Event>::Iterator& itEvent) {
         dmsg(4,("Voice %p processGroupEvents event type=%d", (void*)this, itEvent->Type));
+
+        bool ReleaseVoice = (
+            itEvent->Type == Event::type_release_voice &&
+            itEvent->Param.ReleaseVoice.VoiceID == pEngine->GetVoicePool()->getID(this)
+        );
+
         if (itEvent->Type == Event::type_control_change ||
             (Type & Voice::type_controller_triggered) ||
-            itEvent->Param.Note.Key != HostKey()) {
+            ReleaseVoice) {
             dmsg(4,("Voice %p - kill", (void*)this));
             if (pRegion->off_mode == ::sfz::OFF_NORMAL) {
                 // turn off the voice by entering release envelope stage

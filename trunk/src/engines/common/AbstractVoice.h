@@ -124,6 +124,10 @@ namespace LinuxSampler {
             /// MIDI note-on velocity value which the voice should use for calculating any synthesis relevant parameters (i.e. amplitude).
             inline uint8_t MIDIVelocity() const { return pNote->cause.Param.Note.Velocity; }
 
+            virtual int GetKeyGroup() = 0;
+            // OffBy is different only in sfz::Voice
+            virtual int GetOffBy() { return GetKeyGroup(); }
+
             void processCCEvents(RTList<Event>::Iterator& itEvent, uint End);
             void processPitchEvent(RTList<Event>::Iterator& itEvent);
             void processResonanceEvent(RTList<Event>::Iterator& itEvent);

@@ -63,6 +63,7 @@ namespace LinuxSampler { namespace gig {
             void SetEngine(LinuxSampler::Engine* pEngine);
             void CalculateFadeOutCoeff(float FadeOutTime, float SampleRate);
             virtual release_trigger_t GetReleaseTriggerFlags() OVERRIDE;
+            virtual int               GetKeyGroup() OVERRIDE { return pRegion->GetParent()->KeyGroup; }
 
         protected:
             virtual SampleInfo       GetSampleInfo() OVERRIDE;

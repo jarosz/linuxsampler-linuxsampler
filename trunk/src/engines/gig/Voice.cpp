@@ -510,6 +510,14 @@ namespace LinuxSampler { namespace gig {
     void Voice::ProcessGroupEvent(RTList<Event>::Iterator& itEvent) {
         dmsg(4,("Voice %p processGroupEvents event type=%d", (void*)this, itEvent->Type));
 
+        bool ReleaseVoice = (
+            itEvent->Type == Event::type_release_voice &&
+            itEvent->Param.ReleaseVoice.VoiceID == pEngine->GetVoicePool()->getID(this)
+        );
+        bool NewNote = (
+            itEvent->Type == Event::type_note_on &&
+            itEvent->Type == itEvent->Param.Note.Key != HostKey()
+        );
         // TODO: The SustainPedal condition could be wrong, maybe the
         // check should be if this Voice is in release stage or is a
         // release sample instead. Need to test this in GSt.
@@ -519,7 +527,7 @@ namespace LinuxSampler { namespace gig {
         // note should be stopped at all, because it doesn't sound naturally
         // with a drumkit.
         // -- Christian, 2013-01-08
-        if (itEvent->Param.Note.Key != HostKey() /*||
+        if (NewNote || ReleaseVoice /*||
             !GetGigEngineChannel()->SustainPedal*/) {
             dmsg(4,("Voice %p - kill", (void*)this));
 

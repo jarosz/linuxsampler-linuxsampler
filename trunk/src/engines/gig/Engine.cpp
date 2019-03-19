@@ -226,11 +226,6 @@ namespace LinuxSampler { namespace gig {
         // if nothing defined for this key
         if (!pRegion) return Pool<Voice>::Iterator(); // nothing to do
 
-        int iKeyGroup = pRegion->KeyGroup;
-        // only need to send a group event from the first voice in a layered region,
-        // as all layers in a region always belongs to the same key group
-        if (HandleKeyGroupConflicts && iLayer == 0) pChannel->HandleKeyGroupConflicts(iKeyGroup, itNoteOnEvent);
-
         Voice::type_t VoiceType = Voice::type_normal;
 
         // get current dimension values to select the right dimension region
@@ -363,6 +358,11 @@ namespace LinuxSampler { namespace gig {
             pDimRgn = pRegion->pDimensionRegions[index & 255];
         }
         if (!pDimRgn) return Pool<Voice>::Iterator(); // error (could not resolve dimension region)
+
+        int iKeyGroup = pRegion->KeyGroup;
+        // only need to send a group event from the first voice in a layered region,
+        // as all layers in a region always belongs to the same key group
+        if (HandleKeyGroupConflicts && iLayer == 0) pChannel->HandleKeyGroupConflicts(iKeyGroup, itNoteOnEvent, pDimRgn->SelfMask);
 
         // no need to continue if sample is silent
         if (!pDimRgn->pSample || !pDimRgn->pSample->SamplesTotal) return Pool<Voice>::Iterator();

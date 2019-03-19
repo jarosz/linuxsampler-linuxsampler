@@ -56,6 +56,7 @@ namespace LinuxSampler { namespace sf2 {
             void SetEngine(LinuxSampler::Engine* pEngine);
             void CalculateFadeOutCoeff(float FadeOutTime, float SampleRate);
             virtual release_trigger_t GetReleaseTriggerFlags() OVERRIDE;
+            virtual int               GetKeyGroup() OVERRIDE { return pRegion->exclusiveClass; }
 
         protected:
             virtual SampleInfo       GetSampleInfo() OVERRIDE;

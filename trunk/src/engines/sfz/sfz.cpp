@@ -330,8 +330,15 @@ namespace sfz
         trigger = TRIGGER_ATTACK;
 
         group = 0;
-        off_by = 0;
+        // http://www.sfzformat.com/legacy/ states that default off_by is 0,
+        // but that would make all regions "exclusive" by default.
+        off_by = -1;
         off_mode = OFF_FAST;
+        // -1 means no polyphony limit, 0 means no playback at all
+        polyphony = -1;
+        // 0 means no note_polyphony limit
+        note_polyphony = 0;
+        note_selfmask = SELFMASK_ON;
 
         // sample player
         count = optional<int>::nothing;
@@ -639,6 +646,9 @@ namespace sfz
         definition->group = group;
         definition->off_by = off_by;
         definition->off_mode = off_mode;
+        definition->polyphony = polyphony;
+        definition->note_polyphony = note_polyphony;
+        definition->note_selfmask = note_selfmask;
         definition->on_locc = on_locc;
         definition->on_hicc = on_hicc;
 
@@ -1582,6 +1592,13 @@ namespace sfz
         {
             if (value == "fast")  pCurDef->off_mode = OFF_FAST;
             else if (value == "normal") pCurDef->off_mode = OFF_NORMAL;
+        }
+        else if ("polyphony" == key) pCurDef->polyphony = ToInt(value);
+        else if ("note_polyphony" == key) pCurDef->note_polyphony = ToInt(value);
+        else if ("note_selfmask" == key)
+        {
+            if (value == "on")  pCurDef->note_selfmask = SELFMASK_ON;
+            else if (value == "off") pCurDef->note_selfmask = SELFMASK_OFF;
         }
 
         // sample player
