@@ -508,7 +508,7 @@ namespace LinuxSampler {
                                 )
                             );
                         }
-                        else if (ForceGroup) {
+                        if (ForceGroup || itNoteOnEvent->Param.Note.Key != itVoice->MIDIKey()) {
                             releaseByGroup = (GroupPolyphony > -1 && GroupCount >= GroupPolyphony);
                         }
                     }
