@@ -151,7 +151,11 @@ namespace LinuxSampler {
             uint                 uiAlsaChannels;
             uint                 uiSamplerate;
             uint                 FragmentSize;
+#if DWORDS_LITTLEENDIAN
+            int32_t*             pAlsaOutputBuffer; ///< This is the buffer where the final mix will be copied to and send to the sound card
+#else
             int16_t*             pAlsaOutputBuffer; ///< This is the buffer where the final mix will be copied to and send to the sound card
+#endif
             String               pcm_name;          ///< Name of the PCM device, like plughw:0,0 the first number is the number of the soundcard, the second number is the number of the device.
             snd_pcm_t*           pcm_handle;        ///< Handle for the PCM device
             snd_pcm_stream_t     stream;

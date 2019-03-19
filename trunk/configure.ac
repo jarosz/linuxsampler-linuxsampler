@@ -1327,6 +1327,18 @@ else
 fi
 AC_DEFINE_UNQUOTED(CONFIG_UNSIGNED_TRIANG_ALGO, ${triang_unsigned}, [Define unsigned triangular wave algorithm to be used.])
 
+AC_ARG_ENABLE(alsa-s32_le,
+  [  --enable-alsa-s32_le
+                          Enable using S32_LE sample format with ALSA driver
+                          (default=off). Some audio cards need it (e.g.
+                          Native Instruments Komplete Audio 6).],
+  [config_alsa_s32_le="$enableval"],
+  [config_alsa_s32_le="no"]
+)
+if test "$config_alsa_s32_le" = "yes"; then
+  AC_DEFINE_UNQUOTED(DWORDS_LITTLEENDIAN, 1, [Define to 1 if you want to enable S32_LE sample format.])
+fi
+
 
 ###########################################################################
 # Create Build Files

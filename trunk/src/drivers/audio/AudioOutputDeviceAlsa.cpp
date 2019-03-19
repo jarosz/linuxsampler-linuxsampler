@@ -561,6 +561,8 @@ namespace LinuxSampler {
         /* Set sample format */
         #if WORDS_BIGENDIAN
         if ((err = snd_pcm_hw_params_set_format(pcm_handle, hwparams, SND_PCM_FORMAT_S16_BE)) < 0)
+        #elif DWORDS_LITTLEENDIAN
+        if ((err = snd_pcm_hw_params_set_format(pcm_handle, hwparams, SND_PCM_FORMAT_S32_LE)) < 0)
         #else // little endian
         if ((err = snd_pcm_hw_params_set_format(pcm_handle, hwparams, SND_PCM_FORMAT_S16_LE)) < 0)
         #endif
@@ -623,7 +625,11 @@ namespace LinuxSampler {
         }
 
         // allocate Alsa output buffer
+#if DWORDS_LITTLEENDIAN
+        pAlsaOutputBuffer = new int32_t[uiAlsaChannels * FragmentSize];
+#else
         pAlsaOutputBuffer = new int16_t[uiAlsaChannels * FragmentSize];
+#endif
 
         // create audio channels for this audio device to which the sampler engines can write to
         for (int i = 0; i < uiAlsaChannels; i++) this->Channels.push_back(new AudioChannel(i, FragmentSize));
@@ -669,6 +675,8 @@ namespace LinuxSampler {
         }
         #if WORDS_BIGENDIAN
         if (snd_pcm_hw_params_test_format(pcm_handle, hwparams, SND_PCM_FORMAT_S16_BE) < 0)
+        #elif DWORDS_LITTLEENDIAN
+        if (snd_pcm_hw_params_test_format(pcm_handle, hwparams, SND_PCM_FORMAT_S32_LE) < 0)
         #else // little endian
         if (snd_pcm_hw_params_test_format(pcm_handle, hwparams, SND_PCM_FORMAT_S16_LE) < 0)
         #endif
@@ -755,10 +763,17 @@ namespace LinuxSampler {
             for (int c = 0; c < uiAlsaChannels; c++) {
                 float* in  = Channels[c]->Buffer();
                 for (int i = 0, o = c; i < FragmentSize; i++ , o += uiAlsaChannels) {
+#if DWORDS_LITTLEENDIAN
+                    float sample_point = in[i] * 2147483648.0f;
+                    if (sample_point < -2147483648.0) sample_point = -2147483648.0;
+                    if (sample_point >  2147483647.0) sample_point =  2147483647.0;
+                    pAlsaOutputBuffer[o] = (int32_t) sample_point;
+#else
                     float sample_point = in[i] * 32768.0f;
                     if (sample_point < -32768.0) sample_point = -32768.0;
                     if (sample_point >  32767.0) sample_point =  32767.0;
                     pAlsaOutputBuffer[o] = (int16_t) sample_point;
+#endif
                 }
             }
 
