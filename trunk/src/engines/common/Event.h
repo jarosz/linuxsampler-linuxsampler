@@ -250,9 +250,6 @@ namespace LinuxSampler {
                     bool          Relative; ///< Whether @c Delta should be applied relatively against the note's current synthesis parameter value (false means the paramter's current value is simply replaced by Delta).
                     float         AbsValue; ///< New current absolute value of synthesis parameter (that is after @c Delta being applied).
                 } NoteSynthParam;
-                struct _ReleaseVoice {
-                    voice_id_t VoiceID;
-                } ReleaseVoice;
             } Param;
             EngineChannel* pEngineChannel; ///< Pointer to the EngineChannel where this event occured on, NULL means Engine global event (e.g. SysEx message).
             MidiInputPort* pMidiInputPort; ///< Pointer to the MIDI input port on which this event occured (NOTE: currently only for global events, that is SysEx messages)
