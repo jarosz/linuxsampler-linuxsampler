@@ -137,7 +137,7 @@ namespace sfz
 
     Sample* Region::GetSample(bool create)
     {
-        if (pSample == NULL && create) {
+        if (pSample == NULL && create && sample != "*silence") {
             uint i = offset ? *offset : 0;
             Sample* sf = GetInstrument()->GetSampleManager()->FindSample(sample, i, end);
             if (sf != NULL) pSample = sf; // Reuse already created sample
@@ -1490,6 +1490,16 @@ namespace sfz
         // sample definition
         if ("sample" == key)
         {
+            // handle built-in sample types ...
+            if (value == "*silence") {
+                pCurDef->sample = value;
+                return;
+            } else if (value.length() >= 1 && value[0] == '*') {
+                std::cerr << "Unknown or unsupported built-in sample type '" << value << "'!" << std::endl;
+                return;
+            }
+
+            // handle external samples ...
             std::string path = default_path + value;
             #ifndef WIN32
             for (int i = 0; i < path.length(); i++) if (path[i] == '\\') path[i] = '/';

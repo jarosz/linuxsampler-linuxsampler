@@ -314,33 +314,49 @@ namespace LinuxSampler {
         for (int iChan = 0; iChan < 2; ++iChan) {
             const int iDstChan = pFxSend->DestinationChannel(iChan);
             if (iDstChan < 0) {
-                dmsg(1,("Engine::RouteAudio() Error: invalid FX send (%s) destination channel (%d->%d)", ((iChan) ? "R" : "L"), iChan, iDstChan));
+                dmsg(1,("Engine::RouteAudio() Error: invalid FX send (%s) destination channel (%d->%d)\n",
+                        ((iChan) ? "R" : "L"), iChan, iDstChan));
                 return false; // error
             }
             AudioChannel* pDstChan = NULL;
+            Effect* pEffect = NULL;
             if (pFxSend->DestinationEffectChain() >= 0) { // fx send routed to an internal send effect
                 EffectChain* pEffectChain =
                     pAudioOutputDevice->SendEffectChainByID(
                         pFxSend->DestinationEffectChain()
                     );
                 if (!pEffectChain) {
-                    dmsg(1,("Engine::RouteAudio() Error: invalid FX send (%s) destination effect chain %d", ((iChan) ? "R" : "L"), pFxSend->DestinationEffectChain()));
+                    dmsg(1,("Engine::RouteAudio() Error: invalid FX send (%s) destination effect chain %d\n",
+                            ((iChan) ? "R" : "L"), pFxSend->DestinationEffectChain()));
                     return false; // error
                 }
-                Effect* pEffect =
+                pEffect =
                     pEffectChain->GetEffect(
                         pFxSend->DestinationEffectChainPosition()
                     );
                 if (!pEffect) {
-                    dmsg(1,("Engine::RouteAudio() Error: invalid FX send (%s) destination effect %d of effect chain %d", ((iChan) ? "R" : "L"), pFxSend->DestinationEffectChainPosition(), pFxSend->DestinationEffectChain()));
+                    dmsg(1,("Engine::RouteAudio() Error: invalid FX send (%s) destination effect %d of effect chain %d\n",
+                            ((iChan) ? "R" : "L"), pFxSend->DestinationEffectChainPosition(), pFxSend->DestinationEffectChain()));
                     return false; // error
                 }
                 pDstChan = pEffect->InputChannel(iDstChan);
-            } else { // FX send routed directly to an audio output channel
+            } else { // FX send routed directly to audio output device channel(s)
                 pDstChan = pAudioOutputDevice->Channel(iDstChan);
             }
             if (!pDstChan) {
-                dmsg(1,("Engine::RouteAudio() Error: invalid FX send (%s) destination channel (%d->%d)", ((iChan) ? "R" : "L"), iChan, iDstChan));
+                if (pFxSend->DestinationEffectChain() >= 0) { // fx send routed to an internal send effect
+                    const int iEffectChannels = pEffect ? pEffect->InputChannelCount() : 0;
+                    dmsg(1,("Engine::RouteAudio() Error: invalid FX send (%s) destination channel (%d->%d): "
+                            "FX send is routed to effect %d of effect chain %d and that effect has %d input channels\n",
+                            ((iChan) ? "R" : "L"), iChan, iDstChan,
+                            pFxSend->DestinationEffectChainPosition(),
+                            pFxSend->DestinationEffectChain(), iEffectChannels));
+                } else { // FX send routed directly to audio output device channel(s)
+                    dmsg(1,("Engine::RouteAudio() Error: invalid FX send (%s) destination channel (%d->%d): "
+                            "FX send is directly routed to audio output device which has %d output channels\n",
+                            ((iChan) ? "R" : "L"), iChan, iDstChan,
+                            (pAudioOutputDevice ? pAudioOutputDevice->ChannelCount() : 0)));
+                }
                 return false; // error
             }
             ppSource[iChan]->MixTo(pDstChan, Samples, FxSendLevel);

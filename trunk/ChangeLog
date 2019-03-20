@@ -10,6 +10,10 @@ Version SVN trunk (?)
       was explicitly requested by the instrument (otherwise only on note-off).
     - Fixed compiler warnings.
     - Fixed compilation error when cross-compiling to Mac.
+    - FX Sends: Provide more useful error messages on routing problems
+      (see bug #169).
+    - LSCP doc: Be more clear describing the two distinct approaches
+      of using external vs. internal effects (see bug #169).
 
   * Gigasampler/GigaStudio format engine:
     - Format extension: If requested by instrument then don't play release
@@ -20,6 +24,8 @@ Version SVN trunk (?)
       (fixes bug #307, patch by Jacek Roszkowski)
     - Fixed potential crash when a sample is shared by more than one region
       (fixes bug #308, patch by Jacek Roszkowski).
+    - Opcode 'sample': Added support for built-in sample '*silence'
+      (fixes bug #310, patch by Jacek Roszkowski).
 
 Version 2.1.0 (25 Nov 2017)
 
