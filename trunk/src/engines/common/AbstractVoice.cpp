@@ -118,9 +118,6 @@ namespace LinuxSampler {
         itKillEvent     = Pool<Event>::Iterator();
         MidiKeyBase* pKeyInfo = GetMidiKeyInfo(MIDIKey());
 
-        // FIXME: in sfz iKeyGroup (off_by) = 0 is valid
-        pGroupEvents = iKeyGroup ? pEngineChannel->ActiveKeyGroups[iKeyGroup] : 0;
-
         SmplInfo   = GetSampleInfo();
         RgnInfo    = GetRegionInfo();
         InstrInfo  = GetInstrumentInfo();
@@ -430,12 +427,8 @@ namespace LinuxSampler {
         RTList<Event>::Iterator itNoteEvent;
         GetFirstEventOnKey(HostKey(), itNoteEvent);
 
-        RTList<Event>::Iterator itGroupEvent;
-        if (pGroupEvents && !Orphan) itGroupEvent = pGroupEvents->first();
-
         if (itTriggerEvent) { // skip events that happened before this voice was triggered
             while (itCCEvent && itCCEvent->FragmentPos() <= Skip) ++itCCEvent;
-            while (itGroupEvent && itGroupEvent->FragmentPos() <= Skip) ++itGroupEvent;
 
             // we can't simply compare the timestamp here, because note events
             // might happen on the same time stamp, so we have to deal on the
@@ -493,7 +486,6 @@ namespace LinuxSampler {
 
             // process transition events (note on, note off & sustain pedal)
             processTransitionEvents(itNoteEvent, iSubFragmentEnd);
-            processGroupEvents(itGroupEvent, iSubFragmentEnd);
             
             if (pSignalUnitRack == NULL) {
                 // if the voice was killed in this subfragment, or if the
@@ -839,18 +831,6 @@ namespace LinuxSampler {
         }
     }
 
-    /**
-     * Process given list of events aimed at all voices in a key group.
-     *
-     * @param itEvent - iterator pointing to the next event to be processed
-     * @param End     - youngest time stamp where processing should be stopped
-     */
-    void AbstractVoice::processGroupEvents(RTList<Event>::Iterator& itEvent, uint End) {
-        for (; itEvent && itEvent->FragmentPos() <= End; ++itEvent) {
-            ProcessGroupEvent(itEvent);
-        }
-    }
-
     /** @brief Update current portamento position.
      *
      * Will be called when portamento mode is enabled to get the final
@@ -866,6 +846,11 @@ namespace LinuxSampler {
         } else {
             // TODO: 
         }
+    }
+
+    void AbstractVoice::Release() {
+        // FIXME: Is that all?
+        EnterReleaseStage();
     }
 
     /**

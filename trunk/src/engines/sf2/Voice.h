@@ -84,7 +84,6 @@ namespace LinuxSampler { namespace sf2 {
             virtual double           GetVelocityAttenuation(uint8_t MIDIKeyVelocity) OVERRIDE;
             virtual double           GetVelocityRelease(uint8_t MIDIKeyVelocity) OVERRIDE;
             virtual double           GetSampleAttenuation() OVERRIDE;
-            virtual void             ProcessGroupEvent(RTList<Event>::Iterator& itEvent) OVERRIDE;
             virtual void             AboutToTrigger() OVERRIDE;
             virtual int              CalculatePan(uint8_t pan) OVERRIDE;
 

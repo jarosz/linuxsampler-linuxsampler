@@ -508,7 +508,7 @@ namespace LinuxSampler {
                                 )
                             );
                         }
-                        if (ForceGroup || itNoteOnEvent->Param.Note.Key != itVoice->MIDIKey()) {
+                        else if (ForceGroup) {
                             releaseByGroup = (GroupPolyphony > -1 && GroupCount >= GroupPolyphony);
                         }
                     }
@@ -516,13 +516,9 @@ namespace LinuxSampler {
                     // Forced release
                     bool releaseByOffBy = ForceOffBy && itVoice->GetOffBy() == KeyGroup;
 
-                    ActiveKeyGroupMap::iterator it = ActiveKeyGroups.find(itVoice->GetOffBy());
-                    if (it != ActiveKeyGroups.end() && (releaseByNote || releaseByGroup || releaseByOffBy))
+                    if (releaseByNote || releaseByGroup || releaseByOffBy)
                     {
-                        RTList<Event>::Iterator itEvent = it->second->allocAppend(pEngine->pEventPool);
-                        *itEvent = *itNoteOnEvent;
-                        itEvent->Type = Event::type_release_voice;
-                        itEvent->Param.ReleaseVoice.VoiceID = dynamic_cast<NotePool<V>*>(pEngine)->GetVoicePool()->getID(itVoice);
+                        itVoice->Release();
                     }
                 }
                 // !NewAlgorithm

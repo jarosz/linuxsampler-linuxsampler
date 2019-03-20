@@ -342,21 +342,6 @@ namespace LinuxSampler { namespace sf2 {
         return 0;
     }
 
-    void Voice::ProcessGroupEvent(RTList<Event>::Iterator& itEvent) {
-        bool ReleaseVoice = (
-            itEvent->Type == Event::type_release_voice &&
-            itEvent->Param.ReleaseVoice.VoiceID == pEngine->GetVoicePool()->getID(this)
-        );
-        bool NewNote = (
-            itEvent->Type == Event::type_note_on &&
-            itEvent->Type == itEvent->Param.Note.Key != HostKey()
-        );
-        if (NewNote || ReleaseVoice) {
-            // kill the voice fast
-            SignalRack.EnterFadeOutStage();
-        }
-    }
-
     void Voice::CalculateFadeOutCoeff(float FadeOutTime, float SampleRate) {
         SignalRack.CalculateFadeOutCoeff(FadeOutTime, SampleRate);
     }

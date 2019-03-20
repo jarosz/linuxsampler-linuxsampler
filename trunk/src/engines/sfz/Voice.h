@@ -56,6 +56,7 @@ namespace LinuxSampler { namespace sfz {
             virtual release_trigger_t GetReleaseTriggerFlags() OVERRIDE;
             virtual int               GetKeyGroup() OVERRIDE { return pRegion->group; }
             virtual int               GetOffBy() OVERRIDE { return pRegion->off_by; }
+            virtual void              Release() OVERRIDE;
 
             virtual void VoiceFreed() OVERRIDE { SignalRack.Reset(); }
 
@@ -86,7 +87,6 @@ namespace LinuxSampler { namespace sfz {
             virtual double           GetVelocityAttenuation(uint8_t MIDIKeyVelocity) OVERRIDE;
             virtual double           GetVelocityRelease(uint8_t MIDIKeyVelocity) OVERRIDE;
             virtual double           GetSampleAttenuation() OVERRIDE;
-            virtual void             ProcessGroupEvent(RTList<Event>::Iterator& itEvent) OVERRIDE;
             virtual void             SetSampleStartOffset() OVERRIDE;
             virtual int              GetRAMCacheOffset() OVERRIDE { return pRegion->pSample->RAMCacheOffset; }
             virtual int              CalculatePan(uint8_t pan) OVERRIDE;

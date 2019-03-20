@@ -132,8 +132,8 @@ namespace LinuxSampler {
             void processPitchEvent(RTList<Event>::Iterator& itEvent);
             void processResonanceEvent(RTList<Event>::Iterator& itEvent);
             void processTransitionEvents(RTList<Event>::Iterator& itEvent, uint End);
-            void processGroupEvents(RTList<Event>::Iterator& itEvent, uint End);
             void UpdatePortamentoPos(Pool<Event>::Iterator& itNoteOffEvent);
+            virtual void Release();
             void Kill(Pool<Event>::Iterator& itKillEvent);
             void CreateEq();
             void onScaleTuningChanged();
@@ -190,7 +190,6 @@ namespace LinuxSampler {
             float                       fFinalResonance;
             gig::SynthesisParam         finalSynthesisParameters;
             gig::Loop                   loop;
-            RTList<Event>*              pGroupEvents;        ///< Events directed to an exclusive group
             
             EqSupport* pEq;         ///< Used for per voice equalization
             bool       bEqSupport;
@@ -323,7 +322,6 @@ namespace LinuxSampler {
 
             virtual unsigned long GetNoteOnTime(int MIDIKey) = 0;
 
-            virtual void    ProcessGroupEvent(RTList<Event>::Iterator& itEvent) = 0;
             void            EnterReleaseStage();
 
             virtual int     CalculatePan(uint8_t pan) = 0;

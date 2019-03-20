@@ -91,7 +91,6 @@ namespace LinuxSampler { namespace gig {
             virtual double           GetVelocityAttenuation(uint8_t MIDIKeyVelocity) OVERRIDE;
             virtual double           GetVelocityRelease(uint8_t MIDIKeyVelocity) OVERRIDE;
             virtual double           GetSampleAttenuation() OVERRIDE;
-            virtual void             ProcessGroupEvent(RTList<Event>::Iterator& itEvent) OVERRIDE;
             virtual int              CalculatePan(uint8_t pan) OVERRIDE;
 
         private:
