@@ -343,6 +343,8 @@ namespace sfz
         // -1 means no positional sensing, else it's CC number
         positional = -1;
 
+        cache = CACHE_DFD;
+
         // sample player
         count = optional<int>::nothing;
         delay = optional<float>::nothing;
@@ -653,6 +655,7 @@ namespace sfz
         definition->note_polyphony = note_polyphony;
         definition->note_selfmask = note_selfmask;
         definition->positional = positional;
+        definition->cache = cache;
         definition->on_locc = on_locc;
         definition->on_hicc = on_hicc;
 
@@ -1616,6 +1619,11 @@ namespace sfz
         }
 
         else if ("positional" == key) pCurDef->positional = ToInt(value);
+        else if ("cache" == key)
+        {
+            if (value == "dfd")  pCurDef->cache = CACHE_DFD;
+            else if (value == "ram") pCurDef->cache = CACHE_RAM;
+        }
 
         // sample player
         else if ("count" == key) { pCurDef->count = ToInt(value); pCurDef->loop_mode = ONE_SHOT; }

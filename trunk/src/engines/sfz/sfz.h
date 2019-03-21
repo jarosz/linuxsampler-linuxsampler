@@ -144,6 +144,7 @@ namespace sfz
                        LPF_4P, HPF_4P,
                        LPF_6P, HPF_6P };
     enum note_selfmask_t { SELFMASK_OFF, SELFMASK_ON };
+    enum cache_t { CACHE_DFD, CACHE_RAM };
 
     typedef unsigned char trigger_t;
     typedef unsigned char uint8_t;
@@ -437,6 +438,7 @@ namespace sfz
 
         int positional;
 
+        cache_t cache;
         Array<int> on_locc; Array<int> on_hicc;
 
         // sample player
