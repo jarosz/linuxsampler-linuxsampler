@@ -333,6 +333,8 @@ namespace sfz
         off_by = 0;
         off_mode = OFF_FAST;
 
+        cache = CACHE_DFD;
+
         // sample player
         count = optional<int>::nothing;
         delay = optional<float>::nothing;
@@ -639,6 +641,7 @@ namespace sfz
         definition->group = group;
         definition->off_by = off_by;
         definition->off_mode = off_mode;
+        definition->cache = cache;
         definition->on_locc = on_locc;
         definition->on_hicc = on_hicc;
 
@@ -1592,6 +1595,11 @@ namespace sfz
         {
             if (value == "fast")  pCurDef->off_mode = OFF_FAST;
             else if (value == "normal") pCurDef->off_mode = OFF_NORMAL;
+        }
+        else if ("cache" == key)
+        {
+            if (value == "dfd")  pCurDef->cache = CACHE_DFD;
+            else if (value == "ram") pCurDef->cache = CACHE_RAM;
         }
 
         // sample player

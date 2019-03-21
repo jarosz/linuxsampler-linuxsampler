@@ -78,6 +78,7 @@ namespace LinuxSampler { namespace sfz {
             virtual void               Destroy(::sfz::Instrument* pResource, void* pArg);
             virtual void               DeleteRegionIfNotUsed(::sfz::Region* pRegion, region_info_t* pRegInfo);
             virtual void               DeleteSampleIfNotUsed(Sample* pSample, region_info_t* pRegInfo);
+            void                       CacheInitialSamplesByRegion(::sfz::Region* pRegion, uint maxSamplesPerCycle);
         private:
             typedef ResourceConsumer< ::sfz::File> SfzConsumer;
 

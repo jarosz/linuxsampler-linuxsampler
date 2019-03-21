@@ -116,7 +116,7 @@ namespace LinuxSampler { namespace sfz {
         for (int i = 0 ; i < regionCount ; i++) {
             float localProgress = (float) i / (float) regionCount;
             DispatchResourceProgressEvent(Key, localProgress);
-            CacheInitialSamples(pInstrument->regions[i]->GetSample(), maxSamplesPerCycle);
+            CacheInitialSamplesByRegion(pInstrument->regions[i], maxSamplesPerCycle);
             //pInstrument->regions[i]->GetSample()->Close();
         }
         dmsg(1,("OK\n"));
@@ -158,7 +158,34 @@ namespace LinuxSampler { namespace sfz {
         
     }
 
+    void InstrumentResourceManager::CacheInitialSamplesByRegion(::sfz::Region* pRegion, uint maxSamplesPerCycle) {
+        Sample *pSample = pRegion->GetSample();
+        if (pRegion->cache == ::sfz::CACHE_RAM) {
+            if (!pSample) {
+                dmsg(4,("InstrumentResourceManager: Skipping sample (pSample == NULL)\n"));
+                return;
+            }
+            if (!pSample->GetTotalFrameCount()) return; // skip zero size samples
 
+            // Sample should be cached in RAM, so we place
+            // 'pAudioIO->FragmentSize << CONFIG_MAX_PITCH'
+            // number of '0' samples (silence samples) behind the official buffer
+            // border, to allow the interpolator do it's work even at the end of
+            // the sample.
+            const uint neededSilenceSamples = uint((maxSamplesPerCycle << CONFIG_MAX_PITCH) + 3);
+            const uint currentlyCachedSilenceSamples = uint(pSample->GetCache().NullExtensionSize / pSample->GetFrameSize());
+            if (currentlyCachedSilenceSamples < neededSilenceSamples) {
+                dmsg(3,("Caching whole sample (sample name: \"%s\", sample size: %ld)\n", pSample->GetName().c_str(), pSample->GetTotalFrameCount()));
+                typename Sample::buffer_t buf = pSample->LoadSampleDataWithNullSamplesExtension(neededSilenceSamples);
+                dmsg(4,("Cached %lu Bytes, %lu silence bytes.\n", buf.Size, buf.NullExtensionSize));
+            }
+
+            if (!pSample->GetCache().Size) std::cerr << "Unable to cache sample - maybe memory full!" << std::endl << std::flush;
+        }
+        else {
+            CacheInitialSamples(pSample, maxSamplesPerCycle);
+        }
+    }
 
     // internal sfz file manager
 

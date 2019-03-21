@@ -143,6 +143,7 @@ namespace sfz
                        LPF_2P, HPF_2P, BPF_2P, BRF_2P, PKF_2P,
                        LPF_4P, HPF_4P,
                        LPF_6P, HPF_6P };
+    enum cache_t { CACHE_DFD, CACHE_RAM };
 
     typedef unsigned char trigger_t;
     typedef unsigned char uint8_t;
@@ -431,6 +432,7 @@ namespace sfz
         uint off_by;
         off_mode_t off_mode;
 
+        cache_t cache;
         Array<int> on_locc; Array<int> on_hicc;
 
         // sample player
