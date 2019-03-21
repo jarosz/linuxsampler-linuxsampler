@@ -435,6 +435,8 @@ namespace sfz
         int note_polyphony;
         note_selfmask_t note_selfmask;
 
+        int positional;
+
         Array<int> on_locc; Array<int> on_hicc;
 
         // sample player

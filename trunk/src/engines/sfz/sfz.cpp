@@ -340,6 +340,9 @@ namespace sfz
         note_polyphony = 0;
         note_selfmask = SELFMASK_ON;
 
+        // -1 means no positional sensing, else it's CC number
+        positional = -1;
+
         // sample player
         count = optional<int>::nothing;
         delay = optional<float>::nothing;
@@ -649,6 +652,7 @@ namespace sfz
         definition->polyphony = polyphony;
         definition->note_polyphony = note_polyphony;
         definition->note_selfmask = note_selfmask;
+        definition->positional = positional;
         definition->on_locc = on_locc;
         definition->on_hicc = on_hicc;
 
@@ -1610,6 +1614,8 @@ namespace sfz
             if (value == "on")  pCurDef->note_selfmask = SELFMASK_ON;
             else if (value == "off") pCurDef->note_selfmask = SELFMASK_OFF;
         }
+
+        else if ("positional" == key) pCurDef->positional = ToInt(value);
 
         // sample player
         else if ("count" == key) { pCurDef->count = ToInt(value); pCurDef->loop_mode = ONE_SHOT; }
