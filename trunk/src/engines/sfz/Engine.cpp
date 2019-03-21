@@ -278,6 +278,21 @@ namespace LinuxSampler { namespace sfz {
         // no need to process if sample is silent
         if (!pRgn->GetSample(false) || !pRgn->GetSample()->GetTotalFrameCount()) return Pool<Voice>::Iterator();
 
+        if (pRgn->positional != -1) {
+            unsigned char cc = pChannel->ControllerTable[pRgn->positional],
+                          xfout_hicc = pRgn->xfout_hicc[pRgn->positional],
+                          xfout_locc = pRgn->xfout_locc[pRgn->positional],
+                          xfin_hicc = pRgn->xfin_hicc[pRgn->positional],
+                          xfin_locc = pRgn->xfin_locc[pRgn->positional];
+
+            // Don't play sample if it's not needed
+            if (xfout_hicc != 0 && cc >= xfout_hicc
+                || xfin_hicc != 0 && cc <= xfin_locc)
+            {
+                return Pool<Voice>::Iterator();
+            }
+        }
+
         // allocate a new voice for the key
         itNewVoice = GetVoicePool()->allocAppend();
         int res = InitNewVoice (

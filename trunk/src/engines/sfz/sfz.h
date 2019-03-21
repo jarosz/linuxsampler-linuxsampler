@@ -431,6 +431,8 @@ namespace sfz
         uint off_by;
         off_mode_t off_mode;
 
+        int positional;
+
         Array<int> on_locc; Array<int> on_hicc;
 
         // sample player

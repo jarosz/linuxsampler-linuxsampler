@@ -333,6 +333,9 @@ namespace sfz
         off_by = 0;
         off_mode = OFF_FAST;
 
+        // -1 means no positional sensing, else it's CC number
+        positional = -1;
+
         // sample player
         count = optional<int>::nothing;
         delay = optional<float>::nothing;
@@ -639,6 +642,7 @@ namespace sfz
         definition->group = group;
         definition->off_by = off_by;
         definition->off_mode = off_mode;
+        definition->positional = positional;
         definition->on_locc = on_locc;
         definition->on_hicc = on_hicc;
 
@@ -1593,6 +1597,8 @@ namespace sfz
             if (value == "fast")  pCurDef->off_mode = OFF_FAST;
             else if (value == "normal") pCurDef->off_mode = OFF_NORMAL;
         }
+
+        else if ("positional" == key) pCurDef->positional = ToInt(value);
 
         // sample player
         else if ("count" == key) { pCurDef->count = ToInt(value); pCurDef->loop_mode = ONE_SHOT; }
