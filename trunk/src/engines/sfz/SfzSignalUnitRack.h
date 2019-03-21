@@ -134,6 +134,7 @@ namespace LinuxSampler { namespace sfz {
             virtual bool Active() { return !pCtrls->isEmpty(); }
             virtual void Calculate();
             virtual void SetCrossFadeCCs(::sfz::Array<int>& loCCs, ::sfz::Array<int>& hiCCs);
+            virtual void ProcessCCEvent(uint8_t Controller, uint8_t Value) OVERRIDE;
     };
     
     

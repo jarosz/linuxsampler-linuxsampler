@@ -61,6 +61,14 @@ namespace LinuxSampler { namespace sfz {
             AddCC(cc, i);
         }
     }
+
+    void XFInCCUnit::ProcessCCEvent(uint8_t Controller, uint8_t Value) {
+        // if positional != -1, the controller value is set
+        // in Trigger() function once for whole sample playback
+        if (Controller != pVoice->pRegion->positional) {
+            CCUnit::ProcessCCEvent(Controller, Value);
+        }
+    }
     
     void XFInCCUnit::Calculate() {
         float l = 1;
