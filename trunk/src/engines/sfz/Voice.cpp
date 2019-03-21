@@ -285,8 +285,14 @@ namespace LinuxSampler { namespace sfz {
     }
 
     void Voice::Release() {
-        std::cerr << pSample->GetName() << std::endl;
-        AbstractVoice::Release();
+        if (pRegion->off_mode == ::sfz::OFF_NORMAL) {
+            // turn off the voice by entering release envelope stage
+            AbstractVoice::Release();
+        }
+        else {
+            // kill the voice fast
+            SignalRack.EnterFadeOutStage();
+        }
     }
 
     void Voice::SetSampleStartOffset() {
